@@ -1,0 +1,2415 @@
+/* =========================================================
+
+   NEURO LXP SIDEBAR
+
+   Figma base: 240px sidebar / 204px cards / 44px cards.
+
+========================================================= */
+
+
+
+.sidebar,
+
+.sidebar * {
+
+  box-sizing: border-box;
+
+}
+
+
+
+.sidebar {
+
+  --sidebar-width: 240px;
+
+  --side-pad: 18px;
+
+  --card-width: 204px;
+
+  --card-height: 44px;
+
+  --logo-height: 77px;
+
+  --logo-gap: 32px;
+
+  --menu-font: 16px;
+
+  --icon-size: 20px;
+
+
+
+  width: var(--sidebar-width);
+
+  min-width: var(--sidebar-width);
+
+  max-width: var(--sidebar-width);
+
+  height: 100vh;
+
+  height: 100dvh;
+
+  min-height: 0;
+
+  flex: 0 0 var(--sidebar-width);
+
+
+
+  position: sticky;
+
+  top: 0;
+
+  align-self: flex-start;
+
+
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+
+
+  padding: 24px var(--side-pad);
+
+  overflow: hidden;
+
+
+
+  background: #DFE6E9;
+
+  box-shadow: -4px -4px 8px #FFFFFF, 4px 4px 8px #C4C4C4;
+
+  z-index: 100;
+
+
+
+  transition:
+
+    width .25s ease,
+
+    min-width .25s ease,
+
+    max-width .25s ease,
+
+    flex-basis .25s ease;
+
+}
+
+
+
+/* ---------- Logo ---------- */
+
+.logoArea {
+
+  width: var(--card-width);
+
+  height: var(--logo-height);
+
+  min-height: var(--logo-height);
+
+  flex: 0 0 var(--logo-height);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin: 0 0 var(--logo-gap);
+
+  padding: 0;
+
+}
+
+
+
+.mainLogo {
+
+  display: block;
+
+  width: var(--card-width);
+
+  max-width: 100%;
+
+  height: 100%;
+
+  object-fit: contain;
+
+}
+
+
+
+/* ---------- Navigation ---------- */
+
+.sidebarNav {
+
+  width: var(--card-width);
+
+  display: flex;
+
+  flex: 0 0 auto;
+
+  flex-direction: column;
+
+  align-items: stretch;
+
+  gap: 16px;
+
+  min-height: 0;
+
+}
+
+
+
+.sidebarItem {
+
+  width: var(--card-width);
+
+  height: var(--card-height);
+
+  min-height: var(--card-height);
+
+  flex: 0 0 var(--card-height);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-start;
+
+  gap: 10px;
+
+  padding: 0 14px;
+
+  color: #374151;
+
+  background: #DFE6E9;
+
+  text-decoration: none;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  box-shadow: -4px -4px 8px #FFFFFF, 4px 4px 8px #C4C4C4;
+
+}
+
+
+
+.sidebarItem span {
+
+  min-width: 0;
+
+  font-family: "Segoe UI", Inter, sans-serif;
+
+  font-style: normal;
+
+  font-weight: 600;
+
+  font-size: var(--menu-font);
+
+  line-height: 1.2;
+
+  letter-spacing: .02em;
+
+  color: #374151;
+
+  white-space: nowrap;
+
+}
+
+
+
+/* ---------- Icons ---------- */
+
+.sidebarIcon {
+
+  width: var(--icon-size) !important;
+
+  height: var(--icon-size) !important;
+
+  min-width: var(--icon-size);
+
+  flex: 0 0 var(--icon-size);
+
+  object-fit: contain;
+
+  filter:
+
+    brightness(0)
+
+    saturate(100%)
+
+    invert(25%)
+
+    sepia(11%)
+
+    saturate(1066%)
+
+    hue-rotate(182deg)
+
+    brightness(91%)
+
+    contrast(88%);
+
+}
+
+
+
+/* ---------- Active ---------- */
+
+.sidebarItemActive {
+
+  color: #2D4CC8;
+
+  background: #DFE6E9;
+
+  box-shadow:
+
+    inset -4px -4px 4px #FFFFFF,
+
+    inset 4px 4px 4px #C4C4C4;
+
+}
+
+
+
+.sidebarItemActive span {
+
+  color: #2D4CC8;
+
+  font-weight: 700;
+
+}
+
+
+
+.sidebarItemActive .sidebarIcon {
+
+  filter:
+
+    brightness(0)
+
+    saturate(100%)
+
+    invert(32%)
+
+    sepia(94%)
+
+    saturate(1714%)
+
+    hue-rotate(216deg)
+
+    brightness(82%)
+
+    contrast(96%);
+
+}
+
+
+
+.sidebarItem:hover,
+
+.sidebarItem:focus-visible,
+
+.logoutButton:hover,
+
+.logoutButton:focus-visible {
+
+  outline: none;
+
+  box-shadow:
+
+    inset -4px -4px 4px #FFFFFF,
+
+    inset 4px 4px 4px #C4C4C4;
+
+}
+
+
+
+/* ---------- Logout ---------- */
+
+.sidebarBottom {
+
+  width: var(--card-width);
+
+  flex: 0 0 auto;
+
+  margin-top: auto;
+
+  padding: 0;
+
+}
+
+
+
+.logoutButton {
+
+  width: var(--card-width);
+
+  height: var(--card-height);
+
+  min-height: var(--card-height);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-start;
+
+  gap: 12px;
+
+  padding: 0 14px;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  background: #DFE6E9;
+
+  color: #374151;
+
+  box-shadow: -4px -4px 8px #FFFFFF, 4px 4px 8px #C4C4C4;
+
+  cursor: pointer;
+
+}
+
+
+
+.logoutButton span {
+
+  font-family: "Segoe UI", Inter, sans-serif;
+
+  font-style: normal;
+
+  font-weight: 700;
+
+  font-size: 14px;
+
+  line-height: 20px;
+
+  letter-spacing: .02em;
+
+  color: #374151;
+
+  white-space: nowrap;
+
+}
+
+
+
+/* ---------- Desktop collapse / expand button ---------- */
+
+.sidebarToggleButton {
+
+  position: absolute;
+
+  top: 92px;
+
+  right: -16px;
+
+  z-index: 500;
+
+  width: 32px;
+
+  height: 32px;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: #DFE6E9;
+
+  box-shadow: -3px -3px 6px #FFFFFF, 3px 3px 6px #C4C4C4;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+}
+
+
+
+.sidebarToggleButton:hover,
+
+.sidebarToggleButton:focus-visible {
+
+  outline: none;
+
+  box-shadow:
+
+    inset -2px -2px 4px #FFFFFF,
+
+    inset 2px 2px 4px #C4C4C4;
+
+}
+
+
+
+.sidebarToggleIcon {
+
+  display: block;
+
+  width: 18px !important;
+
+  height: 18px !important;
+
+  object-fit: contain;
+
+}
+
+
+
+/* ---------- Desktop collapsed state ---------- */
+
+@media (min-width: 901px) {
+
+  .sidebar.sidebarCollapsed {
+
+    --sidebar-width: 80px;
+
+    --side-pad: 10px;
+
+    --card-width: 56px;
+
+  }
+
+
+
+  .sidebar.sidebarCollapsed .logoArea {
+
+    width: 56px;
+
+    max-width: 56px;
+
+    overflow: hidden;
+
+  }
+
+
+
+  .sidebar.sidebarCollapsed .mainLogo {
+
+    width: 52px !important;
+
+    max-width: 52px !important;
+
+    height: auto !important;
+
+  }
+
+
+
+  .sidebar.sidebarCollapsed .sidebarNav,
+
+  .sidebar.sidebarCollapsed .sidebarBottom {
+
+    width: 56px;
+
+    max-width: 56px;
+
+  }
+
+
+
+  .sidebar.sidebarCollapsed .sidebarItem,
+
+  .sidebar.sidebarCollapsed .logoutButton {
+
+    width: 56px;
+
+    max-width: 56px;
+
+    padding-left: 0;
+
+    padding-right: 0;
+
+    gap: 0;
+
+    justify-content: center;
+
+  }
+
+
+
+  .sidebar.sidebarCollapsed .sidebarItemText {
+
+    display: none !important;
+
+  }
+
+
+
+  .sidebar.sidebarCollapsed .sidebarIcon {
+
+    margin: 0 !important;
+
+  }
+
+}
+
+
+
+/* ---------- Responsive heights ---------- */
+
+@media (min-width: 901px) and (max-height: 959px) {
+
+  .sidebar {
+
+    --card-height: 44px;
+
+    --logo-height: 62px;
+
+    --logo-gap: 18px;
+
+    --menu-font: 16px;
+
+    --icon-size: 20px;
+
+    padding-top: 12px;
+
+    padding-bottom: 12px;
+
+  }
+
+
+
+  .mainLogo { width: 174px; }
+
+}
+
+
+
+@media (min-width: 901px) and (max-height: 820px) {
+
+  .sidebar {
+
+    --card-height: 44px;
+
+    --logo-height: 54px;
+
+    --logo-gap: 12px;
+
+    --menu-font: 16px;
+
+    --icon-size: 20px;
+
+    padding-top: 8px;
+
+    padding-bottom: 8px;
+
+  }
+
+
+
+  .mainLogo { width: 158px; }
+
+
+
+  .sidebarItem,
+
+  .logoutButton { padding-left: 13px; }
+
+}
+
+
+
+@media (min-width: 901px) and (max-height: 680px) {
+
+  .sidebar {
+
+    --card-height: 44px;
+
+    --logo-height: 42px;
+
+    --logo-gap: 7px;
+
+    --menu-font: 16px;
+
+    --icon-size: 20px;
+
+    padding-top: 6px;
+
+    padding-bottom: 6px;
+
+  }
+
+
+
+  .mainLogo { width: 138px; }
+
+
+
+  .sidebarItem,
+
+  .logoutButton { padding-left: 12px; }
+
+
+
+  .logoutButton span { font-size: 13px; }
+
+}
+
+
+
+/* ---------- Tablet: existing compact rail ---------- */
+
+@media (max-width: 900px) and (min-width: 701px) {
+
+  .sidebar {
+
+    --sidebar-width: 80px;
+
+    --side-pad: 10px;
+
+    --card-width: 60px;
+
+    --card-height: 42px;
+
+    --logo-height: 58px;
+
+    --logo-gap: 10px;
+
+    --icon-size: 20px;
+
+    padding-top: 10px;
+
+    padding-bottom: 10px;
+
+  }
+
+
+
+  .mainLogo { width: 58px; }
+
+
+
+  .sidebarNav { gap: 16px; }
+
+
+
+  .sidebarItem,
+
+  .logoutButton {
+
+    justify-content: center;
+
+    gap: 0;
+
+    padding: 0;
+
+  }
+
+
+
+  .sidebarItem span,
+
+  .logoutButton span,
+
+  .sidebarToggleButton {
+
+    display: none !important;
+
+  }
+
+}
+
+
+
+/* ---------- Mobile: existing drawer ---------- */
+
+@media (max-width: 700px) {
+
+  .sidebar,
+
+  .dashboardLayout > .sidebar {
+
+    position: fixed;
+
+    top: 0;
+
+    right: 0;
+
+    left: auto;
+
+    width: 220px;
+
+    min-width: 220px;
+
+    max-width: 220px;
+
+    height: 100dvh;
+
+    padding: 0;
+
+    display: block;
+
+    background: transparent;
+
+    box-shadow: none;
+
+    overflow: visible;
+
+    pointer-events: none;
+
+    z-index: 2000;
+
+  }
+
+
+
+  .sidebarToggleButton {
+
+    display: none !important;
+
+  }
+
+
+
+  .logoArea {
+
+    position: fixed;
+
+    top: 10px;
+
+    left: 16px;
+
+    width: 145px;
+
+    height: 58px;
+
+    min-height: 58px;
+
+    margin: 0;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    pointer-events: none;
+
+    z-index: 2001;
+
+  }
+
+
+
+  .mainLogo {
+
+    width: 128px;
+
+    height: auto;
+
+  }
+
+
+
+  .sidebarNav,
+
+  .sidebarBottom {
+
+    display: none;
+
+  }
+
+
+
+  body.mobileSidebarOpen .sidebar,
+
+  body.mobileSidebarOpen .dashboardLayout > .sidebar {
+
+    top: 76px;
+
+    right: 10px;
+
+    width: 220px;
+
+    min-width: 220px;
+
+    max-width: 220px;
+
+    height: auto;
+
+    max-height: calc(100dvh - 86px);
+
+    padding: 10px 18px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    overflow-x: hidden;
+
+    overflow-y: auto;
+
+    background: #DFE6E9;
+
+    border-radius: 10px;
+
+    box-shadow: -4px -4px 8px #FFFFFF, 4px 4px 8px #C4C4C4;
+
+    pointer-events: auto;
+
+  }
+
+
+
+  body.mobileSidebarOpen .sidebarNav {
+
+    width: 204px;
+
+    max-width: 204px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+  }
+
+
+
+  body.mobileSidebarOpen .sidebarItem {
+
+    width: 204px;
+
+    max-width: 204px;
+
+    height: 44px;
+
+    min-height: 44px;
+
+    flex: 0 0 44px;
+
+    gap: 10px;
+
+    padding: 0 12px;
+
+    justify-content: flex-start;
+
+  }
+
+
+
+  body.mobileSidebarOpen .sidebarIcon {
+
+    width: 20px !important;
+
+    height: 20px !important;
+
+    min-width: 20px;
+
+    flex: 0 0 20px;
+
+  }
+
+
+
+  body.mobileSidebarOpen .sidebarItem span,
+
+  body.mobileSidebarOpen .sidebarItemText {
+
+    display: inline !important;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    line-height: 1.2;
+
+  }
+
+
+
+  body.mobileSidebarOpen .sidebarBottom {
+
+    width: 204px;
+
+    max-width: 204px;
+
+    display: block;
+
+    margin-top: 16px;
+
+    padding: 0;
+
+  }
+
+
+
+  body.mobileSidebarOpen .logoutButton {
+
+    width: 204px;
+
+    max-width: 204px;
+
+    height: 44px;
+
+    min-height: 44px;
+
+    gap: 10px;
+
+    padding: 0 12px;
+
+    justify-content: flex-start;
+
+  }
+
+
+
+  body.mobileSidebarOpen .logoutButton span {
+
+    display: inline !important;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    line-height: 1.2;
+
+  }
+
+
+
+  body:not(.mobileSidebarOpen) .sidebarNav,
+
+  body:not(.mobileSidebarOpen) .sidebarBottom,
+
+  body:not(.mobileSidebarOpen) .dashboardLayout > .sidebar .sidebarNav,
+
+  body:not(.mobileSidebarOpen) .dashboardLayout > .sidebar .sidebarBottom {
+
+    display: none !important;
+
+  }
+
+}
+
+
+
+@media (max-width: 380px) {
+
+  body.mobileSidebarOpen .sidebar,
+
+  body.mobileSidebarOpen .dashboardLayout > .sidebar {
+
+    right: 8px;
+
+    width: min(212px, calc(100vw - 16px));
+
+    min-width: 0;
+
+    max-width: calc(100vw - 16px);
+
+    padding: 8px;
+
+  }
+
+
+
+  body.mobileSidebarOpen .sidebarNav { gap: 16px; }
+
+
+
+  body.mobileSidebarOpen .sidebarItem,
+
+  body.mobileSidebarOpen .logoutButton {
+
+    height: 44px;
+
+    min-height: 44px;
+
+  }
+
+
+
+  body.mobileSidebarOpen .sidebarItem { flex-basis: 44px; }
+
+}
+
+
+
+/* =========================================================
+
+   SIDEBAR TOGGLE — VISIBLE + SMOOTH
+
+   Keeps the arrow image at the sidebar's right edge like the reference.
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebar {
+
+    /* The arrow sits partly outside the 240px/80px rail, so it must not be clipped. */
+
+    overflow: visible !important;
+
+    transition:
+
+      width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      min-width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      max-width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      flex-basis 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      padding 320ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  }
+
+
+
+  .sidebar .logoArea,
+
+  .sidebar .sidebarNav,
+
+  .sidebar .sidebarBottom,
+
+  .sidebar .sidebarItem,
+
+  .sidebar .logoutButton,
+
+  .sidebar .mainLogo {
+
+    transition:
+
+      width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      max-width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      padding 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      gap 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      opacity 200ms ease,
+
+      transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  }
+
+
+
+  .sidebar .sidebarItemText {
+
+    overflow: hidden;
+
+    opacity: 1;
+
+    max-width: 150px;
+
+    transform: translateX(0);
+
+    transition:
+
+      opacity 160ms ease,
+
+      max-width 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  }
+
+
+
+  .sidebar.sidebarCollapsed .sidebarItemText {
+
+    display: inline !important;
+
+    opacity: 0;
+
+    max-width: 0;
+
+    transform: translateX(-8px);
+
+    pointer-events: none;
+
+  }
+
+
+
+  .sidebarToggleButton {
+
+    /* Reference placement: centered directly over the sidebar's right boundary. */
+
+    position: absolute !important;
+
+    top: 158px !important;
+
+    right: -16px !important;
+
+    left: auto !important;
+
+
+
+    width: 34px !important;
+
+    height: 56px !important;
+
+    min-width: 34px !important;
+
+    min-height: 56px !important;
+
+
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+
+
+    border: 0 !important;
+
+    border-radius: 18px !important;
+
+    background: #DFE6E9 !important;
+
+    box-shadow:
+
+      -4px -4px 8px #FFFFFF,
+
+       4px  4px 8px #C4C4C4 !important;
+
+
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+    overflow: visible !important;
+
+    pointer-events: auto !important;
+
+    cursor: pointer !important;
+
+    z-index: 9999 !important;
+
+
+
+    transition:
+
+      right 320ms cubic-bezier(0.4, 0, 0.2, 1),
+
+      transform 180ms ease,
+
+      box-shadow 180ms ease !important;
+
+  }
+
+
+
+  .sidebarToggleButton:hover {
+
+    transform: translateX(2px);
+
+  }
+
+
+
+  .sidebarToggleButton:active {
+
+    transform: scale(0.96);
+
+    box-shadow:
+
+      inset -2px -2px 4px #FFFFFF,
+
+      inset 2px 2px 4px #C4C4C4 !important;
+
+  }
+
+
+
+  .sidebarToggleIcon {
+
+    width: 18px !important;
+
+    height: 18px !important;
+
+    min-width: 18px !important;
+
+    display: block !important;
+
+    object-fit: contain !important;
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+    filter:
+
+      brightness(0)
+
+      saturate(100%)
+
+      invert(25%)
+
+      sepia(11%)
+
+      saturate(1066%)
+
+      hue-rotate(182deg)
+
+      brightness(91%)
+
+      contrast(88%);
+
+    transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  }
+
+}
+
+
+
+/* Do not introduce the desktop collapse control into tablet/mobile. */
+
+@media (max-width: 900px) {
+
+  .sidebarToggleButton {
+
+    display: none !important;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   FIGMA SIDEBAR TOP TOGGLE
+
+   32x32 button / 24x24 icon / fixed at sidebar top-right edge
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebar {
+
+    overflow: visible !important;
+
+  }
+
+
+
+  .sidebarToggleButton {
+
+    position: absolute !important;
+
+
+
+    /* Fixed near the top/right divider of the sidebar */
+
+    top: 24px !important;
+
+    right: -16px !important;
+
+    left: auto !important;
+
+
+
+    width: 32px !important;
+
+    height: 32px !important;
+
+    min-width: 32px !important;
+
+    min-height: 32px !important;
+
+
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+
+
+    background: #DFE6E9 !important;
+
+    border: 0 !important;
+
+    border-radius: 4px !important;
+
+    box-shadow:
+
+      -2px -2px 2px #FFFFFF,
+
+       2px  2px 2px #C4C4C4 !important;
+
+
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+    overflow: hidden !important;
+
+    pointer-events: auto !important;
+
+    cursor: pointer !important;
+
+    z-index: 9999 !important;
+
+
+
+    transform: none !important;
+
+    transition:
+
+      box-shadow 180ms ease,
+
+      transform 180ms ease !important;
+
+  }
+
+
+
+  .sidebarToggleButton:hover {
+
+    transform: translateY(-1px) !important;
+
+  }
+
+
+
+  .sidebarToggleButton:active {
+
+    transform: translateY(0) scale(0.97) !important;
+
+    box-shadow:
+
+      inset -2px -2px 2px #FFFFFF,
+
+      inset  2px  2px 2px #C4C4C4 !important;
+
+  }
+
+
+
+  .sidebarToggleIcon {
+
+    width: 24px !important;
+
+    height: 24px !important;
+
+    min-width: 24px !important;
+
+    max-width: 24px !important;
+
+    display: block !important;
+
+    object-fit: contain !important;
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+
+
+    /* Figma vector blue */
+
+    filter:
+
+      brightness(0)
+
+      saturate(100%)
+
+      invert(32%)
+
+      sepia(94%)
+
+      saturate(1714%)
+
+      hue-rotate(216deg)
+
+      brightness(82%)
+
+      contrast(96%) !important;
+
+  }
+
+
+
+  /* Keep the control attached to the same divider while the rail animates. */
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    right: -16px !important;
+
+  }
+
+
+
+  /* Thin top-side visual line from the reference placement. */
+
+  .sidebar::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 40px;
+
+    right: 0;
+
+    width: 16px;
+
+    height: 1px;
+
+    background: rgba(45, 76, 200, 0.22);
+
+    pointer-events: none;
+
+  }
+
+}
+
+
+
+@media (max-width: 900px) {
+
+  .sidebarToggleButton {
+
+    display: none !important;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   FINAL TOGGLE PLACEMENT — CENTERED ON SIDEBAR DIVIDER LINE
+
+   Matches the supplied reference: square control straddles
+
+   the vertical sidebar/content boundary instead of sitting
+
+   inside the content/header.
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebar {
+
+    overflow: visible !important;
+
+  }
+
+
+
+  .sidebarToggleButton {
+
+    position: absolute !important;
+
+
+
+    /* Keep the 32px button exactly half on each side of the divider. */
+
+    top: 18px !important;
+
+    right: -16px !important;
+
+    left: auto !important;
+
+
+
+    width: 32px !important;
+
+    height: 32px !important;
+
+    min-width: 32px !important;
+
+    min-height: 32px !important;
+
+
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+
+
+    display: grid !important;
+
+    place-items: center !important;
+
+
+
+    border: 0 !important;
+
+    border-radius: 4px !important;
+
+    background: #DFE6E9 !important;
+
+    box-shadow:
+
+      -2px -2px 2px #FFFFFF,
+
+       2px  2px 2px #C4C4C4 !important;
+
+
+
+    overflow: visible !important;
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+
+    z-index: 10000 !important;
+
+
+
+    transition:
+
+      transform 180ms ease,
+
+      box-shadow 180ms ease !important;
+
+  }
+
+
+
+  .sidebarToggleButton:hover {
+
+    transform: translateY(-1px) !important;
+
+  }
+
+
+
+  .sidebarToggleButton:active {
+
+    transform: translateY(0) scale(.97) !important;
+
+    box-shadow:
+
+      inset -2px -2px 2px #FFFFFF,
+
+      inset 2px 2px 2px #C4C4C4 !important;
+
+  }
+
+
+
+  .sidebarToggleIcon {
+
+    width: 24px !important;
+
+    height: 24px !important;
+
+    min-width: 24px !important;
+
+    max-width: 24px !important;
+
+    display: block !important;
+
+    object-fit: contain !important;
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+  }
+
+
+
+  /* Remove the earlier small horizontal decoration.
+
+     The sidebar's own right boundary is the line the button sits on. */
+
+  .sidebar::after {
+
+    display: none !important;
+
+    content: none !important;
+
+  }
+
+
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    right: -16px !important;
+
+  }
+
+}
+
+
+
+@media (max-width: 900px) {
+
+  .sidebarToggleButton {
+
+    display: none !important;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   FINAL FIGMA TOGGLE — FULLY VISIBLE + BLUE ICON BACKGROUND
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebar {
+
+    overflow: visible !important;
+
+  }
+
+
+
+  .sidebarToggleButton {
+
+    position: absolute !important;
+
+    top: 18px !important;
+
+
+
+    /* Keep the complete 32px control visible on the sidebar side of the divider. */
+
+    right: 0 !important;
+
+    left: auto !important;
+
+
+
+    width: 32px !important;
+
+    height: 32px !important;
+
+    min-width: 32px !important;
+
+    min-height: 32px !important;
+
+
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+
+
+    display: grid !important;
+
+    place-items: center !important;
+
+
+
+    border: 0 !important;
+
+    border-radius: 4px !important;
+
+    background: #DFE6E9 !important;
+
+    box-shadow:
+
+      -2px -2px 2px #FFFFFF,
+
+       2px  2px 2px #C4C4C4 !important;
+
+
+
+    overflow: visible !important;
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+
+    z-index: 10000 !important;
+
+
+
+    transition:
+
+      transform 180ms ease,
+
+      box-shadow 180ms ease !important;
+
+  }
+
+
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    right: 0 !important;
+
+  }
+
+
+
+  .sidebarToggleButton:hover {
+
+    transform: translateY(-1px) !important;
+
+  }
+
+
+
+  .sidebarToggleButton:active {
+
+    transform: translateY(0) scale(.97) !important;
+
+    box-shadow:
+
+      inset -2px -2px 2px #FFFFFF,
+
+      inset  2px  2px 2px #C4C4C4 !important;
+
+  }
+
+
+
+  /* 24x24 Figma square-chevron icon */
+
+  .sidebarToggleIcon {
+
+    position: relative !important;
+
+    width: 24px !important;
+
+    height: 24px !important;
+
+    min-width: 24px !important;
+
+    max-width: 24px !important;
+
+    display: block !important;
+
+
+
+    border-radius: 5px !important;
+
+    background: #2D4CC8 !important;
+
+    box-shadow:
+
+      -1px -1px 2px rgba(255,255,255,.75),
+
+       1px  1px 2px rgba(196,196,196,.65);
+
+
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+    filter: none !important;
+
+    transform: none !important;
+
+  }
+
+
+
+  .sidebarToggleChevron {
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 50%;
+
+    width: 7px;
+
+    height: 7px;
+
+    border-top: 1.5px solid #FFFFFF;
+
+    border-right: 1.5px solid #FFFFFF;
+
+    transform-origin: center;
+
+  }
+
+
+
+  .sidebarToggleIconLeft .sidebarToggleChevron {
+
+    transform: translate(-35%, -50%) rotate(-135deg);
+
+  }
+
+
+
+  .sidebarToggleIconRight .sidebarToggleChevron {
+
+    transform: translate(-65%, -50%) rotate(45deg);
+
+  }
+
+
+
+  .sidebar::after {
+
+    display: none !important;
+
+    content: none !important;
+
+  }
+
+}
+
+
+
+@media (max-width: 900px) {
+
+  .sidebarToggleButton {
+
+    display: none !important;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   FINAL SMALL TOGGLE — FIGMA PROPORTIONS
+
+   Slightly smaller, white chevron, moved right onto divider.
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebarToggleButton,
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    top: 18px !important;
+
+    right: -10px !important;
+
+
+
+    width: 28px !important;
+
+    height: 28px !important;
+
+    min-width: 28px !important;
+
+    min-height: 28px !important;
+
+
+
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    border-radius: 4px !important;
+
+    background: #DFE6E9 !important;
+
+    box-shadow:
+
+      -2px -2px 2px #FFFFFF,
+
+       2px  2px 2px #C4C4C4 !important;
+
+
+
+    overflow: visible !important;
+
+    z-index: 10000 !important;
+
+  }
+
+
+
+  .sidebarToggleIcon {
+
+    position: relative !important;
+
+    width: 20px !important;
+
+    height: 20px !important;
+
+    min-width: 20px !important;
+
+    max-width: 20px !important;
+
+
+
+    display: block !important;
+
+    border-radius: 4px !important;
+
+    background: #2D4CC8 !important;
+
+    filter: none !important;
+
+  }
+
+
+
+  .sidebarToggleChevron {
+
+    position: absolute !important;
+
+    top: 50% !important;
+
+    left: 50% !important;
+
+
+
+    width: 6px !important;
+
+    height: 6px !important;
+
+
+
+    border-top: 1.5px solid #FFFFFF !important;
+
+    border-right: 1.5px solid #FFFFFF !important;
+
+    border-bottom: 0 !important;
+
+    border-left: 0 !important;
+
+
+
+    background: transparent !important;
+
+  }
+
+
+
+  .sidebarToggleIconLeft .sidebarToggleChevron {
+
+    transform: translate(-35%, -50%) rotate(-135deg) !important;
+
+  }
+
+
+
+  .sidebarToggleIconRight .sidebarToggleChevron {
+
+    transform: translate(-65%, -50%) rotate(45deg) !important;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   FINAL TOGGLE POSITION — ON HEADER / SIDEBAR DIVIDER
+
+   Only placement is changed. Existing size, colors and
+
+   collapse/expand behavior remain unchanged.
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebarToggleButton,
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    /* Header-height placement: button sits across the sidebar/header line. */
+
+    top: 68px !important;
+
+    right: -10px !important;
+
+    left: auto !important;
+
+    z-index: 10000 !important;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   TOGGLE POSITION — LIFT INTO HEADER / LOGO AREA
+
+   Position-only correction from the supplied screenshot.
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebarToggleButton,
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    top: 42px !important;
+
+    right: -10px !important;
+
+    left: auto !important;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   CALENDAR HEADER + SIDEBAR TOGGLE JUNCTION — FINAL
+
+   Keep all existing sidebar design; only place the toggle
+
+   at the sidebar/header boundary in the header area.
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebar {
+
+    overflow: visible !important;
+
+  }
+
+
+
+  .sidebarToggleButton,
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    top: 26px !important;
+
+    right: -10px !important;
+
+    left: auto !important;
+
+    z-index: 10001 !important;
+
+  }
+
+
+
+  .calendarTopHeader {
+
+    position: relative;
+
+    z-index: 90;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   FINAL NON-BREAKING HEADER TOGGLE POSITION
+
+   Right edge of the 28px button sits exactly on sidebar line.
+
+   Nothing projects underneath the header, so it cannot clip.
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebar {
+
+    overflow: visible !important;
+
+    isolation: isolate;
+
+  }
+
+
+
+  .sidebarToggleButton,
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    top: 26px !important;
+
+    right: 0 !important;
+
+    left: auto !important;
+
+
+
+    width: 28px !important;
+
+    height: 28px !important;
+
+    min-width: 28px !important;
+
+    min-height: 28px !important;
+
+
+
+    transform: none !important;
+
+    z-index: 2147483000 !important;
+
+  }
+
+
+
+  .sidebarToggleButton:hover {
+
+    transform: translateY(-1px) !important;
+
+  }
+
+
+
+  .sidebarToggleButton:active {
+
+    transform: scale(.97) !important;
+
+  }
+
+
+
+  /* Header must never paint over the sidebar control. */
+
+  .calendarTopHeader {
+
+    position: relative !important;
+
+    z-index: 1 !important;
+
+  }
+
+}
+
+
+
+/* =========================================================
+
+   REFERENCE-2 TOGGLE PLACEMENT — FINAL
+
+   Match supplied second image:
+
+   small control at upper-right of logo/header area,
+
+   centered over the sidebar/content divider.
+
+========================================================= */
+
+@media (min-width: 901px) {
+
+  .sidebar {
+
+    overflow: visible !important;
+
+    z-index: 200 !important;
+
+  }
+
+
+
+  .sidebarToggleButton,
+
+  .sidebar.sidebarExpanded .sidebarToggleButton,
+
+  .sidebar.sidebarCollapsed .sidebarToggleButton {
+
+    position: absolute !important;
+
+
+
+    /* Reference 2: higher, close to the top-right of logo area. */
+
+    top: 24px !important;
+
+
+
+    /* Put part of the control over the divider, like the reference. */
+
+    right: -10px !important;
+
+    left: auto !important;
+
+
+
+    width: 28px !important;
+
+    height: 28px !important;
+
+    min-width: 28px !important;
+
+    min-height: 28px !important;
+
+
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+
+
+    display: grid !important;
+
+    place-items: center !important;
+
+
+
+    background: #DFE6E9 !important;
+
+    border: 0 !important;
+
+    border-radius: 4px !important;
+
+    box-shadow:
+
+      -2px -2px 2px #FFFFFF,
+
+       2px  2px 2px #C4C4C4 !important;
+
+
+
+    overflow: visible !important;
+
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+
+    z-index: 10001 !important;
+
+  }
+
+
+
+  .sidebarToggleIcon {
+
+    width: 20px !important;
+
+    height: 20px !important;
+
+    min-width: 20px !important;
+
+    max-width: 20px !important;
+
+    border-radius: 4px !important;
+
+    background: #2D4CC8 !important;
+
+  }
+
+
+
+  .sidebarToggleChevron {
+
+    width: 6px !important;
+
+    height: 6px !important;
+
+    border-top: 1.5px solid #FFFFFF !important;
+
+    border-right: 1.5px solid #FFFFFF !important;
+
+  }
+
+
+
+  /* Keep header below the toggle so the part crossing the divider is not clipped. */
+
+  .calendarTopHeader {
+
+    position: relative !important;
+
+    z-index: 100 !important;
+
+    overflow: visible !important;
+
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE ONLY — REDUCE HEADER / SIDEBAR DRAWER GAP
+   ========================================================= */
+/* @media (max-width: 700px) {
+  body.mobileSidebarOpen .sidebar,
+  body.mobileSidebarOpen .dashboardLayout > .sidebar {
+    top: 72px !important;
+    max-height: calc(100dvh - 80px) !important;
+    padding-top: 6px !important;
+  }
+} */
+
+@media (max-width: 380px) {
+  body.mobileSidebarOpen .sidebar,
+  body.mobileSidebarOpen .dashboardLayout > .sidebar {
+    top: 65px !important;
+    max-height: calc(100dvh - 78px) !important;
+    padding-top: 6px !important;
+  }
+}

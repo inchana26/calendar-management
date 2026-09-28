@@ -76,9 +76,24 @@ export default function CalendarSidebar() {
   const router = useRouter();
 
   function handleLogout() {
+    // Clear every login/session key used by the dummy sign-in flow.
+    // Keep calendars and events intact.
     storageService.removeCurrentUser();
 
+    localStorage.removeItem(
+      "calendar_dummy_login"
+    );
+
+    localStorage.removeItem(
+      "calendar_current_role"
+    );
+
+    localStorage.removeItem(
+      "calendar_current_tenant"
+    );
+
     router.replace("/sign_in");
+    router.refresh();
   }
 
   return (

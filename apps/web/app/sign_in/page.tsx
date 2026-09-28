@@ -56,6 +56,14 @@ const TENANT_OPTIONS = [
     label: "Corporate",
     value: "CORPORATE",
   },
+  {
+    label: "Government",
+    value: "GOVERNMENT",
+  },
+  {
+    label: "NGO",
+    value: "NGO",
+  },
 ];
 
 export default function LoginPage() {
@@ -109,7 +117,7 @@ export default function LoginPage() {
      LOGIN
   ======================================== */
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!role) {
       alert(
         "Please select a role."
@@ -141,72 +149,193 @@ export default function LoginPage() {
           item.value === tenantType
       );
 
-    const loginData = {
-      loggedIn: true,
+    try {
+      /* ========================================
+         BACKEND LOGIN
+      ======================================== */
 
-      role,
+      const apiUrl =
+        process.env
+          .NEXT_PUBLIC_API_URL ||
+        "http://localhost:3000";
 
-      displayRole:
-        selectedRole?.label ||
+      const response =
+        await fetch(
+          `${apiUrl}/auth/calendar-login`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              role,
+
+              tenantType:
+                isPlatformLevelRole
+                  ? undefined
+                  : tenantType,
+            }),
+          }
+        );
+
+      if (!response.ok) {
+        const errorData =
+          await response
+            .json()
+            .catch(() => null);
+
+        alert(
+          errorData?.message ||
+            "Login failed."
+        );
+
+        return;
+      }
+
+      const backendLogin =
+        (await response.json()) as {
+          accessToken: string;
+
+          user: {
+            id: string;
+            name: string;
+            email: string;
+            role: string;
+            active?: boolean;
+            tenantId?: string | null;
+            departmentId?: string | null;
+            tenant?: unknown;
+            department?: unknown;
+          };
+        };
+
+      /* ========================================
+         KEEP EXISTING LOGIN DATA
+      ======================================== */
+
+      const loginData = {
+        loggedIn: true,
+
         role,
 
-      tenantType:
-        isPlatformLevelRole
-          ? "ALL"
-          : tenantType,
+        displayRole:
+          selectedRole?.label ||
+          role,
 
-      displayTenant:
-        isPlatformLevelRole
-          ? "All Tenants"
-          : selectedTenant?.label ||
-            tenantType,
+        tenantType:
+          isPlatformLevelRole
+            ? "ALL"
+            : tenantType,
 
-      loginTime:
-        new Date().toISOString(),
-    };
+        displayTenant:
+          isPlatformLevelRole
+            ? "All Tenants"
+            : selectedTenant?.label ||
+              tenantType,
 
-    console.log(
-      "LOGIN SUCCESS:",
-      loginData
-    );
+        loginTime:
+          new Date().toISOString(),
+      };
 
-    /* ========================================
-       SAVE DUMMY LOGIN
-    ======================================== */
+      console.log(
+        "LOGIN SUCCESS:",
+        loginData
+      );
 
-    localStorage.setItem(
-      "calendar_dummy_login",
-      JSON.stringify(loginData)
-    );
+      /* ========================================
+         KEEP EXISTING LOGIN STORAGE
+      ======================================== */
 
-    localStorage.setItem(
-      "calendar_current_role",
-      role
-    );
+      localStorage.setItem(
+        "calendar_dummy_login",
+        JSON.stringify(loginData)
+      );
 
-    localStorage.setItem(
-      "calendar_current_tenant",
-      loginData.tenantType
-    );
+      localStorage.setItem(
+        "calendar_current_role",
+        role
+      );
 
-    /* ========================================
-       NAVIGATE TO DASHBOARD FIRST
+      localStorage.setItem(
+        "calendar_current_tenant",
+        loginData.tenantType
+      );
 
-       Correct flow:
+      /* ========================================
+         BACKEND AUTHENTICATION STORAGE
+      ======================================== */
 
-       Sign In
-          ↓
-       Dashboard
-          ↓
-       Sidebar
-          ↓
-       Calendar Management
-          ↓
-       Calendar
-    ======================================== */
+      localStorage.setItem(
+        "calendar_access_token",
+        backendLogin.accessToken
+      );
 
-    window.location.href =
-      "/dashboard";
+      localStorage.setItem(
+        "calendar_auth_user",
+        JSON.stringify(
+          backendLogin.user
+        )
+      );
+
+      /* ========================================
+         NAVIGATE TO CALENDAR MANAGEMENT
+
+         Role + tenant selected above are saved
+         before navigation.
+
+         The Calendar Management header can now
+         read:
+         - calendar_dummy_login
+         - calendar_current_role
+         - calendar_current_tenant
+
+         Backend Calendar APIs can now read:
+         - calendar_access_token
+
+         Examples:
+
+         SUPER_ADMIN
+         -> Calendar Management - All Tenants
+         -> Super Admin
+
+         PLATFORM_ADMIN
+         -> Calendar Management - All Tenants
+         -> Platform Admin
+
+         TENANT_ADMIN + UNIVERSITY
+         -> University & College Calendar
+         -> Institute Admin
+
+         COORDINATOR + BOOTCAMP
+         -> Bootcamp Calendar
+         -> Coordinator
+
+         FACULTY + SKILL_ACADEMY
+         -> Skill Academy Calendar
+         -> Faculty
+
+         LEARNER + CORPORATE
+         -> Corporate Calendar
+         -> Student
+         -> View Only
+
+      ======================================== */
+
+      window.location.href =
+        "/calendarmanagment";
+    } catch (error) {
+      console.error(
+        "Calendar backend login failed:",
+        error
+      );
+
+      alert(
+        "Unable to connect to the backend."
+      );
+    }
   };
 
   return (

@@ -5,26 +5,51 @@ import { useRouter } from "next/navigation";
 
 import CalendarSidebar from "@/components/calendar/CalendarSidebar";
 
-import { storageService } from "@/features/calendar/services/storage.service";
-
-import type { DummyUser } from "@/features/calendar/types/role.types";
+interface LoginData {
+  loggedIn: boolean;
+  role: string;
+  displayRole: string;
+  tenantType: string;
+  displayTenant: string;
+  loginTime: string;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
 
   const [user, setUser] =
-    useState<DummyUser | null>(null);
+    useState<LoginData | null>(null);
 
   useEffect(() => {
-    const currentUser =
-      storageService.getCurrentUser();
+    const storedLogin =
+      localStorage.getItem(
+        "calendar_dummy_login"
+      );
 
-    if (!currentUser) {
+    if (!storedLogin) {
       router.replace("/sign_in");
       return;
     }
 
-    setUser(currentUser);
+    try {
+      const parsedLogin =
+        JSON.parse(
+          storedLogin
+        ) as LoginData;
+
+      if (!parsedLogin.loggedIn) {
+        router.replace("/sign_in");
+        return;
+      }
+
+      setUser(parsedLogin);
+    } catch {
+      localStorage.removeItem(
+        "calendar_dummy_login"
+      );
+
+      router.replace("/sign_in");
+    }
   }, [router]);
 
   if (!user) {
@@ -76,9 +101,11 @@ export default function DashboardPage() {
           </h3>
 
           <div>
-            <strong>{user.name}</strong>
+            <strong>
+              {user.displayRole}
+            </strong>
             {" | "}
-            {formatRole(user.role)}
+            {user.displayTenant}
           </div>
         </header>
 
@@ -100,7 +127,7 @@ export default function DashboardPage() {
               color: "#6b7280",
             }}
           >
-            {user.tenantName || user.tenantId}
+            {user.displayTenant || user.tenantType}
           </p>
 
           <div
@@ -195,15 +222,4 @@ function DashboardCard({
       </h2>
     </div>
   );
-}
-
-function formatRole(role: string) {
-  return role
-    .split("_")
-    .map(
-      (word) =>
-        word.charAt(0).toUpperCase() +
-        word.slice(1).toLowerCase()
-    )
-    .join(" ");
 }

@@ -10,19 +10,36 @@ import { useRouter } from "next/navigation";
 
 import CalendarSidebar from "@/components/calendar/CalendarSidebar";
 
-import { storageService } from "@/features/calendar/services/storage.service";
-
 import { calendarService } from "@/features/calendar/services/calendar.service";
 
-import type { DummyUser } from "@/features/calendar/types/role.types";
+/* ========================================
+   LOGIN DATA TYPE
+======================================== */
+
+interface LoginData {
+  loggedIn: boolean;
+
+  role: string;
+
+  displayRole: string;
+
+  tenantType: string;
+
+  displayTenant: string;
+
+  loginTime: string;
+}
 
 export default function CreateCalendarPage() {
   const router = useRouter();
 
   const [user, setUser] =
-    useState<DummyUser | null>(
+    useState<LoginData | null>(
       null
     );
+
+  const [showForm, setShowForm] =
+    useState(false);
 
   const [
     academicYear,
@@ -65,10 +82,33 @@ export default function CreateCalendarPage() {
   ] = useState("");
 
   useEffect(() => {
-    const currentUser =
-      storageService.getCurrentUser();
+    const storedLogin =
+      localStorage.getItem(
+        "calendar_dummy_login"
+      );
 
-    if (!currentUser) {
+    if (!storedLogin) {
+      router.replace(
+        "/sign_in"
+      );
+
+      return;
+    }
+
+    let currentUser: LoginData;
+
+    try {
+      currentUser =
+        JSON.parse(storedLogin);
+    } catch {
+      router.replace(
+        "/sign_in"
+      );
+
+      return;
+    }
+
+    if (!currentUser.loggedIn) {
       router.replace(
         "/sign_in"
       );
@@ -83,9 +123,7 @@ export default function CreateCalendarPage() {
       currentUser.role ===
         "SUPER_ADMIN" ||
       currentUser.role ===
-        "PLATFORM_ADMIN" ||
-      currentUser.role ===
-        "STUDENT"
+        "PLATFORM_ADMIN"
     ) {
       router.replace(
         "/calendar-management"
@@ -96,8 +134,8 @@ export default function CreateCalendarPage() {
 
     const existingCalendar =
       calendarService.getCalendarForUser(
-        currentUser.id,
-        currentUser.tenantId
+        currentUser.role,
+        currentUser.tenantType
       );
 
     if (existingCalendar) {
@@ -123,10 +161,10 @@ export default function CreateCalendarPage() {
     calendarService.createCalendar(
       {
         tenantId:
-          user.tenantId,
+          user.tenantType,
 
         ownerId:
-          user.id,
+          user.role,
 
         title: `${programme} ${branch} ${semester}`,
 
@@ -186,229 +224,492 @@ export default function CreateCalendarPage() {
 
           padding:
             "30px",
+
+          display:
+            "flex",
+
+          justifyContent:
+            "center",
+
+          alignItems:
+            showForm
+              ? "flex-start"
+              : "center",
         }}
       >
-        <form
-          onSubmit={
-            handleSubmit
-          }
-          style={{
-            maxWidth:
-              "700px",
-
-            background:
-              "#ffffff",
-
-            padding:
-              "30px",
-
-            borderRadius:
-              "12px",
-
-            border:
-              "1px solid #e5e7eb",
-          }}
-        >
-          <h1>
-            Create Calendar
-          </h1>
-
-          <SelectField
-            label="Academic Year *"
-            value={
-              academicYear
-            }
-            onChange={
-              setAcademicYear
-            }
-            options={[
-              "2025-26",
-              "2026-27",
-              "2027-28",
-            ]}
-          />
-
-          <SelectField
-            label="Programme *"
-            value={
-              programme
-            }
-            onChange={
-              setProgramme
-            }
-            options={[
-              "B.Tech",
-              "B.E",
-              "B.Sc",
-              "BCA",
-              "BBA",
-              "M.Tech",
-              "MBA",
-            ]}
-          />
-
-          <SelectField
-            label="Branch / Specification *"
-            value={branch}
-            onChange={
-              setBranch
-            }
-            options={[
-              "CSE",
-              "IT",
-              "ECE",
-              "EEE",
-              "Mechanical",
-              "Civil",
-              "AI & ML",
-              "Data Science",
-            ]}
-          />
-
-          <SelectField
-            label="Year *"
-            value={year}
-            onChange={
-              setYear
-            }
-            options={[
-              "Year 1",
-              "Year 2",
-              "Year 3",
-              "Year 4",
-            ]}
-          />
-
-          <SelectField
-            label="Semester *"
-            value={
-              semester
-            }
-            onChange={
-              setSemester
-            }
-            options={[
-              "Semester 1",
-              "Semester 2",
-              "Semester 3",
-              "Semester 4",
-              "Semester 5",
-              "Semester 6",
-              "Semester 7",
-              "Semester 8",
-            ]}
-          />
-
-          <SelectField
-            label="Scheme"
-            value={
-              scheme
-            }
-            onChange={
-              setScheme
-            }
-            required={
-              false
-            }
-            options={[
-              "2021 Scheme",
-              "2025 Scheme",
-              "2026 Scheme",
-            ]}
-          />
-
-          <div
+        {!showForm ? (
+          <section
             style={{
-              marginBottom:
+              width: "100%",
+
+              maxWidth:
+                "720px",
+
+              background:
+                "#ffffff",
+
+              border:
+                "1px solid #e5e7eb",
+
+              borderRadius:
                 "18px",
-            }}
-          >
-            <label>
-              Semester Start Date *
-            </label>
 
-            <input
-              type="date"
-              required
-              value={
-                startDate
-              }
-              onChange={(
-                event
-              ) =>
-                setStartDate(
-                  event
-                    .target
-                    .value
-                )
-              }
-              style={
-                fieldStyle
-              }
-            />
-          </div>
-
-          <div
-            style={{
-              marginBottom:
-                "18px",
-            }}
-          >
-            <label>
-              Semester End Date *
-            </label>
-
-            <input
-              type="date"
-              required
-              value={
-                endDate
-              }
-              onChange={(
-                event
-              ) =>
-                setEndDate(
-                  event
-                    .target
-                    .value
-                )
-              }
-              style={
-                fieldStyle
-              }
-            />
-          </div>
-
-          <button
-            type="submit"
-            style={{
               padding:
-                "12px 22px",
+                "48px 36px",
 
-              cursor:
-                "pointer",
+              textAlign:
+                "center",
+
+              boxShadow:
+                "0 10px 30px rgba(15, 23, 42, 0.06)",
             }}
           >
-            Create Calendar
-          </button>
-        </form>
+            <div
+              style={{
+                width:
+                  "64px",
+
+                height:
+                  "64px",
+
+                margin:
+                  "0 auto 20px",
+
+                borderRadius:
+                  "16px",
+
+                display:
+                  "flex",
+
+                alignItems:
+                  "center",
+
+                justifyContent:
+                  "center",
+
+                background:
+                  "#eef2ff",
+
+                color:
+                  "#4f46e5",
+
+                fontSize:
+                  "30px",
+              }}
+              aria-hidden="true"
+            >
+              📅
+            </div>
+
+            <h1
+              style={{
+                margin:
+                  "0 0 12px",
+
+                fontSize:
+                  "30px",
+
+                color:
+                  "#111827",
+              }}
+            >
+              Create Calendar
+            </h1>
+
+            <p
+              style={{
+                maxWidth:
+                  "520px",
+
+                margin:
+                  "0 auto 26px",
+
+                color:
+                  "#6b7280",
+
+                fontSize:
+                  "15px",
+
+                lineHeight:
+                  1.6,
+              }}
+            >
+              Set up your calendar for {user.displayTenant}. Once created,
+              you will be taken directly to the calendar view.
+            </p>
+
+            <button
+              type="button"
+              onClick={() =>
+                setShowForm(true)
+              }
+              style={primaryButtonStyle}
+            >
+              + Create Calendar
+            </button>
+          </section>
+        ) : (
+          <form
+            onSubmit={
+              handleSubmit
+            }
+            style={{
+              width:
+                "100%",
+
+              maxWidth:
+                "900px",
+
+              background:
+                "#ffffff",
+
+              padding:
+                "32px",
+
+              borderRadius:
+                "16px",
+
+              border:
+                "1px solid #e5e7eb",
+
+              boxShadow:
+                "0 10px 30px rgba(15, 23, 42, 0.05)",
+            }}
+          >
+            <div
+              style={{
+                marginBottom:
+                  "28px",
+              }}
+            >
+              <h1
+                style={{
+                  margin:
+                    "0 0 8px",
+
+                  fontSize:
+                    "28px",
+
+                  color:
+                    "#111827",
+                }}
+              >
+                Create Calendar
+              </h1>
+
+              <p
+                style={{
+                  margin: 0,
+
+                  color:
+                    "#6b7280",
+
+                  fontSize:
+                    "14px",
+                }}
+              >
+                Enter the calendar details below.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display:
+                  "grid",
+
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(280px, 1fr))",
+
+                gap:
+                  "0 20px",
+              }}
+            >
+              <SelectField
+                label="Academic Year *"
+                value={
+                  academicYear
+                }
+                onChange={
+                  setAcademicYear
+                }
+                options={[
+                  "2025-26",
+                  "2026-27",
+                  "2027-28",
+                ]}
+              />
+
+              <SelectField
+                label="Programme *"
+                value={
+                  programme
+                }
+                onChange={
+                  setProgramme
+                }
+                options={[
+                  "B.Tech",
+                  "B.E",
+                  "B.Sc",
+                  "BCA",
+                  "BBA",
+                  "M.Tech",
+                  "MBA",
+                ]}
+              />
+
+              <SelectField
+                label="Branch / Specification *"
+                value={branch}
+                onChange={
+                  setBranch
+                }
+                options={[
+                  "CSE",
+                  "IT",
+                  "ECE",
+                  "EEE",
+                  "Mechanical",
+                  "Civil",
+                  "AI & ML",
+                  "Data Science",
+                ]}
+              />
+
+              <SelectField
+                label="Year *"
+                value={year}
+                onChange={
+                  setYear
+                }
+                options={[
+                  "Year 1",
+                  "Year 2",
+                  "Year 3",
+                  "Year 4",
+                ]}
+              />
+
+              <SelectField
+                label="Semester *"
+                value={
+                  semester
+                }
+                onChange={
+                  setSemester
+                }
+                options={[
+                  "Semester 1",
+                  "Semester 2",
+                  "Semester 3",
+                  "Semester 4",
+                  "Semester 5",
+                  "Semester 6",
+                  "Semester 7",
+                  "Semester 8",
+                ]}
+              />
+
+              <SelectField
+                label="Scheme"
+                value={
+                  scheme
+                }
+                onChange={
+                  setScheme
+                }
+                required={
+                  false
+                }
+                options={[
+                  "2021 Scheme",
+                  "2025 Scheme",
+                  "2026 Scheme",
+                ]}
+              />
+
+              <div
+                style={{
+                  marginBottom:
+                    "18px",
+                }}
+              >
+                <label
+                  style={labelStyle}
+                >
+                  Semester Start Date *
+                </label>
+
+                <input
+                  type="date"
+                  required
+                  value={
+                    startDate
+                  }
+                  onChange={(
+                    event
+                  ) =>
+                    setStartDate(
+                      event
+                        .target
+                        .value
+                    )
+                  }
+                  style={
+                    fieldStyle
+                  }
+                />
+              </div>
+
+              <div
+                style={{
+                  marginBottom:
+                    "18px",
+                }}
+              >
+                <label
+                  style={labelStyle}
+                >
+                  Semester End Date *
+                </label>
+
+                <input
+                  type="date"
+                  required
+                  value={
+                    endDate
+                  }
+                  onChange={(
+                    event
+                  ) =>
+                    setEndDate(
+                      event
+                        .target
+                        .value
+                    )
+                  }
+                  style={
+                    fieldStyle
+                  }
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                display:
+                  "flex",
+
+                justifyContent:
+                  "flex-end",
+
+                gap:
+                  "12px",
+
+                marginTop:
+                  "8px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  setShowForm(false)
+                }
+                style={secondaryButtonStyle}
+              >
+                Back
+              </button>
+
+              <button
+                type="submit"
+                style={primaryButtonStyle}
+              >
+                Create Calendar
+              </button>
+            </div>
+          </form>
+        )}
       </main>
     </div>
   );
 }
+
+const labelStyle = {
+  display:
+    "block",
+
+  marginBottom:
+    "7px",
+
+  fontWeight:
+    500,
+
+  color:
+    "#111827",
+};
 
 const fieldStyle = {
   width: "100%",
 
   padding: "11px",
 
-  marginTop: "7px",
-
   border:
     "1px solid #d1d5db",
 
   borderRadius:
     "7px",
+
+  boxSizing:
+    "border-box" as const,
+
+  background:
+    "#ffffff",
+};
+
+const primaryButtonStyle = {
+  padding:
+    "12px 22px",
+
+  border:
+    "none",
+
+  borderRadius:
+    "8px",
+
+  background:
+    "#4f46e5",
+
+  color:
+    "#ffffff",
+
+  fontWeight:
+    600,
+
+  cursor:
+    "pointer",
+};
+
+const secondaryButtonStyle = {
+  padding:
+    "12px 22px",
+
+  border:
+    "1px solid #d1d5db",
+
+  borderRadius:
+    "8px",
+
+  background:
+    "#ffffff",
+
+  color:
+    "#111827",
+
+  fontWeight:
+    500,
+
+  cursor:
+    "pointer",
 };
 
 function SelectField({
@@ -437,7 +738,9 @@ function SelectField({
           "18px",
       }}
     >
-      <label>
+      <label
+        style={labelStyle}
+      >
         {label}
       </label>
 

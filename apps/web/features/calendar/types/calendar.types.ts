@@ -33,5 +33,7 @@ export interface CalendarEvent {
   description?: string;
   audience?: string;
 
+  dataPoints?: Record<string, string>;
+
   color?: string;
 }

@@ -1,0 +1,2769 @@
+.addEventPage {
+    width:100%;
+    min-height:100dvh;
+    display:grid;
+    place-items:center;
+    padding:16px;
+    background:rgba(223,230,233,.72);
+    font-family:"Segoe UI",Inter,sans-serif;
+    color:#2f3547}
+
+    .addEventModal {
+        position:relative;
+        width:454px;
+        height:614px;
+        max-width:calc(100vw - 24px);
+        max-height:calc(100dvh - 24px);
+        overflow:hidden;
+        background:#DFE6E9;
+        border-radius:16px;
+        box-shadow:-6px -6px 12px #fff,6px 6px 12px #c4c4c4}
+
+        .closeButton {
+            position:absolute;
+            z-index:100;
+            top:16px;
+            right:16px;
+            width:38px;
+            height:38px;
+            padding:0;
+            display:grid;
+            place-items:center;
+            border:0;
+            border-radius:50%;
+            background:#DFE6E9;
+            box-shadow:-3px -3px 5px #fff,3px 3px 5px #c4c4c4;
+            cursor:pointer}
+
+            .modalScroller {
+                width:100%;
+                height:100%;
+                overflow-y:auto;
+                overflow-x:hidden;
+                padding:24px 25px 26px;
+                scrollbar-width:thin;
+                scrollbar-color:#9F9E9E transparent}
+
+                .modalScroller::-webkit-scrollbar {
+                    width:7px}
+
+                    .modalScroller::-webkit-scrollbar-track {
+                        background:transparent}
+
+                        .modalScroller::-webkit-scrollbar-thumb {
+                            background:#9F9E9E;
+                            border-radius:20px}
+
+                            .addEventHero {
+                                width:255px;
+                                min-height:70px;
+                                margin:0 auto 18px;
+                                padding:10px 20px 8px;
+                                text-align:center;
+                                border-radius:42px;
+                                background:radial-gradient(circle at 2px 2px,rgba(140,140,140,.13) 1px,transparent 1.2px) 0 0/7px 7px,#eef2f3;
+                                box-shadow:inset 2px 2px 4px rgba(196,196,196,.45),inset -2px -2px 4px #fff}
+
+                                .heroTitle {
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    gap:9px}
+
+                                    .heroTitle h1 {
+                                        margin:0;
+                                        font-size:24px;
+                                        line-height:28px;
+                                        font-weight:700;
+                                        background:linear-gradient(90deg,#2D55D7 0%,#7543C7 52%,#F3155C 100%);
+                                        -webkit-background-clip:text;
+                                        background-clip:text;
+                                        color:transparent}
+
+                                        .addEventHero p {
+                                            margin:4px 0 0;
+                                            font-size:16px;
+                                            line-height:20px;
+                                            letter-spacing:.06em}
+
+                                            .fieldGroup {
+                                                margin-bottom:17px}
+
+                                                .fieldGroup>label:first-child {
+                                                    display:block;
+                                                    margin-bottom:7px;
+                                                    font-size:15px;
+                                                    line-height:20px;
+                                                    font-weight:600;
+                                                    letter-spacing:.03em}
+
+                                                    .formDropdown {
+                                                        position:relative;
+                                                        z-index:1}
+
+                                                        .formDropdown.open {
+                                                            z-index:50}
+
+                                                            .formControl,.inputWithIcon,.fieldGroup textarea,.attachmentControl {
+                                                                width:100%;
+                                                                border:0;
+                                                                border-radius:5px;
+                                                                background:#DFE6E9;
+                                                                box-shadow:inset -2px -2px 3px #fff,inset 2px 2px 3px #c4c4c4}
+
+                                                                .formControl {
+                                                                    height:36px;
+                                                                    padding:0 14px;
+                                                                    display:flex;
+                                                                    align-items:center;
+                                                                    justify-content:space-between;
+                                                                    color:#374151;
+                                                                    font:inherit;
+                                                                    font-size:16px;
+                                                                    cursor:pointer}
+
+                                                                    .dropdownIcon {
+                                                                        width:16px;
+                                                                        height:16px;
+                                                                        transition:transform .18s}
+
+                                                                        .formDropdown.open .dropdownIcon {
+                                                                            transform:rotate(180deg)}
+
+                                                                            .formDropdown.open .formControl {
+                                                                                border-radius:7px 7px 0 0;
+                                                                                box-shadow:-3px -3px 4px #fff,3px 3px 4px #c4c4c4}
+
+                                                                                .dropdownMenu {
+                                                                                    position:absolute;
+                                                                                    z-index:60;
+                                                                                    top:100%;
+                                                                                    left:0;
+                                                                                    width:100%;
+                                                                                    padding:6px 8px;
+                                                                                    background:#DFE6E9;
+                                                                                    border-radius:0 0 8px 8px;
+                                                                                    box-shadow:3px 5px 7px #c4c4c4}
+
+                                                                                    .dropdownOption {
+                                                                                        width:100%;
+                                                                                        height:34px;
+                                                                                        padding:0 6px;
+                                                                                        display:flex;
+                                                                                        align-items:center;
+                                                                                        gap:10px;
+                                                                                        border:0;
+                                                                                        background:transparent;
+                                                                                        color:#374151;
+                                                                                        font-size:14px;
+                                                                                        text-align:left}
+
+                                                                                        .dropdownOption.selected {
+                                                                                            color:#2D55D7}
+
+                                                                                            .optionRadio {
+                                                                                                position:relative;
+                                                                                                width:30px;
+                                                                                                height:30px;
+                                                                                                flex:0 0 30px}
+
+                                                                                                .optionRadioOuter {
+                                                                                                    position:absolute;
+                                                                                                    width:28px;
+                                                                                                    height:28px;
+                                                                                                    left:0;
+                                                                                                    top:2px;
+                                                                                                    border-radius:50%;
+                                                                                                    background:#DFE6E9;
+                                                                                                    box-shadow:inset -2px -2px 2px #fff,inset 2px 2px 2px #c4c4c4}
+
+                                                                                                    .optionRadioInner {
+                                                                                                        position:absolute;
+                                                                                                        width:16px;
+                                                                                                        height:16px;
+                                                                                                        left:calc(50% - 16px/2 - 1px);
+                                                                                                        top:calc(50% - 16px/2 + 1px);
+                                                                                                        border:1.5px solid #C6C6C9;
+                                                                                                        border-radius:50%;
+                                                                                                        box-sizing:border-box}
+
+                                                                                                        .dropdownOption.selected .optionRadioOuter {
+                                                                                                            top:1px;
+                                                                                                            box-shadow:4px 4px 4px #c4c4c4,-4px -4px 4px #fff}
+
+                                                                                                            .optionRadioSelected {
+                                                                                                                position:absolute;
+                                                                                                                width:16px;
+                                                                                                                height:16px;
+                                                                                                                left:calc(50% - 16px/2 - 1px);
+                                                                                                                top:calc(50% - 16px/2 + 1px);
+                                                                                                                border-radius:50%;
+                                                                                                                background:#2D55D7}
+
+                                                                                                                .optionTick {
+                                                                                                                    position:absolute;
+                                                                                                                    width:6px;
+                                                                                                                    height:4px;
+                                                                                                                    left:calc(50% - 6px/2);
+                                                                                                                    top:calc(50% - 4px/2 - 1px);
+                                                                                                                    border-left:1.5px solid #fff;
+                                                                                                                    border-bottom:1.5px solid #fff;
+                                                                                                                    transform:rotate(-45deg);
+                                                                                                                    box-sizing:border-box}
+
+                                                                                                                    .twoColumns {
+                                                                                                                        display:grid;
+                                                                                                                        grid-template-columns:1fr 1fr;
+                                                                                                                        gap:16px}
+
+                                                                                                                        .inputWithIcon {
+                                                                                                                            position:relative;
+                                                                                                                            height:36px}
+
+                                                                                                                            .inputWithIcon input {
+                                                                                                                                width:100%;
+                                                                                                                                height:100%;
+                                                                                                                                padding:0 43px 0 12px;
+                                                                                                                                border:0;
+                                                                                                                                outline:0;
+                                                                                                                                background:transparent;
+                                                                                                                                color:#374151;
+                                                                                                                                font:inherit;
+                                                                                                                                font-size:13px;
+                                                                                                                                color-scheme:light}
+
+                                                                                                                                .inputWithIcon input::-webkit-calendar-picker-indicator {
+                                                                                                                                    opacity:0;
+                                                                                                                                    position:absolute;
+                                                                                                                                    inset:0;
+                                                                                                                                    width:100%;
+                                                                                                                                    height:100%;
+                                                                                                                                    cursor:pointer}
+
+                                                                                                                                    .inputWithIcon span {
+                                                                                                                                        pointer-events:none;
+                                                                                                                                        position:absolute;
+                                                                                                                                        right:7px;
+                                                                                                                                        top:50%;
+                                                                                                                                        transform:translateY(-50%);
+                                                                                                                                        width:28px;
+                                                                                                                                        height:28px;
+                                                                                                                                        display:grid;
+                                                                                                                                        place-items:center;
+                                                                                                                                        border-radius:50%;
+                                                                                                                                        background:#DFE6E9;
+                                                                                                                                        box-shadow:-2px -2px 3px #fff,2px 2px 3px #c4c4c4}
+
+                                                                                                                                        .fieldGroup textarea {
+                                                                                                                                            height:64px;
+                                                                                                                                            padding:12px;
+                                                                                                                                            resize:none;
+                                                                                                                                            outline:0;
+                                                                                                                                            color:#374151;
+                                                                                                                                            font:inherit;
+                                                                                                                                            font-size:13px}
+
+                                                                                                                                            .attachmentControl {
+                                                                                                                                                height:64px;
+                                                                                                                                                padding:8px 12px;
+                                                                                                                                                display:flex;
+                                                                                                                                                align-items:center;
+                                                                                                                                                gap:12px;
+                                                                                                                                                cursor:pointer}
+
+                                                                                                                                                .attachmentControl input {
+                                                                                                                                                    display:none}
+
+                                                                                                                                                    .attachmentIcon {
+                                                                                                                                                        width:34px;
+                                                                                                                                                        height:34px;
+                                                                                                                                                        flex:0 0 34px;
+                                                                                                                                                        display:grid;
+                                                                                                                                                        place-items:center;
+                                                                                                                                                        border-radius:50%;
+                                                                                                                                                        background:#DFE6E9;
+                                                                                                                                                        box-shadow:-2px -2px 3px #fff,2px 2px 3px #c4c4c4}
+
+                                                                                                                                                        .attachmentText {
+                                                                                                                                                            display:flex;
+                                                                                                                                                            flex-direction:column;
+                                                                                                                                                            gap:3px}
+
+                                                                                                                                                            .attachmentText strong {
+                                                                                                                                                                font-size:14px;
+                                                                                                                                                                font-weight:400}
+
+                                                                                                                                                                .attachmentText small {
+                                                                                                                                                                    font-size:12px;
+                                                                                                                                                                    color:#596174}
+
+                                                                                                                                                                    .formActions {
+                                                                                                                                                                        display:flex;
+                                                                                                                                                                        justify-content:flex-end;
+                                                                                                                                                                        gap:24px;
+                                                                                                                                                                        padding:16px 0 2px}
+
+                                                                                                                                                                        .formActions button {
+                                                                                                                                                                            height:44px;
+                                                                                                                                                                            min-width:112px;
+                                                                                                                                                                            padding:0 24px;
+                                                                                                                                                                            border:0;
+                                                                                                                                                                            border-radius:28px;
+                                                                                                                                                                            background:#DFE6E9;
+                                                                                                                                                                            box-shadow:-4px -4px 8px #ffffff,4px 4px 8px #c4c4c4;
+                                                                                                                                                                            font:inherit;
+                                                                                                                                                                            font-size:18px;
+                                                                                                                                                                            font-weight:600;
+                                                                                                                                                                            cursor:pointer}
+
+                                                                                                                                                                            .saveButton {
+                                                                                                                                                                                color:#287A0B}
+
+                                                                                                                                                                                .cancelButton {
+                                                                                                                                                                                    color:#374151}
+
+                                                                                                                                                                                    @media(max-width:520px) {
+                                                                                                                                                                                        .addEventPage {
+                                                                                                                                                                                            padding:8px}
+
+                                                                                                                                                                                            .addEventModal {
+                                                                                                                                                                                                width:min(454px,calc(100vw - 16px));
+                                                                                                                                                                                                height:min(614px,calc(100dvh - 16px))}
+
+                                                                                                                                                                                                .modalScroller {
+                                                                                                                                                                                                    padding:22px 18px}
+
+                                                                                                                                                                                                    .twoColumns {
+                                                                                                                                                                                                        gap:10px}
+
+                                                                                                                                                                                                        .addEventHero {
+                                                                                                                                                                                                            width:240px}
+
+                                                                                                                                                                                                            .formActions {
+                                                                                                                                                                                                                gap:14px}
+
+                                                                                                                                                                                                                .formActions button {
+                                                                                                                                                                                                                    min-width:100px}
+
+                                                                                                                                                                                                                }
+
+
+/* =========================================================
+   ADD EVENT — NEUMORPHIC DATE AND TIME
+   Start Date / End Date / Start Time / End Time
+   ========================================================= */
+
+.addEventPage .inputWithIcon {
+    position: relative !important;
+    width: 100% !important;
+    height: 42px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    border: 0 !important;
+    border-radius: 7px !important;
+    background: #DFE6E9 !important;
+
+    box-shadow:
+        inset 3px 3px 5px #C4C4C4,
+        inset -3px -3px 5px #FFFFFF !important;
+}
+
+.addEventPage .inputWithIcon input {
+    width: 100% !important;
+    height: 42px !important;
+
+    padding: 0 52px 0 13px !important;
+
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 7px !important;
+
+    background: transparent !important;
+    box-shadow: none !important;
+
+    color: #374151 !important;
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Hide browser default calendar / time icon */
+.addEventPage .inputWithIcon input::-webkit-calendar-picker-indicator {
+    position: absolute !important;
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    opacity: 0 !important;
+    cursor: pointer !important;
+}
+
+/* Your calendar.svg / time.svg image */
+.addEventPage .inputWithIcon > img {
+    position: absolute !important;
+
+    top: 50% !important;
+    right: 7px !important;
+
+    width: 32px !important;
+    height: 32px !important;
+
+    padding: 7px !important;
+
+    transform: translateY(-50%) !important;
+
+    border-radius: 50% !important;
+    background: #DFE6E9 !important;
+
+    box-shadow:
+        -3px -3px 5px #FFFFFF,
+        3px 3px 5px #BFC6C9 !important;
+
+    object-fit: contain !important;
+    pointer-events: none !important;
+}
+
+.addEventPage .inputWithIcon:focus-within {
+    box-shadow:
+        inset 4px 4px 6px #BEC5C8,
+        inset -4px -4px 6px #FFFFFF !important;
+}
+
+/* =========================================================
+   CUSTOM NEUMORPHIC DATE + TIME DROPDOWNS
+   These replace the browser-native date/time popups.
+   ========================================================= */
+
+.customPickerWrap {
+    position: relative;
+    width: 100%;
+    z-index: 10;
+}
+
+.customPickerWrap:has(.neoCalendarPopup),
+.customPickerWrap:has(.neoTimePopup) {
+    z-index: 100;
+}
+
+.neoPickerField {
+    width: 100%;
+    height: 42px;
+    padding: 0 7px 0 13px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border: 0;
+    border-radius: 7px;
+    background: #DFE6E9;
+
+    color: #374151;
+    font-family: "Segoe UI", Inter, sans-serif;
+    font-size: 14px;
+    text-align: left;
+
+    box-shadow:
+        inset 3px 3px 5px #C4C4C4,
+        inset -3px -3px 5px #FFFFFF;
+
+    cursor: pointer;
+}
+
+.neoPickerIcon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+    background: #DFE6E9;
+
+    box-shadow:
+        -3px -3px 5px #FFFFFF,
+        3px 3px 5px #BFC6C9;
+}
+
+.neoPickerIcon img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+/* ---------- DATE CALENDAR DROPDOWN ---------- */
+
+.neoCalendarPopup {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 300;
+
+    width: 260px;
+    padding: 12px;
+
+    border-radius: 12px;
+    background: #DFE6E9;
+
+    box-shadow:
+        -6px -6px 10px #FFFFFF,
+        6px 6px 12px #BFC6C9;
+}
+
+.neoCalendarHeader {
+    height: 36px;
+
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 10px;
+}
+
+.neoCalendarHeader strong {
+    color: #30384B;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.neoCalendarHeader button {
+    width: 32px;
+    height: 32px;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+
+    background: #DFE6E9;
+
+    box-shadow:
+        -3px -3px 5px #FFFFFF,
+        3px 3px 5px #C4C4C4;
+
+    cursor: pointer;
+}
+
+.neoCalendarWeek,
+.neoCalendarGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.neoCalendarWeek {
+    margin-bottom: 6px;
+}
+
+.neoCalendarWeek span {
+    color: #667085;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.neoCalendarGrid button {
+    width: 28px;
+    height: 28px;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+
+    background: #DFE6E9;
+    color: #30384B;
+
+    font-family: "Segoe UI", Inter, sans-serif;
+    font-size: 11px;
+
+    box-shadow:
+        -2px -2px 3px #FFFFFF,
+        2px 2px 3px #C4C4C4;
+
+    cursor: pointer;
+}
+
+.neoCalendarGrid button:hover {
+    color: #2D55D7;
+
+    box-shadow:
+        inset 2px 2px 3px #C4C4C4,
+        inset -2px -2px 3px #FFFFFF;
+}
+
+.neoCalendarGrid button.outside {
+    color: #9CA3AF;
+    opacity: 0.62;
+}
+
+.neoCalendarGrid button.selected {
+    color: #FFFFFF;
+    background: #2D55D7;
+
+    box-shadow:
+        inset 2px 2px 4px rgba(0, 0, 0, 0.16),
+        -2px -2px 4px #FFFFFF;
+}
+
+/* ---------- 24-HOUR TIME DROPDOWN ---------- */
+
+.neoTimePopup {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 300;
+
+    width: 100%;
+    max-height: 190px;
+    padding: 8px;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    border-radius: 12px;
+    background: #DFE6E9;
+
+    box-shadow:
+        -6px -6px 10px #FFFFFF,
+        6px 6px 12px #BFC6C9;
+
+    scrollbar-width: thin;
+    scrollbar-color: #9F9E9E transparent;
+}
+
+.neoTimePopup::-webkit-scrollbar {
+    width: 6px;
+}
+
+.neoTimePopup::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.neoTimePopup::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background: #9F9E9E;
+}
+
+.neoTimePopup button {
+    height: 34px;
+
+    border: 0;
+    border-radius: 7px;
+
+    background: #DFE6E9;
+    color: #374151;
+
+    font-family: "Segoe UI", Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+
+    box-shadow:
+        -2px -2px 4px #FFFFFF,
+        2px 2px 4px #C4C4C4;
+
+    cursor: pointer;
+}
+
+.neoTimePopup button:hover {
+    color: #2D55D7;
+
+    box-shadow:
+        inset 2px 2px 3px #C4C4C4,
+        inset -2px -2px 3px #FFFFFF;
+}
+
+.neoTimePopup button.selected {
+    color: #FFFFFF;
+    background: #2D55D7;
+
+    box-shadow:
+        inset 2px 2px 4px rgba(0, 0, 0, 0.16),
+        -2px -2px 4px #FFFFFF;
+}
+
+@media (max-width: 520px) {
+    .neoCalendarPopup {
+        width: 250px;
+    }
+
+    .neoCalendarGrid button {
+        width: 27px;
+        height: 27px;
+    }
+}
+
+
+/* =========================================================
+   END DATE / END TIME DROPDOWN POSITION FIX
+   Prevents the right-side picker from breaking outside form.
+   ========================================================= */
+
+/* Keep both date/time columns able to contain positioned popups */
+.addEventPage .twoFields,
+.addEventPage .formRow,
+.addEventPage .dateTimeRow {
+    overflow: visible !important;
+}
+
+.addEventPage .customPickerWrap {
+    position: relative !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+}
+
+/* Start Date / Start Time open toward the right */
+.addEventPage .customPickerWrap .neoCalendarPopup {
+    left: 0 !important;
+    right: auto !important;
+}
+
+/* End Date: align calendar to the RIGHT edge of the field.
+   This keeps the 260px calendar completely inside the Add Event modal. */
+.addEventPage .twoFields > *:nth-child(2) .neoCalendarPopup,
+.addEventPage .formRow > *:nth-child(2) .neoCalendarPopup,
+.addEventPage .dateTimeRow > *:nth-child(2) .neoCalendarPopup {
+    left: auto !important;
+    right: 0 !important;
+}
+
+/* Time dropdown always stays exactly within its own field */
+.addEventPage .neoTimePopup {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Calendar popup fixed dimensions without layout breaking */
+.addEventPage .neoCalendarPopup {
+    width: 260px !important;
+    max-width: min(260px, calc(100vw - 40px)) !important;
+    box-sizing: border-box !important;
+}
+
+/* Prevent calendar buttons/grid from overflowing */
+.addEventPage .neoCalendarWeek,
+.addEventPage .neoCalendarGrid {
+    width: 100% !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+}
+
+.addEventPage .neoCalendarGrid button {
+    width: 100% !important;
+    min-width: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+    height: auto !important;
+}
+
+/* Picker must display over the following fields instead of pushing/breaking them */
+.addEventPage .customPickerWrap:has(.neoCalendarPopup),
+.addEventPage .customPickerWrap:has(.neoTimePopup) {
+    z-index: 1000 !important;
+}
+
+/* Mobile: center calendar popup safely under either field */
+@media (max-width: 520px) {
+    .addEventPage .neoCalendarPopup,
+    .addEventPage .twoFields > *:nth-child(2) .neoCalendarPopup,
+    .addEventPage .formRow > *:nth-child(2) .neoCalendarPopup,
+    .addEventPage .dateTimeRow > *:nth-child(2) .neoCalendarPopup {
+        left: 50% !important;
+        right: auto !important;
+        width: min(260px, calc(100vw - 48px)) !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+
+/* =========================================================
+   FINAL FIX — END DATE CALENDAR OPENS TO THE LEFT
+   The actual row class in page.tsx is .twoColumns.
+   ========================================================= */
+
+.addEventPage .twoColumns {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+.addEventPage .twoColumns .fieldGroup {
+    position: relative !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+}
+
+.addEventPage .twoColumns .customPickerWrap {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/* Start Date — normal left alignment */
+.addEventPage .twoColumns > .fieldGroup:first-child .neoCalendarPopup {
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+}
+
+/* End Date — open toward LEFT, keeping the full calendar visible */
+.addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoCalendarPopup {
+    left: auto !important;
+    right: 0 !important;
+    transform: none !important;
+}
+
+/* Both calendars must have exactly the same size and appearance */
+.addEventPage .twoColumns .neoCalendarPopup {
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    z-index: 5000 !important;
+
+    border-radius: 12px !important;
+    background: #DFE6E9 !important;
+
+    box-shadow:
+        -6px -6px 10px #FFFFFF,
+        6px 6px 12px #BFC6C9 !important;
+}
+
+/* Keep all 7 days inside the popup */
+.addEventPage .neoCalendarWeek,
+.addEventPage .neoCalendarGrid {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    box-sizing: border-box !important;
+}
+
+.addEventPage .neoCalendarGrid button {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 28px !important;
+    aspect-ratio: auto !important;
+    box-sizing: border-box !important;
+}
+
+/* Ensure calendar overlays lower fields without changing/breaking layout */
+.addEventPage .customPickerWrap:has(.neoCalendarPopup) {
+    z-index: 5000 !important;
+}
+
+/* End Time also stays inside the right column */
+.addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoTimePopup {
+    left: auto !important;
+    right: 0 !important;
+    width: 100% !important;
+}
+
+/* Small screens: show full calendar centered within the form */
+@media (max-width: 520px) {
+    .addEventPage .twoColumns > .fieldGroup:first-child .neoCalendarPopup,
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoCalendarPopup {
+        left: 50% !important;
+        right: auto !important;
+        width: min(260px, calc(100vw - 48px)) !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 48px) !important;
+        transform: translateX(-50%) !important;
+    }
+}
+
+
+/* =========================================================
+   ADD EVENT HEADING — BACKGROUND IMAGE
+   Replace the src in page.tsx with your own image.
+   ========================================================= */
+
+.addEventPage .addEventHero {
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+}
+
+/* Background image only — keeps existing heading design/content unchanged */
+.addEventPage .addEventHeroBackground {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: -1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: inherit !important;
+    pointer-events: none !important;
+}
+
+/* Keep Add Event title/icon/subtitle above the background image */
+.addEventPage .addEventHero .heroTitle,
+.addEventPage .addEventHero > p {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON — FIXED AT THE ORIGINAL TOP-RIGHT POSITION
+   Only modal content scrolls. No other UI changes.
+   ========================================================= */
+.addEventPage .addEventModal {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.addEventPage .modalScroller {
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+.addEventPage .closeButton {
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px !important;
+    z-index: 99999 !important;
+
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    transform: none !important;
+    flex: none !important;
+}
+
+/* =========================================================
+   CLOSE BUTTON — STAYS ONLY AT ITS ORIGINAL TOP POSITION
+   It scrolls away with the top section and does NOT follow
+   the user into Priority / Description / Attachment sections.
+   ========================================================= */
+.addEventPage .addEventModal {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.addEventPage .modalScroller {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+.addEventPage .closeButton {
+    /* Override the previous modal-fixed rule */
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px !important;
+    z-index: 100 !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+}
+
+/* Move the button into the same scrolling coordinate system as the content.
+   Since the button is currently a direct child of addEventModal in TSX,
+   this rule alone cannot make it scroll away. The TSX below places it
+   inside modalScroller at the very top, preserving the exact visual position. */
+
+
+/* =========================================================
+   MOBILE RESPONSIVE FIX ONLY
+   Desktop/tablet styles remain unchanged.
+   ========================================================= */
+@media (max-width: 520px) {
+
+    /* Keep the Add Event modal comfortably inside mobile viewport */
+    .addEventPage {
+        padding: 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    .addEventPage .addEventModal {
+        width: 100% !important;
+        max-width: 454px !important;
+        height: calc(100dvh - 16px) !important;
+        max-height: calc(100dvh - 16px) !important;
+        border-radius: 16px !important;
+        overflow: hidden !important;
+    }
+
+    .addEventPage .modalScroller {
+        width: 100% !important;
+        height: 100% !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        box-sizing: border-box !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Keep date and time in two columns, but prevent either side breaking */
+    .addEventPage .twoColumns {
+        width: 100% !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        gap: 12px !important;
+        overflow: visible !important;
+    }
+
+    .addEventPage .twoColumns > .fieldGroup {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .addEventPage .customPickerWrap,
+    .addEventPage .neoPickerField {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Date/time field text must not push the icon outside */
+    .addEventPage .neoPickerField {
+        height: 42px !important;
+        padding: 0 6px 0 10px !important;
+        gap: 5px !important;
+        overflow: hidden !important;
+    }
+
+    .addEventPage .neoPickerField > span:first-child {
+        min-width: 0 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        font-size: 13px !important;
+    }
+
+    /* Slightly smaller calendar/time icon ONLY on mobile */
+    .addEventPage .neoPickerIcon {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        flex: 0 0 28px !important;
+    }
+
+    .addEventPage .neoPickerIcon img {
+        width: 15px !important;
+        height: 15px !important;
+        object-fit: contain !important;
+    }
+
+    /* Custom calendar popup: full calendar stays inside mobile modal */
+    .addEventPage .neoCalendarPopup,
+    .addEventPage .twoColumns > .fieldGroup:first-child .neoCalendarPopup,
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoCalendarPopup {
+        position: absolute !important;
+        top: calc(100% + 8px) !important;
+
+        width: 248px !important;
+        min-width: 248px !important;
+        max-width: calc(100vw - 40px) !important;
+
+        padding: 10px !important;
+        box-sizing: border-box !important;
+        transform: none !important;
+        z-index: 5000 !important;
+    }
+
+    /* Start Date opens from LEFT */
+    .addEventPage .twoColumns > .fieldGroup:first-child .neoCalendarPopup {
+        left: 0 !important;
+        right: auto !important;
+    }
+
+    /* End Date opens toward LEFT so it never breaks on right side */
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoCalendarPopup {
+        left: auto !important;
+        right: 0 !important;
+    }
+
+    .addEventPage .neoCalendarHeader {
+        grid-template-columns: 30px minmax(0, 1fr) 30px !important;
+        gap: 5px !important;
+    }
+
+    .addEventPage .neoCalendarHeader button {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+    }
+
+    .addEventPage .neoCalendarHeader button img {
+        width: 13px !important;
+        height: 13px !important;
+    }
+
+    .addEventPage .neoCalendarHeader strong {
+        min-width: 0 !important;
+        font-size: 13px !important;
+        white-space: nowrap !important;
+    }
+
+    .addEventPage .neoCalendarWeek,
+    .addEventPage .neoCalendarGrid {
+        width: 100% !important;
+        grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+        gap: 4px !important;
+    }
+
+    .addEventPage .neoCalendarWeek span {
+        min-width: 0 !important;
+        font-size: 10px !important;
+    }
+
+    .addEventPage .neoCalendarGrid button {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 27px !important;
+        padding: 0 !important;
+        font-size: 10px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Time popup stays inside its own mobile column */
+    .addEventPage .neoTimePopup,
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoTimePopup {
+        left: 0 !important;
+        right: auto !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Keep the existing close-button behavior unchanged */
+    .addEventPage .closeButton {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+    }
+}
+
+/* Extra narrow phones */
+@media (max-width: 380px) {
+    .addEventPage .modalScroller {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .addEventPage .twoColumns {
+        gap: 8px !important;
+    }
+
+    .addEventPage .neoPickerField {
+        padding-left: 8px !important;
+        padding-right: 5px !important;
+    }
+
+    .addEventPage .neoPickerField > span:first-child {
+        font-size: 12px !important;
+    }
+
+    .addEventPage .neoPickerIcon {
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        flex-basis: 26px !important;
+    }
+
+    .addEventPage .neoPickerIcon img {
+        width: 14px !important;
+        height: 14px !important;
+    }
+
+    .addEventPage .neoCalendarPopup,
+    .addEventPage .twoColumns > .fieldGroup:first-child .neoCalendarPopup,
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoCalendarPopup {
+        width: 232px !important;
+        min-width: 232px !important;
+        max-width: calc(100vw - 32px) !important;
+    }
+}
+
+
+
+/* =========================================================
+   MOBILE — WEB HEADING DESIGN PRESERVED EXACTLY
+   ONLY the heading width is reduced.
+   No border/background/radius/shadow/typography design changes.
+   ========================================================= */
+@media (max-width: 520px) {
+    .addEventPage .addEventHero {
+        width: 242px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .addEventPage .addEventHero {
+        width: 238px !important;
+    }
+}
+
+
+/* =========================================================
+   EDIT EVENT — FOOTER ONLY
+   Add Event form/design above is intentionally unchanged.
+   ========================================================= */
+
+.addEventPage .editEventActions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.addEventPage .editEventRightActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+}
+
+.addEventPage .editEventActions .deleteButton,
+.addEventPage .editEventActions .cancelButton,
+.addEventPage .editEventActions .updateButton {
+  height: 44px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 28px;
+  background: #DFE6E9;
+  font-family: "Segoe UI", Inter, sans-serif;
+  font-size: 16px;
+  line-height: 44px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow:
+    -4px -4px 8px rgba(255, 255, 255, 0.92),
+     4px 4px 8px rgba(174, 181, 184, 0.52);
+}
+
+.addEventPage .editEventActions .deleteButton {
+  min-width: 112px;
+  color: #D71920;
+}
+
+.addEventPage .editEventActions .cancelButton {
+  min-width: 112px;
+  color: #30394D;
+}
+
+.addEventPage .editEventActions .updateButton {
+  min-width: 154px;
+  color: #3158E7;
+}
+
+.addEventPage .editEventActions .deleteButton:active,
+.addEventPage .editEventActions .cancelButton:active,
+.addEventPage .editEventActions .updateButton:active {
+  box-shadow:
+    inset 3px 3px 5px rgba(174, 181, 184, 0.48),
+    inset -3px -3px 5px rgba(255, 255, 255, 0.86);
+}
+
+@media (max-width: 520px) {
+  .addEventPage .editEventActions {
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .addEventPage .editEventRightActions {
+    gap: 10px;
+  }
+
+  .addEventPage .editEventActions .deleteButton,
+  .addEventPage .editEventActions .cancelButton,
+  .addEventPage .editEventActions .updateButton {
+    height: 40px;
+    min-width: 0;
+    padding: 0 14px;
+    font-size: 13px;
+    line-height: 40px;
+  }
+
+  .addEventPage .editEventActions .deleteButton {
+    flex: 0 1 88px;
+  }
+
+  .addEventPage .editEventRightActions {
+    flex: 1;
+  }
+
+  .addEventPage .editEventRightActions .cancelButton,
+  .addEventPage .editEventRightActions .updateButton {
+    flex: 1;
+  }
+}
+
+@media (max-width: 390px) {
+  .addEventPage .editEventActions {
+    flex-direction: column;
+  }
+
+  .addEventPage .editEventRightActions {
+    width: 100%;
+  }
+
+  .addEventPage .editEventActions .deleteButton {
+    width: 100%;
+    flex: none;
+  }
+}
+
+/* =========================================================
+   EVENT TITLE + EVENT SUBTITLE — SEARCHABLE DROPDOWN
+   Clean search bar and proper scrollable result view.
+   Priority and all other fields remain unchanged.
+   ========================================================= */
+
+.addEventPage .formDropdown.open {
+  z-index: 10000 !important;
+}
+
+.addEventPage .formDropdown .dropdownMenu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10001 !important;
+
+  width: 100% !important;
+  margin-top: 0 !important;
+  max-height: 260px !important;
+  padding: 10px 8px 8px !important;
+
+  overflow: hidden !important;
+
+  border: 0 !important;
+  border-radius: 0 0 10px 10px !important;
+  background: #DFE6E9 !important;
+
+  box-shadow:
+    -5px -5px 10px rgba(255,255,255,.96),
+     5px  5px 10px rgba(174,181,184,.72) !important;
+}
+
+.addEventPage .dropdownSearchWrap {
+  position: relative !important;
+  width: 100% !important;
+  margin: 0 0 8px !important;
+  padding: 0 !important;
+}
+
+.addEventPage .dropdownSearch {
+  display: block !important;
+  width: 100% !important;
+  height: 38px !important;
+
+  margin: 0 !important;
+  padding: 0 13px !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 7px !important;
+
+  background: #DFE6E9 !important;
+  color: #374151 !important;
+
+  font-family: "Segoe UI", Inter, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  font-weight: 400 !important;
+
+  box-shadow:
+    inset 3px 3px 5px rgba(174,181,184,.58),
+    inset -3px -3px 5px rgba(255,255,255,.94) !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+.addEventPage .dropdownSearch::placeholder {
+  color: #8B95A3 !important;
+  opacity: 1 !important;
+}
+
+.addEventPage .dropdownSearch::-webkit-search-decoration,
+.addEventPage .dropdownSearch::-webkit-search-cancel-button,
+.addEventPage .dropdownSearch::-webkit-search-results-button,
+.addEventPage .dropdownSearch::-webkit-search-results-decoration {
+  display: none !important;
+  -webkit-appearance: none !important;
+}
+
+.addEventPage .dropdownSearch:focus {
+  box-shadow:
+    inset 4px 4px 6px rgba(174,181,184,.68),
+    inset -4px -4px 6px #FFFFFF !important;
+}
+
+.addEventPage .dropdownOptionsScroll {
+  width: 100% !important;
+  max-height: 194px !important;
+  padding: 2px 2px 3px !important;
+
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
+  scrollbar-width: thin !important;
+  scrollbar-color: #9F9E9E transparent !important;
+}
+
+.addEventPage .dropdownOptionsScroll::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.addEventPage .dropdownOptionsScroll::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.addEventPage .dropdownOptionsScroll::-webkit-scrollbar-thumb {
+  border-radius: 20px !important;
+  background: #9F9E9E !important;
+}
+
+.addEventPage .dropdownOption {
+  width: 100% !important;
+  min-height: 40px !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 5px 7px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+
+  border: 0 !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+
+  color: #374151 !important;
+  font-family: "Segoe UI", Inter, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  text-align: left !important;
+
+  cursor: pointer !important;
+}
+
+.addEventPage .dropdownOption:hover {
+  color: #2D55D7 !important;
+  background: rgba(255,255,255,.18) !important;
+}
+
+.addEventPage .dropdownOption.selected {
+  color: #2D55D7 !important;
+}
+
+.addEventPage .dropdownOption > span:last-child {
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.addEventPage .dropdownNoResults {
+  width: 100% !important;
+  padding: 16px 10px !important;
+  color: #7B8492 !important;
+  font-family: "Segoe UI", Inter, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  text-align: center !important;
+}
+
+/* Mobile: dropdown remains completely inside Add Event form. */
+@media (max-width: 520px) {
+  .addEventPage .formDropdown .dropdownMenu {
+    max-height: 245px !important;
+    padding: 9px 7px 7px !important;
+  }
+
+  .addEventPage .dropdownSearch {
+    height: 38px !important;
+    font-size: 14px !important;
+  }
+
+  .addEventPage .dropdownOptionsScroll {
+    max-height: 180px !important;
+  }
+
+  .addEventPage .dropdownOption {
+    min-height: 40px !important;
+    padding: 5px 6px !important;
+  }
+}
+
+/* =========================================================
+   EVENT TITLE + SUBTITLE — FIELD/DROPDOWN CONNECTED
+   No external gap between top field and opened dropdown.
+   ========================================================= */
+.addEventPage .formDropdown.open .formControl {
+  margin-bottom: 0 !important;
+  border-radius: 7px 7px 0 0 !important;
+}
+
+.addEventPage .formDropdown.open .dropdownMenu {
+  top: 100% !important;
+  margin-top: 0 !important;
+  border-radius: 0 0 10px 10px !important;
+}
+
+/* =========================================================
+   FINAL — ADD EVENT COMPACT VIEW + FIGMA SCROLLER
+   Goal: show through Description in the first modal view.
+   No TSX / form / save / edit / reuse logic changed.
+   ========================================================= */
+
+.addEventPage .modalScroller {
+  padding: 18px 25px 22px !important;
+  scrollbar-width: auto !important;
+  scrollbar-color: #DFE6E9 transparent !important;
+}
+
+/* Slightly reduce only vertical space; preserve the same design. */
+.addEventPage .addEventHero {
+  width: 255px !important;
+  min-height: 62px !important;
+  margin: 0 auto 12px !important;
+  padding: 7px 20px 6px !important;
+}
+
+.addEventPage .heroTitle h1 {
+  font-size: 23px !important;
+  line-height: 27px !important;
+}
+
+.addEventPage .addEventHero p {
+  margin-top: 2px !important;
+  font-size: 15px !important;
+  line-height: 18px !important;
+}
+
+.addEventPage .fieldGroup {
+  margin-bottom: 11px !important;
+}
+
+.addEventPage .fieldGroup > label:first-child,
+.addEventPage .descriptionLabelRow label {
+  margin-bottom: 5px !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
+  font-weight: 600 !important;
+}
+
+.addEventPage .descriptionLabelRow {
+  margin-bottom: 5px !important;
+}
+
+.addEventPage .formControl {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 13px !important;
+  font-size: 14px !important;
+}
+
+.addEventPage .twoColumns {
+  gap: 16px !important;
+}
+
+.addEventPage .neoPickerField {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 6px 0 11px !important;
+  font-size: 13px !important;
+}
+
+.addEventPage .neoPickerIcon {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  flex: 0 0 28px !important;
+}
+
+.addEventPage .neoPickerIcon img {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.addEventPage .descriptionFieldGroup {
+  margin-bottom: 11px !important;
+}
+
+.addEventPage .descriptionFieldGroup textarea {
+  display: block !important;
+  width: 100% !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  padding: 10px 12px !important;
+  font-size: 13px !important;
+  line-height: 18px !important;
+  box-sizing: border-box !important;
+}
+
+.addEventPage .descriptionCounter {
+  font-size: 13px !important;
+  line-height: 18px !important;
+}
+
+/* Figma-like scrollbar:
+   grey rail starts at the TOP of the scrolling area,
+   with a light circular neumorphic thumb and visible shadow. */
+.addEventPage .modalScroller::-webkit-scrollbar {
+  width: 18px !important;
+}
+
+.addEventPage .modalScroller::-webkit-scrollbar-track {
+  margin: 0 !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(
+      to right,
+      transparent 6px,
+      #9F9E9E 6px,
+      #9F9E9E 12px,
+      transparent 12px
+    ) !important;
+}
+
+.addEventPage .modalScroller::-webkit-scrollbar-thumb {
+  min-height: 28px !important;
+  border: 2px solid transparent !important;
+  border-radius: 999px !important;
+  background: #DFE6E9 !important;
+  background-clip: padding-box !important;
+  box-shadow:
+    -3px -3px 5px #FFFFFF,
+     3px  3px 5px #C4C4C4 !important;
+}
+
+/* Keep the close button visually aligned after reducing top spacing. */
+.addEventPage .closeButton {
+  top: 16px !important;
+  right: 16px !important;
+}
+
+/* Mobile keeps the same compact proportions without changing layout. */
+@media (max-width: 520px) {
+  .addEventPage .modalScroller {
+    padding: 16px 16px 20px !important;
+  }
+
+  .addEventPage .addEventHero {
+    width: 242px !important;
+    min-height: 60px !important;
+    margin-bottom: 11px !important;
+  }
+
+  .addEventPage .fieldGroup {
+    margin-bottom: 10px !important;
+  }
+
+  .addEventPage .formControl,
+  .addEventPage .neoPickerField {
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+
+  .addEventPage .descriptionFieldGroup textarea {
+    height: 70px !important;
+    min-height: 70px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .addEventPage .modalScroller {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .addEventPage .addEventHero {
+    width: 238px !important;
+  }
+}
+
+/* =========================================================
+   FINAL FIGMA CORRECTION — HEADER + VISIBLE ROUND SCROLLER
+   CSS only. No Add/Edit/Reuse/Save logic changed.
+   ========================================================= */
+
+/* Restore/keep the original Figma heading capsule exactly.
+   Do not let compact-view overrides shrink or reshape it. */
+.addEventPage .addEventHero {
+  width: 255px !important;
+  min-height: 70px !important;
+  height: auto !important;
+  margin: 0 auto 14px !important;
+  padding: 10px 20px 8px !important;
+  border-radius: 42px !important;
+  background:
+    radial-gradient(circle at 2px 2px, rgba(140,140,140,.13) 1px, transparent 1.2px) 0 0/7px 7px,
+    #eef2f3 !important;
+  box-shadow:
+    inset 2px 2px 4px rgba(196,196,196,.45),
+    inset -2px -2px 4px #fff !important;
+}
+
+.addEventPage .heroTitle h1 {
+  font-size: 24px !important;
+  line-height: 28px !important;
+  font-weight: 700 !important;
+}
+
+.addEventPage .addEventHero p {
+  margin: 4px 0 0 !important;
+  font-size: 16px !important;
+  line-height: 20px !important;
+  letter-spacing: .06em !important;
+}
+
+/* Keep enough compactness so Description remains in the first view. */
+.addEventPage .modalScroller {
+  position: relative !important;
+  padding: 18px 34px 22px 25px !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+}
+
+.addEventPage .modalScroller::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Custom Figma scrollbar rail. It starts at the TOP of the scrollable
+   form area and remains visible instead of depending on OS scrollbar UI. */
+.addEventPage .modalScrollRail {
+  position: absolute;
+  z-index: 120;
+  top: 106px;
+  right: 8px;
+  bottom: 18px;
+  width: 16px;
+  pointer-events: none;
+}
+
+.addEventPage .modalScrollRail::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  width: 6px;
+  border-radius: 999px;
+  background: #9F9E9E;
+}
+
+/* Circular neumorphic thumb, matching the supplied Figma reference. */
+.addEventPage .modalScrollThumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #DFE6E9;
+  box-shadow:
+    -3px -3px 5px #FFFFFF,
+     3px  3px 5px #C4C4C4;
+  will-change: transform;
+}
+
+/* Compact only field gaps/heights — heading design remains untouched. */
+.addEventPage .fieldGroup {
+  margin-bottom: 10px !important;
+}
+
+.addEventPage .fieldGroup > label:first-child,
+.addEventPage .descriptionLabelRow label {
+  margin-bottom: 4px !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
+}
+
+.addEventPage .formControl,
+.addEventPage .neoPickerField {
+  height: 35px !important;
+  min-height: 35px !important;
+}
+
+.addEventPage .neoPickerIcon {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  flex-basis: 28px !important;
+}
+
+.addEventPage .descriptionLabelRow {
+  margin-bottom: 4px !important;
+}
+
+.addEventPage .descriptionFieldGroup textarea {
+  height: 68px !important;
+  min-height: 68px !important;
+  padding: 9px 12px !important;
+}
+
+/* Keep DESCRIPTION and 0/250 separated/aligned as in Figma. */
+.addEventPage .descriptionLabelRow {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.addEventPage .descriptionLabelRow label {
+  margin: 0 !important;
+}
+
+.addEventPage .descriptionCounter {
+  margin-left: auto !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 520px) {
+  .addEventPage .addEventHero {
+    width: 240px !important;
+    min-height: 70px !important;
+    padding: 10px 18px 8px !important;
+  }
+
+  .addEventPage .modalScroller {
+    padding: 16px 30px 20px 18px !important;
+  }
+
+  .addEventPage .modalScrollRail {
+    right: 6px;
+  }
+}
+
+/* =========================================================
+   FINAL — FIRST VIEW ENDS AT DESCRIPTION + FIGMA SCROLLER
+   Visual-only. Existing form/event logic is unchanged.
+   ========================================================= */
+
+/* Keep original heading capsule unchanged. */
+.addEventPage .addEventHero {
+  width: 255px !important;
+  min-height: 70px !important;
+  margin: 0 auto 12px !important;
+  padding: 10px 20px 8px !important;
+  border-radius: 42px !important;
+}
+
+/* Fit Title through Description cleanly in the 614px modal.
+   Attachment remains below the fold and appears only after scrolling. */
+.addEventPage .modalScroller {
+  padding: 16px 34px 24px 25px !important;
+}
+
+.addEventPage .fieldGroup {
+  margin-bottom: 8px !important;
+}
+
+.addEventPage .fieldGroup > label:first-child,
+.addEventPage .descriptionLabelRow label {
+  margin-bottom: 4px !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
+}
+
+.addEventPage .formControl,
+.addEventPage .neoPickerField {
+  height: 34px !important;
+  min-height: 34px !important;
+}
+
+.addEventPage .neoPickerIcon {
+  width: 27px !important;
+  height: 27px !important;
+  min-width: 27px !important;
+  flex: 0 0 27px !important;
+}
+
+.addEventPage .neoPickerIcon img {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.addEventPage .descriptionFieldGroup {
+  margin-bottom: 14px !important;
+}
+
+.addEventPage .descriptionLabelRow {
+  margin-bottom: 4px !important;
+}
+
+.addEventPage .descriptionFieldGroup textarea {
+  height: 66px !important;
+  min-height: 66px !important;
+  padding: 9px 12px !important;
+}
+
+/* Attachment is intentionally below the initial viewport.
+   Do not pull it upward into the Description view. */
+.addEventPage .descriptionFieldGroup + .fieldGroup {
+  margin-top: 14px !important;
+}
+
+/* Figma scrollbar placement:
+   starts alongside the form fields, below the heading capsule. */
+.addEventPage .modalScrollRail {
+  top: 150px !important;
+  right: 7px !important;
+  bottom: 20px !important;
+  width: 18px !important;
+  border-radius: 999px !important;
+  background: #DFE6E9 !important;
+  box-shadow:
+    inset 2px 2px 3px rgba(196,196,196,.72),
+    inset -2px -2px 3px rgba(255,255,255,.92) !important;
+}
+
+/* Thin recessed line inside the soft neumorphic rail. */
+.addEventPage .modalScrollRail::before {
+  top: 8px !important;
+  bottom: 8px !important;
+  left: 7px !important;
+  width: 4px !important;
+  border-radius: 999px !important;
+  background: #9F9E9E !important;
+  box-shadow:
+    inset 1px 1px 2px rgba(100,100,100,.18),
+    1px 0 1px rgba(255,255,255,.55) !important;
+}
+
+/* Round light thumb with the raised shadow from the reference. */
+.addEventPage .modalScrollThumb {
+  left: 0 !important;
+  top: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  background: #DFE6E9 !important;
+  box-shadow:
+    -3px -3px 5px #FFFFFF,
+     3px  3px 5px #C4C4C4 !important;
+}
+
+/* Do not show a native browser scrollbar behind the custom one. */
+.addEventPage .modalScroller {
+  overflow-y: scroll !important;
+  scrollbar-width: none !important;
+}
+
+.addEventPage .modalScroller::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+@media (max-width: 520px) {
+  .addEventPage .modalScroller {
+    padding: 14px 30px 22px 18px !important;
+  }
+
+  .addEventPage .modalScrollRail {
+    top: 146px !important;
+    right: 5px !important;
+  }
+
+  .addEventPage .fieldGroup {
+    margin-bottom: 7px !important;
+  }
+
+  .addEventPage .descriptionFieldGroup textarea {
+    height: 64px !important;
+    min-height: 64px !important;
+  }
+}
+
+/* =========================================================
+   FIGMA FINAL MATCH
+   - Heading capsule unchanged
+   - First view ends cleanly after Description
+   - Attachment starts below the fold
+   - Scroll rail starts at the same upper position as reference
+   - Circular raised thumb + soft shadow
+   ========================================================= */
+
+.addEventPage .addEventHero {
+  width: 255px !important;
+  min-height: 70px !important;
+  margin: 0 auto 14px !important;
+  padding: 10px 20px 8px !important;
+  border-radius: 42px !important;
+}
+
+/* Keep the form compact but readable, matching the reference proportions. */
+.addEventPage .modalScroller {
+  padding: 16px 34px 24px 25px !important;
+}
+
+.addEventPage .fieldGroup {
+  margin-bottom: 9px !important;
+}
+
+.addEventPage .fieldGroup > label:first-child,
+.addEventPage .descriptionLabelRow label {
+  margin-bottom: 4px !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
+  font-weight: 600 !important;
+}
+
+.addEventPage .formControl,
+.addEventPage .neoPickerField {
+  height: 35px !important;
+  min-height: 35px !important;
+}
+
+.addEventPage .descriptionFieldGroup {
+  margin-bottom: 0 !important;
+}
+
+.addEventPage .descriptionLabelRow {
+  margin-bottom: 5px !important;
+}
+
+.addEventPage .descriptionFieldGroup textarea {
+  height: 68px !important;
+  min-height: 68px !important;
+  padding: 9px 12px !important;
+}
+
+/* IMPORTANT: first modal view must contain Description only.
+   Attachment remains in the form and appears normally after scrolling. */
+.addEventPage .descriptionFieldGroup + .fieldGroup {
+  margin-top: 52px !important;
+}
+
+/* Reference scrollbar begins high beside the form, not near Description. */
+.addEventPage .modalScrollRail {
+  top: 106px !important;
+  right: 7px !important;
+  bottom: 18px !important;
+  width: 18px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Long grey rail, matching the supplied Figma image. */
+.addEventPage .modalScrollRail::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 7px !important;
+  width: 5px !important;
+  border-radius: 999px !important;
+  background: #9F9E9E !important;
+  box-shadow:
+    inset 1px 1px 2px rgba(95,95,95,.20),
+    1px 0 2px rgba(255,255,255,.65) !important;
+}
+
+/* Circular light thumb with the same raised neumorphic shadow. */
+.addEventPage .modalScrollThumb {
+  top: 68px !important;
+  left: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  background: #DFE6E9 !important;
+  box-shadow:
+    -3px -3px 5px #FFFFFF,
+     3px 3px 5px #C4C4C4 !important;
+}
+
+/* Hide native browser scrollbar; custom Figma rail remains visible. */
+.addEventPage .modalScroller {
+  overflow-y: scroll !important;
+  scrollbar-width: none !important;
+}
+
+.addEventPage .modalScroller::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+@media (max-width: 520px) {
+  .addEventPage .modalScrollRail {
+    top: 106px !important;
+    right: 5px !important;
+  }
+
+  .addEventPage .descriptionFieldGroup + .fieldGroup {
+    margin-top: 48px !important;
+  }
+}
+
+
+/* =========================================================
+   FINAL FIGMA SIZE + SCROLLER CORRECTION
+   Only Add Event modal sizing and its custom scrollbar visuals.
+   Existing form / Add / Edit / Reuse / Save logic remains unchanged.
+   ========================================================= */
+
+/* Slightly taller, matching the reference proportions more closely. */
+.addEventPage .addEventModal {
+  width: 454px !important;
+  height: 630px !important;
+  max-width: calc(100vw - 24px) !important;
+  max-height: calc(100dvh - 24px) !important;
+}
+
+/* Keep the first view clean through Description. */
+.addEventPage .modalScroller {
+  padding: 18px 34px 26px 25px !important;
+}
+
+/* Figma rail:
+   grey BEFORE/above the round thumb,
+   soft white track/shadow AFTER/below the thumb. */
+.addEventPage .modalScrollRail {
+  --scroll-thumb-center: 77px;
+  top: 106px !important;
+  right: 7px !important;
+  bottom: 18px !important;
+  width: 18px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+/* Grey part only up to the current circular thumb. */
+.addEventPage .modalScrollRail::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 7px !important;
+  width: 5px !important;
+  height: var(--scroll-thumb-center) !important;
+  bottom: auto !important;
+  border-radius: 24px !important;
+  background: #9F9E9E !important;
+  box-shadow:
+    inset 1px 1px 2px rgba(95,95,95,.18),
+    -2px 0 4px rgba(255,255,255,.70) !important;
+}
+
+/* White continuation below the circle, including the Figma-like light shadow. */
+.addEventPage .modalScrollRail::after {
+  content: "" !important;
+  position: absolute !important;
+  top: var(--scroll-thumb-center) !important;
+  left: 7px !important;
+  bottom: 0 !important;
+  width: 5px !important;
+  border-radius: 24px !important;
+  background: rgba(255,255,255,.82) !important;
+  box-shadow:
+    -3px 0 5px rgba(255,255,255,.98),
+     2px 0 4px rgba(196,196,196,.20) !important;
+}
+
+/* Raised circular thumb stays above both rail segments. */
+.addEventPage .modalScrollThumb {
+  z-index: 2 !important;
+  top: 68px !important;
+  left: 0 !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  background: #DFE6E9 !important;
+  box-shadow:
+    -3px -3px 5px #FFFFFF,
+     3px 3px 5px #C4C4C4 !important;
+}
+
+/* Preserve responsive behavior; only allow the slightly taller desktop target. */
+@media (max-width: 520px) {
+  .addEventPage .addEventModal {
+    width: 100% !important;
+    height: calc(100dvh - 16px) !important;
+    max-width: 454px !important;
+    max-height: calc(100dvh - 16px) !important;
+  }
+}
+
+
+/* =========================================================
+   FINAL HEIGHT CORRECTION — FORM ONLY
+   Slightly taller section + less empty space at the bottom.
+   Existing form/backend logic and scrollbar design are unchanged.
+   ========================================================= */
+.addEventPage .addEventModal {
+  height: 670px !important;
+  max-height: calc(100dvh - 16px) !important;
+}
+
+.addEventPage .modalScroller {
+  padding-bottom: 8px !important;
+}
+
+/* Keep the final visible Description area close to the modal bottom,
+   without changing any field/content logic. */
+.addEventPage .descriptionFieldGroup {
+  margin-bottom: 6px !important;
+}
+
+@media (max-width: 520px) {
+  .addEventPage .addEventModal {
+    height: calc(100dvh - 12px) !important;
+    max-height: calc(100dvh - 12px) !important;
+  }
+
+  .addEventPage .modalScroller {
+    padding-bottom: 8px !important;
+  }
+}
+
+
+/* =========================================================
+   FINAL — INCREASE SECTION HEIGHT + REDUCE VERTICAL GAPS
+   Form/backend logic untouched.
+   ========================================================= */
+.addEventPage .addEventModal {
+  height: 700px !important;
+  max-height: calc(100dvh - 12px) !important;
+}
+
+/* Reduce only the gaps between form sections. */
+.addEventPage .fieldGroup {
+  margin-bottom: 8px !important;
+}
+
+.addEventPage .descriptionFieldGroup {
+  margin-bottom: 4px !important;
+}
+
+.addEventPage .fieldGroup > label:first-child,
+.addEventPage .descriptionLabelRow label {
+  margin-bottom: 4px !important;
+}
+
+.addEventPage .descriptionLabelRow {
+  margin-bottom: 4px !important;
+}
+
+/* Reduce unused space at the bottom of the visible modal. */
+.addEventPage .modalScroller {
+  padding-bottom: 6px !important;
+}
+
+@media (max-width: 520px) {
+  .addEventPage .addEventModal {
+    height: calc(100dvh - 8px) !important;
+    max-height: calc(100dvh - 8px) !important;
+  }
+
+  .addEventPage .fieldGroup {
+    margin-bottom: 8px !important;
+  }
+
+  .addEventPage .modalScroller {
+    padding-bottom: 6px !important;
+  }
+}
+
+
+/* =========================================================
+   FIRST VIEW CORRECTION
+   - Initial view ends after Description
+   - Attachment stays just below and appears only after scrolling
+   - Reduce Description -> Attachment gap
+   - No form/backend logic changes
+   ========================================================= */
+
+/* Keep Description fully visible in the first view. */
+.addEventPage .descriptionFieldGroup {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Attachment remains close to Description in document flow,
+   but below the initial viewport. */
+.addEventPage .attachmentFieldGroup {
+  margin-top: 10px !important;
+  padding-top: 0 !important;
+}
+
+/* Remove large generic spacing if Attachment is the next field group. */
+.addEventPage .descriptionFieldGroup + .fieldGroup,
+.addEventPage .descriptionFieldGroup + .attachmentFieldGroup {
+  margin-top: 10px !important;
+}
+
+/* First view: title through the complete Description box.
+   Extra fields remain available by scrolling. */
+.addEventPage .modalScroller {
+  padding-bottom: 4px !important;
+}
+
+/* Give the visible Description area a clean bottom breathing space,
+   without exposing the Attachment heading initially. */
+.addEventPage .descriptionFieldGroup {
+  min-height: 132px !important;
+}
+
+@media (max-width: 520px) {
+  .addEventPage .attachmentFieldGroup,
+  .addEventPage .descriptionFieldGroup + .fieldGroup,
+  .addEventPage .descriptionFieldGroup + .attachmentFieldGroup {
+    margin-top: 8px !important;
+  }
+
+  .addEventPage .modalScroller {
+    padding-bottom: 4px !important;
+  }
+}
+
+
+/* =========================================================
+   FIGMA SECOND-IMAGE MATCH — FINAL FORM SPACING
+   Only Add Event form dimensions/spacing are affected.
+   ========================================================= */
+
+/* Match the taller Figma composition so Description is fully visible. */
+.addEventPage .addEventModal {
+  width: 454px !important;
+  height: 700px !important;
+  max-width: calc(100vw - 16px) !important;
+  max-height: calc(100dvh - 8px) !important;
+}
+
+/* Figma-like inner width and compact vertical rhythm. */
+.addEventPage .modalScroller {
+  padding: 18px 23px 0 23px !important;
+}
+
+/* Reduce the gaps between the visible form sections. */
+.addEventPage .fieldGroup {
+  margin-bottom: 10px !important;
+}
+
+.addEventPage .fieldGroup > label:first-child,
+.addEventPage .descriptionLabelRow {
+  margin-bottom: 5px !important;
+}
+
+/* Description must be the last thing visible in the initial viewport. */
+.addEventPage .descriptionFieldGroup {
+  min-height: 0 !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* IMPORTANT: no artificial gap between Description and Attachment.
+   Attachment follows immediately in document flow and appears on scroll. */
+.addEventPage .attachmentFieldGroup,
+.addEventPage .descriptionFieldGroup + .fieldGroup,
+.addEventPage .descriptionFieldGroup + .attachmentFieldGroup {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Remove any generic spacer between these two sections. */
+.addEventPage .descriptionFieldGroup + * {
+  margin-top: 0 !important;
+}
+
+/* Keep the textarea close to the Figma height. */
+.addEventPage .descriptionFieldGroup textarea {
+  min-height: 96px !important;
+  height: 96px !important;
+}
+
+/* No unused bottom padding pushing Attachment farther down. */
+.addEventPage .modalScroller {
+  padding-bottom: 0 !important;
+}
+
+@media (max-width: 520px) {
+  .addEventPage .addEventModal {
+    width: 100% !important;
+    height: calc(100dvh - 8px) !important;
+    max-height: calc(100dvh - 8px) !important;
+  }
+
+  .addEventPage .modalScroller {
+    padding-bottom: 0 !important;
+  }
+
+  .addEventPage .attachmentFieldGroup,
+  .addEventPage .descriptionFieldGroup + .fieldGroup,
+  .addEventPage .descriptionFieldGroup + .attachmentFieldGroup {
+    margin-top: 0 !important;
+  }
+}
+
+
+/* =========================================================
+   FINAL FIRST-VIEW FIX
+   Description is the last visible section on initial view.
+   Attachment remains immediately next in scroll content.
+   No TSX / backend / form logic changes.
+   ========================================================= */
+
+/* Keep the modal dimensions/design unchanged. */
+.addEventPage .modalScroller {
+  padding-bottom: 0 !important;
+}
+
+/* Description remains fully visible with a small clean bottom breathing space. */
+.addEventPage .descriptionFieldGroup {
+  margin-bottom: 0 !important;
+  padding-bottom: 14px !important;
+}
+
+/* Attachment is still the very next section.
+   The small negative compensation means there is no large Description→Attachment
+   gap after scrolling, while the heading no longer peeks into the first view. */
+.addEventPage .attachmentFieldGroup,
+.addEventPage .descriptionFieldGroup + .fieldGroup,
+.addEventPage .descriptionFieldGroup + .attachmentFieldGroup {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Ensure the first viewport clips cleanly after Description. */
+.addEventPage .addEventModal {
+  overflow: hidden !important;
+}
+
+.addEventPage .modalScroller {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+}
+
+/* Give the Description bottom edge enough room so ATTACHMENT starts below
+   the initial visible boundary instead of showing at the bottom. */
+.addEventPage .descriptionFieldGroup {
+  min-height: 146px !important;
+}
+
+@media (max-width: 520px) {
+  .addEventPage .descriptionFieldGroup {
+    min-height: 146px !important;
+    padding-bottom: 14px !important;
+  }
+}
+
+
+/* =========================================================
+   SCROLLER POSITION ONLY
+   Move the Add Event custom scrollbar slightly to the right.
+   No form sizing, spacing, scrollbar design, or logic changes.
+   ========================================================= */
+.addEventPage .modalScrollRail {
+  right: 1px !important;
+}
+
+
+/* =========================================================
+   ADD EVENT — FINAL SPECIFIC FORM HEIGHT
+   Header/hero design remains unchanged.
+   The form section uses the remaining modal height and scrolls internally.
+   ========================================================= */
+.addEventPage .addEventModal {
+    height: 650px !important;
+    max-height: calc(100dvh - 24px) !important;
+}
+
+.addEventPage .modalScroller {
+    height: 100% !important;
+    max-height: 100% !important;
+    padding-top: 24px !important;
+    padding-bottom: 26px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 520px) {
+    .addEventPage .addEventModal {
+        height: min(650px, calc(100dvh - 16px)) !important;
+        max-height: calc(100dvh - 16px) !important;
+    }
+
+    .addEventPage .modalScroller {
+        height: 100% !important;
+        max-height: 100% !important;
+    }
+}
+
+
+/* Requested field-height adjustment only:
+   Event Title + Event Subtitle slightly taller; Description slightly shorter. */
+.addEventPage .fieldGroup:has(.formDropdown) .formControl {
+    height: 40px !important;
+    min-height: 40px !important;
+}
+
+.addEventPage .fieldGroup textarea {
+    height: 54px !important;
+    min-height: 54px !important;
+}
+
+
+/* Requested only: reduce the space between Description and Attachment */
+.addEventPage .fieldGroup:has(textarea) {
+    margin-bottom: 8px !important;
+}
+
+
+/* FINAL — Description and Attachment must sit directly one after another */
+.addEventPage .fieldGroup:has(textarea) {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.addEventPage .fieldGroup:has(textarea) + .fieldGroup {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* If Attachment is wrapped immediately after the Description group */
+.addEventPage .fieldGroup:has(textarea) + * {
+    margin-top: 0 !important;
+}
+
+/* Keep only a small readable label gap, not a section gap */
+.addEventPage .fieldGroup:has(textarea) + .fieldGroup > label:first-child {
+    margin-top: 0 !important;
+}
+
+
+/* Description -> Attachment: reduce remaining visual gap only */
+.addEventPage .fieldGroup:has(textarea) { margin-bottom:0 !important; padding-bottom:0 !important; }
+.addEventPage .fieldGroup:has(textarea) + .fieldGroup,
+.addEventPage .fieldGroup:has(textarea) + * { margin-top:-32px !important; padding-top:0 !important; }
+.addEventPage .fieldGroup:has(textarea) + .fieldGroup > label:first-child { margin-top:0 !important; margin-bottom:7px !important; }
+
+
+/* Latest screenshot correction — Attachment only a little closer to Description */
+.addEventPage .fieldGroup:has(textarea) + .fieldGroup,
+.addEventPage .fieldGroup:has(textarea) + * {
+    margin-top: -44px !important;
+}
+
+/* FINAL REQUEST — equal Date/Time height + 20px spacing */
+.addEventPage .fieldGroup:has(.formDropdown) .formControl,
+.addEventPage .neoPickerField,
+.addEventPage .inputWithIcon {
+    height: 40px !important;
+    min-height: 40px !important;
+}
+
+.addEventPage .inputWithIcon input {
+    height: 40px !important;
+    min-height: 40px !important;
+}
+
+.addEventPage .fieldGroup {
+    margin-bottom: 20px !important;
+}
+
+.addEventPage .twoColumns {
+    gap: 20px !important;
+}
+
+.addEventPage .fieldGroup:has(textarea),
+.addEventPage .descriptionFieldGroup {
+    margin-bottom: 20px !important;
+    padding-bottom: 0 !important;
+}
+
+.addEventPage .fieldGroup:has(textarea) + .fieldGroup,
+.addEventPage .fieldGroup:has(textarea) + *,
+.addEventPage .descriptionFieldGroup + .fieldGroup,
+.addEventPage .descriptionFieldGroup + .attachmentFieldGroup {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+@media (max-width: 520px) {
+    .addEventPage .fieldGroup {
+        margin-bottom: 20px !important;
+    }
+
+    .addEventPage .twoColumns {
+        gap: 20px !important;
+    }
+
+    .addEventPage .fieldGroup:has(.formDropdown) .formControl,
+    .addEventPage .neoPickerField,
+    .addEventPage .inputWithIcon,
+    .addEventPage .inputWithIcon input {
+        height: 40px !important;
+        min-height: 40px !important;
+    }
+}
+
+
+/* FINAL SPACING CORRECTION — section gap 20px, label/control gap 8px */
+.addEventPage .fieldGroup,
+.addEventPage .descriptionFieldGroup,
+.addEventPage .attachmentFieldGroup {
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: 0 !important;
+}
+
+/* Remove older negative Description -> Attachment compensation. */
+.addEventPage .fieldGroup:has(textarea) + .fieldGroup,
+.addEventPage .fieldGroup:has(textarea) + *,
+.addEventPage .descriptionFieldGroup + .fieldGroup,
+.addEventPage .descriptionFieldGroup + .attachmentFieldGroup {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Exactly 20px from the Description output box to the Attachment section. */
+.addEventPage .descriptionFieldGroup,
+.addEventPage .fieldGroup:has(textarea) {
+    margin-bottom: 20px !important;
+    padding-bottom: 0 !important;
+    min-height: 0 !important;
+}
+
+/* Small, consistent gap between every field title and its control/output box. */
+.addEventPage .fieldGroup > label:first-child,
+.addEventPage .descriptionLabelRow {
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+}
+
+/* Description label row contains both DESCRIPTION and the counter. */
+.addEventPage .descriptionLabelRow label {
+    margin: 0 !important;
+}
+
+/* Keep the Attachment title close to its upload box as well. */
+.addEventPage .attachmentFieldGroup > label:first-child {
+    margin-bottom: 8px !important;
+}
+
+@media (max-width: 520px) {
+    .addEventPage .fieldGroup,
+    .addEventPage .descriptionFieldGroup,
+    .addEventPage .attachmentFieldGroup {
+        margin-bottom: 20px !important;
+        min-height: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .addEventPage .fieldGroup > label:first-child,
+    .addEventPage .descriptionLabelRow,
+    .addEventPage .attachmentFieldGroup > label:first-child {
+        margin-bottom: 8px !important;
+    }
+
+    .addEventPage .fieldGroup:has(textarea) + .fieldGroup,
+    .addEventPage .fieldGroup:has(textarea) + *,
+    .addEventPage .descriptionFieldGroup + .fieldGroup,
+    .addEventPage .descriptionFieldGroup + .attachmentFieldGroup {
+        margin-top: 0 !important;
+    }
+}
+
+/* =========================================================
+   ATTACHMENT FILE NAME — WRAP LONG NAMES
+   Only affects long attachment names; existing design remains unchanged.
+   ========================================================= */
+.addEventPage .attachmentControl {
+    height: auto !important;
+    min-height: 64px !important;
+}
+
+.addEventPage .attachmentText {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+
+.addEventPage .attachmentText strong {
+    display: block !important;
+    width: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    line-height: 18px !important;
+}
+
+
+/* =========================================================
+   MOBILE ONLY — SMALLER CLOSE BUTTON OUTSIDE HEADING FRAME
+   Desktop/tablet design remains unchanged.
+   ========================================================= */
+@media (max-width: 520px) {
+  .addEventPage .closeButton {
+    top: 8px !important;
+    right: 8px !important;
+
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+
+    padding: 0 !important;
+    border-radius: 50% !important;
+
+    z-index: 99999 !important;
+  }
+
+  .addEventPage .closeButton img {
+    width: 14px !important;
+    height: 14px !important;
+    object-fit: contain !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .addEventPage .closeButton {
+    top: 7px !important;
+    right: 7px !important;
+
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+  }
+
+  .addEventPage .closeButton img {
+    width: 13px !important;
+    height: 13px !important;
+  }
+}

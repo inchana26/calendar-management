@@ -1,7 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Calendar Management - Prisma Schema
+// Simplified according to the Calendar Management requirement.
+//
+// Database is used only for the main Calendar Management functionality.
+// Tenant, Division, Department, Calendar, Reminder and User tables
+// are not duplicated in this module.
+//
+// Main tables:
+// 1. Event
+// 2. EventAudience
 
 generator client {
   provider = "prisma-client"
@@ -10,4 +16,128 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+
+// ============================================================
+// EVENT STATUS
+// ============================================================
+
+enum EventStatus {
+  SAVED
+  SCHEDULED
+  PUBLISHED
+  PAUSED
+  CLOSED
+}
+
+
+// ============================================================
+// EVENT
+// ============================================================
+//
+// Main Calendar Management table.
+//
+// Handles:
+// - Create Event
+// - Save Event
+// - Edit Event
+// - Bulk Upload
+// - Schedule Event
+// - Publish Event
+// - Pause Event
+// - Close Event
+//
+// Calendar Management should fetch these records from the
+// database instead of depending on frontend/localStorage data.
+// ============================================================
+
+model Event {
+  id          String      @id @default(cuid())
+
+  // Event information
+  title       String
+  subtitle    String?
+  description String?
+
+  // Event date and time
+  startDate   DateTime
+  endDate     DateTime
+
+  // Kept separately because the existing frontend
+  // already handles date/time values separately.
+  startTime   String?
+  endTime     String?
+
+  // Event additional information
+  location    String?
+  priority    String?
+  attachment  String?
+
+  // Current event state
+  status      EventStatus @default(SAVED)
+
+  // Used when Publish is scheduled for a future time.
+  scheduledPublishAt DateTime?
+
+  // Stores the actual published time.
+  publishedAt DateTime?
+
+  // Existing/onboarding user ID.
+  // We do not create another User table in Calendar Management.
+  createdBy String?
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Target audience for this event
+  audiences EventAudience[]
+
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([scheduledPublishAt])
+  @@index([createdBy])
+}
+
+
+// ============================================================
+// EVENT AUDIENCE
+// ============================================================
+//
+// Stores who should receive/see the event.
+//
+// Actual users/roles/divisions/etc. should come from the
+// existing onboarding/user system.
+//
+// We only store the identifier required by Calendar Management.
+// This avoids creating duplicate User, Tenant, Division and
+// Department tables.
+// ============================================================
+
+model EventAudience {
+  id String @id @default(cuid())
+
+  // Event this audience belongs to
+  eventId String
+
+  // ID received from the existing user/onboarding system.
+  //
+  // Depending on the selected target audience this can identify
+  // the required user/group from the existing system.
+  audienceId String
+
+  // Example values can represent the type of selected audience.
+  // We keep this flexible instead of creating unnecessary tables.
+  audienceType String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+ event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, audienceId])
+  @@index([eventId])
+  @@index([audienceId])
 }
