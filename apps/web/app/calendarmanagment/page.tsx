@@ -70,6 +70,7 @@ type CalendarEvent = {
   scheduledPublishAt?: string;
   reminderSentAt?: string;
   createdBy?: string;
+  localOwner?: string;
 };
 
 /* ========================================
@@ -1856,34 +1857,56 @@ export default function CalendarManagementPage() {
          *      title/date/time as a fallback.
          */
         setEvents((previousEvents) => {
-          const normalize = (value?: string) =>
-            String(value || "").trim().toLowerCase();
+          /*
+           * PERMANENT EVENT PERSISTENCE
+           *
+           * Reused events are allowed to have the same date/time and must
+           * remain as separate records. Therefore we never de-duplicate by
+           * title/date/time.
+           *
+           * Backend events are matched ONLY by backendId. Existing frontend
+           * metadata (for example reminderSentAt) is preserved when the
+           * backend polling refresh returns the same event.
+           */
+          const previousByBackendId = new Map<string, CalendarEvent>();
 
-          const eventSignature = (event: CalendarEvent) =>
-            [
-              normalize(event.eventTitle || event.title),
-              normalize(event.startDate || event.date),
-              normalize(event.startTime || event.start),
-              normalize(event.endDate || event.startDate || event.date),
-              normalize(event.endTime || event.end),
-            ].join("|");
+          previousEvents.forEach((event) => {
+            if (event.backendId) {
+              previousByBackendId.set(event.backendId, event);
+            }
+          });
 
-          const backendIds = new Set(
+          const mergedBackendEvents = mappedEvents.map((backendEvent) => {
+            if (!backendEvent.backendId) {
+              return backendEvent;
+            }
+
+            const existingEvent = previousByBackendId.get(
+              backendEvent.backendId
+            );
+
+            if (!existingEvent) {
+              return backendEvent;
+            }
+
+            return {
+              ...existingEvent,
+              ...backendEvent,
+              reminderSentAt:
+                existingEvent.reminderSentAt ||
+                backendEvent.reminderSentAt,
+              localOwner: existingEvent.localOwner,
+            };
+          });
+
+          const returnedBackendIds = new Set(
             mappedEvents
               .map((event) => event.backendId)
               .filter((value): value is string => Boolean(value))
           );
 
-          const backendSignatures = new Set(
-            mappedEvents.map(eventSignature)
-          );
-
-          const preservedLocalEvents = previousEvents.filter((event) => {
-            if (event.backendId && backendIds.has(event.backendId)) {
-              return false;
-            }
-
-            if (backendSignatures.has(eventSignature(event))) {
+          const preservedExistingEvents = previousEvents.filter((event) => {
+            if (event.backendId && returnedBackendIds.has(event.backendId)) {
               return false;
             }
 
@@ -1891,8 +1914,8 @@ export default function CalendarManagementPage() {
           });
 
           const nextEvents = [
-            ...mappedEvents,
-            ...preservedLocalEvents,
+            ...mergedBackendEvents,
+            ...preservedExistingEvents,
           ];
 
           window.localStorage.setItem(
@@ -2364,16 +2387,94 @@ export default function CalendarManagementPage() {
         if (login.role === "SUPER_ADMIN") return "calendar-SUPER_ADMIN";
         if (login.role === "PLATFORM_ADMIN") return "calendar-PLATFORM_ADMIN";
 
-        return login.tenantType
-          ? `calendar-${login.role}-${login.tenantType}`
+        const tenantTypeFromDisplay: Record<string, string> = {
+          "University & College": "UNIVERSITY_COLLEGE",
+          "Skill Academy": "SKILL_ACADEMY",
+          Bootcamp: "BOOTCAMP",
+          Corporate: "CORPORATE",
+          Government: "GOVERNMENT",
+          NGO: "NGO",
+        };
+
+        const creatorTenantType =
+          login.tenantType ||
+          tenantTypeFromDisplay[login.displayTenant || ""] ||
+          "";
+
+        return creatorTenantType
+          ? `calendar-${login.role}-${creatorTenantType}`
           : `calendar-${login.role}`;
       })();
 
+      const normalizedCreatedBy = (event.createdBy || "")
+        .trim()
+        .toUpperCase();
+
+      const normalizedExactSignedInUserId = exactSignedInUserId
+        .trim()
+        .toUpperCase();
+
+      const normalizedLoginRole = (login?.role || "")
+        .trim()
+        .toUpperCase();
+
+      const creatorRoleToken = normalizedCreatedBy
+        .replace(/^CALENDAR-/, "")
+        .split("-")[0] || "";
+
+      const creatorTenantToken = normalizedCreatedBy
+        .replace(/^CALENDAR-/, "")
+        .split("-")
+        .slice(1)
+        .join("_");
+
+      const normalizedSignedTenantForCreator = (() => {
+        const tenantTypeFromDisplay: Record<string, string> = {
+          "University & College": "UNIVERSITY_COLLEGE",
+          "Skill Academy": "SKILL_ACADEMY",
+          Bootcamp: "BOOTCAMP",
+          Corporate: "CORPORATE",
+          Government: "GOVERNMENT",
+          NGO: "NGO",
+        };
+
+        return (
+          login?.tenantType ||
+          tenantTypeFromDisplay[login?.displayTenant || ""] ||
+          ""
+        )
+          .trim()
+          .toUpperCase();
+      })();
+
+      const exactCreatorMatch =
+        !!normalizedCreatedBy &&
+        !!normalizedExactSignedInUserId &&
+        normalizedCreatedBy === normalizedExactSignedInUserId;
+
+      const actorCreatorMatch =
+        !!normalizedCreatedBy &&
+        !!normalizedLoginRole &&
+        creatorRoleToken === normalizedLoginRole &&
+        (
+          login?.role === "SUPER_ADMIN" ||
+          login?.role === "PLATFORM_ADMIN" ||
+          !normalizedSignedTenantForCreator ||
+          creatorTenantToken === normalizedSignedTenantForCreator
+        );
+
+      const localOwner = login?.role
+        ? `${login.role}::${login.tenantType || ""}`
+        : "";
       const isCreatedBySignedInUser =
-        !!event.createdBy &&
-        !!exactSignedInUserId &&
-        event.createdBy.trim().toUpperCase() ===
-          exactSignedInUserId.trim().toUpperCase();
+        exactCreatorMatch || actorCreatorMatch ||
+        (!!localOwner && event.localOwner === localOwner);
+
+      // Add / Reuse writes into local state immediately. Before the next
+      // backend refresh there may be no createdBy value yet. Such an event
+      // is still owned by the current calendar screen and must stay visible
+      // in the right-side schedule list.
+      const isLocallyManagedEvent = !event.createdBy;
 
       // GET /events is already audience-filtered by the backend:
       // Default => everyone; TARGET => exact Tenant + Actor recipient.
@@ -2450,10 +2551,10 @@ export default function CalendarManagementPage() {
         return statusMatch && tabMatch && dayMatch;
       }
 
-      // The creator must keep seeing their own event after creation regardless
-      // of tenant/actor role. Recipient filters are for received events, not
-      // for hiding the creator's own Saved/Published event.
-      if (isCreatedBySignedInUser) {
+      // Never hide the creator's own Add / Reuse / Publish event merely
+      // because it was assigned to another Tenant + Actor.
+      // Also keep a just-created local event visible until backend refresh.
+      if (isCreatedBySignedInUser || isLocallyManagedEvent) {
         return statusMatch && tabMatch && dayMatch && departmentMatch;
       }
 
@@ -2711,6 +2812,9 @@ export default function CalendarManagementPage() {
         const parsedEvent = JSON.parse(storedNewEvent) as CalendarEvent;
         const eventWithDepartment: CalendarEvent = {
           ...parsedEvent,
+          localOwner: login?.role
+            ? `${login.role}::${login.tenantType || ""}`
+            : parsedEvent.localOwner,
           department:
             parsedEvent.department ||
             (department !== "All Departments" ? department : undefined),
@@ -3047,7 +3151,13 @@ export default function CalendarManagementPage() {
         event.id === currentPublishEvent.id ||
         event.backendId === currentPublishEvent.backendId
           ? {
+              ...event,
               ...mappedUpdatedEvent,
+              id: event.id,
+              createdBy: mappedUpdatedEvent.createdBy || event.createdBy,
+              localOwner: login?.role
+                ? `${login.role}::${login.tenantType || ""}`
+                : event.localOwner,
               audience:
                 mappedUpdatedEvent.audience ||
                 audience ||
@@ -3081,11 +3191,72 @@ export default function CalendarManagementPage() {
 
           if (Array.isArray(backendEvents)) {
             const mappedEvents = backendEvents.map(backendEventToCalendarEvent);
-            setEvents(mappedEvents);
-            window.localStorage.setItem(
-              "calendar:events",
-              JSON.stringify(mappedEvents)
-            );
+
+            /*
+             * Do not replace the whole calendar after Publish.
+             * GET /events can be audience-scoped, so replacing all events here
+             * was removing reused/local/reminder-sent events immediately after
+             * a publish. Merge only matching backendIds and preserve everything
+             * else.
+             */
+            setEvents((previousEvents) => {
+              const previousByBackendId = new Map<string, CalendarEvent>();
+
+              previousEvents.forEach((event) => {
+                if (event.backendId) {
+                  previousByBackendId.set(event.backendId, event);
+                }
+              });
+
+              const mergedBackendEvents = mappedEvents.map((backendEvent) => {
+                if (!backendEvent.backendId) {
+                  return backendEvent;
+                }
+
+                const existingEvent = previousByBackendId.get(
+                  backendEvent.backendId
+                );
+
+                if (!existingEvent) {
+                  return backendEvent;
+                }
+
+                return {
+                  ...existingEvent,
+                  ...backendEvent,
+                  reminderSentAt:
+                    existingEvent.reminderSentAt ||
+                    backendEvent.reminderSentAt,
+                  localOwner: existingEvent.localOwner,
+                };
+              });
+
+              const returnedBackendIds = new Set(
+                mappedEvents
+                  .map((event) => event.backendId)
+                  .filter((value): value is string => Boolean(value))
+              );
+
+              const preservedExistingEvents = previousEvents.filter((event) => {
+                if (event.backendId && returnedBackendIds.has(event.backendId)) {
+                  return false;
+                }
+
+                return true;
+              });
+
+              const nextEvents = [
+                ...mergedBackendEvents,
+                ...preservedExistingEvents,
+              ];
+
+              window.localStorage.setItem(
+                "calendar:events",
+                JSON.stringify(nextEvents)
+              );
+
+              return nextEvents;
+            });
           }
         }
       } catch (error) {
@@ -3093,6 +3264,9 @@ export default function CalendarManagementPage() {
       }
     }
 
+    setScheduleTab("All");
+    setStatus("All Status");
+    setSelectedDay(null);
     closePublishModal();
   };
 
@@ -3512,109 +3686,360 @@ export default function CalendarManagementPage() {
     e.target.value = "";
 
     const reader = new FileReader();
+
     reader.onload = async () => {
+      /*
+       * BULK UPLOAD DATE/TIME SAFETY FIX
+       *
+       * Keep the existing CSV/template/backend/schedule flow exactly the same,
+       * but normalize common CSV/Excel date and time formats before calling
+       * Date.toISOString(). This prevents "RangeError: Invalid time value".
+       */
       const parseCsvDate = (value: string) => {
-        const raw = value.trim();
+        const raw = (value || "").trim().replace(/^"|"$/g, "");
+        if (!raw) return null;
 
         let match = raw.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
         if (match) {
-          return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+          const parsed = new Date(
+            Number(match[1]),
+            Number(match[2]) - 1,
+            Number(match[3])
+          );
+
+          return Number.isNaN(parsed.getTime()) ? null : parsed;
         }
 
         match = raw.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
         if (match) {
-          return new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+          const parsed = new Date(
+            Number(match[3]),
+            Number(match[2]) - 1,
+            Number(match[1])
+          );
+
+          return Number.isNaN(parsed.getTime()) ? null : parsed;
         }
 
         const fallback = new Date(raw);
         return Number.isNaN(fallback.getTime()) ? null : fallback;
       };
 
-      const lines = String(reader.result).trim().split(/\r?\n/).slice(1);
-      const parsed = lines
+      const normalizeCsvTime = (
+        value: string,
+        fallback: string
+      ) => {
+        const raw = (value || "")
+          .trim()
+          .replace(/^"|"$/g, "")
+          .replace(/\./g, ":")
+          .replace(/\s+/g, " ");
+
+        if (!raw) return fallback;
+
+        // Excel can export a time as a fraction of a day, e.g. 0.5 = 12:00.
+        if (/^(?:0(?:\.\d+)?|1(?:\.0+)?)$/.test(raw)) {
+          const fraction = Number(raw);
+
+          if (Number.isFinite(fraction) && fraction >= 0 && fraction <= 1) {
+            const totalMinutes = Math.round(fraction * 24 * 60) % (24 * 60);
+            const hour = Math.floor(totalMinutes / 60);
+            const minute = totalMinutes % 60;
+
+            return `${String(hour).padStart(2, "0")}:${String(minute).padStart(
+              2,
+              "0"
+            )}`;
+          }
+        }
+
+        // 24-hour values: 9:30, 09:30, 09:30:00
+        let match = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+        if (match) {
+          const hour = Number(match[1]);
+          const minute = Number(match[2]);
+
+          if (
+            Number.isInteger(hour) &&
+            Number.isInteger(minute) &&
+            hour >= 0 &&
+            hour <= 23 &&
+            minute >= 0 &&
+            minute <= 59
+          ) {
+            return `${String(hour).padStart(2, "0")}:${String(minute).padStart(
+              2,
+              "0"
+            )}`;
+          }
+
+          return fallback;
+        }
+
+        // 12-hour values: 9 AM, 9:30 AM, 09:30AM, 09:30:00 PM
+        match = raw.match(
+          /^(\d{1,2})(?::(\d{2}))?(?::\d{2})?\s*(am|pm)$/i
+        );
+
+        if (match) {
+          let hour = Number(match[1]);
+          const minute = Number(match[2] || "00");
+          const meridiem = match[3].toLowerCase();
+
+          if (
+            !Number.isInteger(hour) ||
+            !Number.isInteger(minute) ||
+            hour < 1 ||
+            hour > 12 ||
+            minute < 0 ||
+            minute > 59
+          ) {
+            return fallback;
+          }
+
+          if (meridiem === "pm" && hour < 12) hour += 12;
+          if (meridiem === "am" && hour === 12) hour = 0;
+
+          return `${String(hour).padStart(2, "0")}:${String(minute).padStart(
+            2,
+            "0"
+          )}`;
+        }
+
+        return fallback;
+      };
+
+      const toBackendIso = (
+        dateValue: string,
+        timeValue: string
+      ) => {
+        const dateMatch = dateValue.match(
+          /^(\d{4})-(\d{2})-(\d{2})$/
+        );
+
+        const timeMatch = timeValue.match(
+          /^(\d{2}):(\d{2})$/
+        );
+
+        if (!dateMatch || !timeMatch) {
+          return null;
+        }
+
+        const year = Number(dateMatch[1]);
+        const month = Number(dateMatch[2]);
+        const day = Number(dateMatch[3]);
+        const hour = Number(timeMatch[1]);
+        const minute = Number(timeMatch[2]);
+
+        const localDateTime = new Date(
+          year,
+          month - 1,
+          day,
+          hour,
+          minute,
+          0,
+          0
+        );
+
+        // Reject impossible calendar values such as 2026-02-31.
+        if (
+          Number.isNaN(localDateTime.getTime()) ||
+          localDateTime.getFullYear() !== year ||
+          localDateTime.getMonth() !== month - 1 ||
+          localDateTime.getDate() !== day ||
+          localDateTime.getHours() !== hour ||
+          localDateTime.getMinutes() !== minute
+        ) {
+          return null;
+        }
+
+        return localDateTime.toISOString();
+      };
+
+      const csvLines = String(reader.result || "")
+        .replace(/^\uFEFF/, "")
+        .trim()
+        .split(/\r?\n/)
+        .slice(1);
+
+      const parsed = csvLines
         .map((line, index) => {
-          const [title, rawDate, start, end, location, attendees, rawStatus] = line
+          const [
+            title,
+            rawDate,
+            rawStart,
+            rawEnd,
+            location,
+            attendees,
+            rawStatus,
+          ] = line
             .split(",")
             .map((x) => x.trim().replace(/^"|"$/g, ""));
 
-          const dateObj = parseCsvDate(rawDate);
+          const dateObj = parseCsvDate(rawDate || "");
+
+          if (!title || !dateObj) {
+            return null;
+          }
+
+          const start = normalizeCsvTime(rawStart || "", "10:00");
+          let end = normalizeCsvTime(rawEnd || "", "11:00");
+
+          // If the imported end time is invalid/equal/earlier, keep the row
+          // usable by moving the end time one hour after start where possible.
+          const startMinutes =
+            Number(start.slice(0, 2)) * 60 + Number(start.slice(3, 5));
+          let endMinutes =
+            Number(end.slice(0, 2)) * 60 + Number(end.slice(3, 5));
+
+          if (endMinutes <= startMinutes) {
+            const adjustedEndMinutes = Math.min(
+              startMinutes + 60,
+              23 * 60 + 59
+            );
+
+            end = `${String(Math.floor(adjustedEndMinutes / 60)).padStart(
+              2,
+              "0"
+            )}:${String(adjustedEndMinutes % 60).padStart(2, "0")}`;
+
+            endMinutes = adjustedEndMinutes;
+          }
 
           return {
             id: Date.now() + index,
-            title: title,
-            date: dateObj
-              ? dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-              : rawDate,
-            day: dateObj ? dateObj.getDate() : 1,
-            month: dateObj ? dateObj.getMonth() : currentDate.getMonth(),
-            year: dateObj ? dateObj.getFullYear() : currentDate.getFullYear(),
-            start: start || "10:00 am",
-            end: end || "11:00 am",
+            title,
+            date: dateObj.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+            day: dateObj.getDate(),
+            month: dateObj.getMonth(),
+            year: dateObj.getFullYear(),
+            start,
+            end,
+            startTime: start,
+            endTime: end,
+            startDate: `${dateObj.getFullYear()}-${String(
+              dateObj.getMonth() + 1
+            ).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`,
+            endDate: `${dateObj.getFullYear()}-${String(
+              dateObj.getMonth() + 1
+            ).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`,
             location: location || "TBA",
             attendees: Number(attendees) || 0,
-            status: rawStatus?.toLowerCase() === "published"
-              ? "Published" as const
-              : "Saved" as const,
+            status:
+              rawStatus?.toLowerCase() === "published"
+                ? ("Published" as const)
+                : ("Saved" as const),
             color: "#2d4cc8",
           };
         })
-        .filter((event) => event.title && event.day > 0 && event.month >= 0 && event.year > 0);
+        .filter((event): event is NonNullable<typeof event> => Boolean(event));
 
       // Remove duplicate rows inside the same CSV before any POST request.
       const uniqueParsed = parsed.filter((event, index, allEvents) => {
-        const key = `${event.title}|${event.year}-${event.month}-${event.day}|${event.start}|${event.end}|${event.location}`.toLowerCase();
-        return allEvents.findIndex((candidate) =>
-          `${candidate.title}|${candidate.year}-${candidate.month}-${candidate.day}|${candidate.start}|${candidate.end}|${candidate.location}`.toLowerCase() === key
-        ) === index;
+        const key =
+          `${event.title}|${event.year}-${event.month}-${event.day}|${event.start}|${event.end}|${event.location}`.toLowerCase();
+
+        return (
+          allEvents.findIndex(
+            (candidate) =>
+              `${candidate.title}|${candidate.year}-${candidate.month}-${candidate.day}|${candidate.start}|${candidate.end}|${candidate.location}`.toLowerCase() ===
+              key
+          ) === index
+        );
       });
 
       const token = window.localStorage.getItem("calendar_access_token");
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
       if (token) {
-        const to24Hour = (value: string) => {
-          const match = value.trim().match(/^(\d{1,2}):(\d{2})\s*(am|pm)?$/i);
-          if (!match) return value;
-          let hour = Number(match[1]);
-          const minute = match[2];
-          const meridiem = match[3]?.toLowerCase();
-          if (meridiem === "pm" && hour < 12) hour += 12;
-          if (meridiem === "am" && hour === 12) hour = 0;
-          return `${String(hour).padStart(2, "0")}:${minute}`;
-        };
-
-        // Read the database first. This makes bulk upload idempotent: uploading
-        // the same CSV again will not create a second copy of the same event.
+        // Read the database first. This keeps the existing duplicate-prevention
+        // behavior: uploading the same CSV again will not create another copy.
         let existingBackendEvents: BackendEvent[] = [];
+
         try {
           const existingResponse = await fetch(`${apiUrl}/events`, {
             method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           });
 
           if (existingResponse.ok) {
-            existingBackendEvents = (await existingResponse.json()) as BackendEvent[];
+            existingBackendEvents =
+              (await existingResponse.json()) as BackendEvent[];
           }
         } catch (error) {
-          console.error("Failed to check existing backend events before bulk upload:", error);
+          console.error(
+            "Failed to check existing backend events before bulk upload:",
+            error
+          );
         }
 
         const backendKey = (event: BackendEvent) => {
           const date = new Date(event.startDate);
-          const dateValue = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-          return `${event.title}|${dateValue}|${event.startTime || ""}|${event.endTime || ""}|${event.location || "TBA"}`.toLowerCase();
+
+          if (Number.isNaN(date.getTime())) {
+            return "";
+          }
+
+          const dateValue = `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+          ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+          return `${event.title}|${dateValue}|${
+            event.startTime || ""
+          }|${event.endTime || ""}|${event.location || "TBA"}`.toLowerCase();
         };
 
-        const existingKeys = new Set(existingBackendEvents.map(backendKey));
+        const existingKeys = new Set(
+          existingBackendEvents
+            .map(backendKey)
+            .filter(Boolean)
+        );
+
         const savedBackendEvents: CalendarEvent[] = [];
 
         for (const event of uniqueParsed) {
-          const rawStart = event.start || "10:00";
-          const rawEnd = event.end || "11:00";
-          const dateValue = `${event.year}-${String(event.month + 1).padStart(2, "0")}-${String(event.day).padStart(2, "0")}`;
-          const startTime = to24Hour(rawStart);
-          const endTime = to24Hour(rawEnd);
-          const eventKey = `${event.title}|${dateValue}|${startTime}|${endTime}|${event.location}`.toLowerCase();
+          const dateValue =
+            event.startDate ||
+            `${event.year}-${String(event.month + 1).padStart(
+              2,
+              "0"
+            )}-${String(event.day).padStart(2, "0")}`;
+
+          const startTime = normalizeCsvTime(
+            event.startTime || event.start,
+            "10:00"
+          );
+
+          const endTime = normalizeCsvTime(
+            event.endTime || event.end,
+            "11:00"
+          );
+
+          const startDateIso = toBackendIso(dateValue, startTime);
+          const endDateIso = toBackendIso(dateValue, endTime);
+
+          // Never call toISOString() on an invalid Date.
+          // Invalid rows are skipped without breaking the whole bulk upload.
+          if (!startDateIso || !endDateIso) {
+            console.error(
+              "Skipped invalid bulk upload row:",
+              event.title,
+              dateValue,
+              startTime,
+              endTime
+            );
+            continue;
+          }
+
+          const eventKey =
+            `${event.title}|${dateValue}|${startTime}|${endTime}|${event.location}`.toLowerCase();
 
           if (existingKeys.has(eventKey)) {
             continue;
@@ -3629,35 +4054,107 @@ export default function CalendarManagementPage() {
               },
               body: JSON.stringify({
                 title: event.title,
-                startDate: new Date(`${dateValue}T${startTime}:00`).toISOString(),
-                endDate: new Date(`${dateValue}T${endTime}:00`).toISOString(),
+                startDate: startDateIso,
+                endDate: endDateIso,
                 startTime,
                 endTime,
                 location: event.location,
-                status: event.status === "Published" ? "PUBLISHED" : "SAVED",
+                status:
+                  event.status === "Published"
+                    ? "PUBLISHED"
+                    : "SAVED",
               }),
             });
 
-            if (!response.ok) continue;
+            if (!response.ok) {
+              console.error(
+                "Failed to bulk upload backend event:",
+                response.status,
+                await response.text()
+              );
+              continue;
+            }
 
             const saved = (await response.json()) as BackendEvent;
-            savedBackendEvents.push({ ...event, backendId: saved.id });
+
+            // Use the backend response so the bulk-created item has backendId,
+            // start/end dates and all fields required by the schedule panel.
+            const mappedSavedEvent = backendEventToCalendarEvent(saved);
+
+            savedBackendEvents.push(mappedSavedEvent);
             existingKeys.add(eventKey);
           } catch (error) {
-            console.error("Failed to bulk upload backend event:", error);
+            console.error(
+              "Failed to bulk upload backend event:",
+              error
+            );
           }
         }
 
         if (savedBackendEvents.length) {
-          setEvents((prev) => saveEvents([...prev, ...savedBackendEvents]));
+          setEvents((prev) =>
+            saveEvents([...prev, ...savedBackendEvents])
+          );
+
+          const latestUploadedEvent =
+            savedBackendEvents[savedBackendEvents.length - 1];
+
+          if (latestUploadedEvent) {
+            const uploadedDate = new Date(
+              latestUploadedEvent.year,
+              latestUploadedEvent.month,
+              latestUploadedEvent.day
+            );
+
+            setScheduleDate(uploadedDate);
+            setCurrentDate(
+              new Date(
+                latestUploadedEvent.year,
+                latestUploadedEvent.month,
+                1
+              )
+            );
+            setSelectedDay(null);
+            setScheduleTab("All");
+            setStatus("All Status");
+          }
         }
       } else {
-        setEvents((prev) => saveEvents([...prev, ...uniqueParsed]));
+        setEvents((prev) =>
+          saveEvents([...prev, ...uniqueParsed])
+        );
+
+        const latestUploadedEvent =
+          uniqueParsed[uniqueParsed.length - 1];
+
+        if (latestUploadedEvent) {
+          setScheduleDate(
+            new Date(
+              latestUploadedEvent.year,
+              latestUploadedEvent.month,
+              latestUploadedEvent.day
+            )
+          );
+          setCurrentDate(
+            new Date(
+              latestUploadedEvent.year,
+              latestUploadedEvent.month,
+              1
+            )
+          );
+          setSelectedDay(null);
+          setScheduleTab("All");
+          setStatus("All Status");
+        }
       }
 
       setBulkOpen(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     };
+
     reader.readAsText(file);
   };
 

@@ -3695,6 +3695,17 @@ export default function AddEventPage({
 
 
 
+    const savedLogin = window.localStorage.getItem("calendar_dummy_login");
+    let localOwner = "";
+    try {
+      const activeLogin = savedLogin ? JSON.parse(savedLogin) as { role?: string; tenantType?: string } : null;
+      if (activeLogin?.role) {
+        localOwner = `${activeLogin.role}::${activeLogin.tenantType || ""}`;
+      }
+    } catch {
+      // An invalid login record should not prevent saving the event.
+    }
+
     const eventPayload = {
 
       ...(formMode === "edit" && sourceEvent ? sourceEvent : {}),
@@ -3702,6 +3713,8 @@ export default function AddEventPage({
       id: formMode === "edit" && sourceEventId !== null ? sourceEventId : Date.now(),
 
       backendId: existingBackendId,
+
+      localOwner: localOwner || (formMode === "edit" ? sourceEvent?.localOwner : undefined),
 
       title: finalTitle,
 

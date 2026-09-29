@@ -18296,16 +18296,15 @@ button.autoPublishDateControl {
     min-height: 38px !important;
     margin: 0 0 16px !important;
     padding: 0 14px !important;
-    display: flex !important;
+    display: grid !important;
+    grid-template-columns: 32px minmax(0, 1fr) 32px !important;
     align-items: center !important;
-    justify-content: center !important;
-    gap: 16px !important;
-    overflow: visible !important;
+    column-gap: 8px !important;
+    overflow: hidden !important;
     box-sizing: border-box !important;
   }
 
   .calendarPage .schedulePanel .scheduleDateRow > button {
-    flex: 0 0 32px !important;
     width: 32px !important;
     min-width: 32px !important;
     height: 32px !important;
@@ -18319,17 +18318,29 @@ button.autoPublishDateControl {
   }
 
   .calendarPage .schedulePanel .scheduleDateRow > span {
-    flex: 0 1 auto !important;
-    width: auto !important;
+    width: 100% !important;
     min-width: 0 !important;
     margin: 0 !important;
     padding: 0 4px !important;
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
     text-align: center !important;
     font-size: 14px !important;
     line-height: 22px !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+  }
+
+  .calendarPage .schedulePanel .scheduleDateRow .scheduleEventCount,
+  .calendarPage .schedulePanel .scheduleDateRow .scheduleDateSeparator,
+  .calendarPage .schedulePanel .scheduleDateRow .scheduleDateText {
+    width: auto !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
     white-space: nowrap !important;
-    overflow: visible !important;
   }
 
   .calendarPage .schedulePanel .scheduleDateRow > button img,
@@ -18360,17 +18371,31 @@ button.autoPublishDateControl {
   .calendarPage .schedulePanel .scheduleDateRow {
     padding-left: 8px !important;
     padding-right: 8px !important;
-    gap: 12px !important;
+    grid-template-columns: 28px minmax(0, 1fr) 28px !important;
+    column-gap: 6px !important;
+    min-height: 48px !important;
+    height: auto !important;
   }
 
   .calendarPage .schedulePanel .scheduleDateRow > button {
-    flex-basis: 28px !important;
     width: 28px !important;
     min-width: 28px !important;
   }
 
   .calendarPage .schedulePanel .scheduleDateRow > span {
+    flex-wrap: wrap !important;
+    gap: 0 6px !important;
     font-size: 13px !important;
+  }
+
+  .calendarPage .schedulePanel .scheduleDateRow .scheduleDateSeparator {
+    display: none !important;
+  }
+
+  .calendarPage .schedulePanel .scheduleDateRow .scheduleEventCount,
+  .calendarPage .schedulePanel .scheduleDateRow .scheduleDateText {
+    flex: 0 0 100% !important;
+    white-space: nowrap !important;
   }
 }
 
