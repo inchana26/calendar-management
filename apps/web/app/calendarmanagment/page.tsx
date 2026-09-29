@@ -2767,26 +2767,16 @@ export default function CalendarManagementPage() {
   const publishActors = (() => {
     switch (login?.role) {
       case "SUPER_ADMIN":
-        return [
-          "Platform Admins",
-          "Institute Admins",
-          "Coordinators",
-          "Faculty",
-          "Students",
-        ];
       case "PLATFORM_ADMIN":
+      case "TENANT_ADMIN":
+      case "COORDINATOR":
+      case "FACULTY":
         return [
           "Institute Admins",
           "Coordinators",
           "Faculty",
           "Students",
         ];
-      case "TENANT_ADMIN":
-        return ["Coordinators", "Faculty", "Students"];
-      case "COORDINATOR":
-        return ["Faculty", "Students"];
-      case "FACULTY":
-        return ["Students"];
       default:
         return [];
     }
