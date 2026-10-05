@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-import CalendarSidebar from "@/components/calendar/CalendarSidebar";
+import Sidebar from "../../components/sidebar/Sidebar";
+import "./dashboard.css";
 
 interface LoginData {
   loggedIn: boolean;
@@ -14,17 +14,19 @@ interface LoginData {
   loginTime: string;
 }
 
+const dashboardCards = [
+  { title: "Total Users", value: "1,240", icon: "👥" },
+  { title: "Courses", value: "24", icon: "🎓" },
+  { title: "Assessments", value: "18", icon: "▣" },
+  { title: "Calendar Events", value: "12", icon: "▦" },
+];
+
 export default function DashboardPage() {
   const router = useRouter();
-
-  const [user, setUser] =
-    useState<LoginData | null>(null);
+  const [user, setUser] = useState<LoginData | null>(null);
 
   useEffect(() => {
-    const storedLogin =
-      localStorage.getItem(
-        "calendar_dummy_login"
-      );
+    const storedLogin = window.localStorage.getItem("calendar_dummy_login");
 
     if (!storedLogin) {
       router.replace("/sign_in");
@@ -32,10 +34,7 @@ export default function DashboardPage() {
     }
 
     try {
-      const parsedLogin =
-        JSON.parse(
-          storedLogin
-        ) as LoginData;
+      const parsedLogin = JSON.parse(storedLogin) as LoginData;
 
       if (!parsedLogin.loggedIn) {
         router.replace("/sign_in");
@@ -44,145 +43,94 @@ export default function DashboardPage() {
 
       setUser(parsedLogin);
     } catch {
-      localStorage.removeItem(
-        "calendar_dummy_login"
-      );
-
+      window.localStorage.removeItem("calendar_dummy_login");
       router.replace("/sign_in");
     }
   }, [router]);
 
   if (!user) {
     return (
-      <div
-        style={{
-          padding: "30px",
-        }}
-      >
+      <div className="dashboardLoading">
         Loading Dashboard...
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        background: "#f8fafc",
-      }}
-    >
-      <CalendarSidebar />
+    <div className="dashboardPage">
+      <div className="dashboardLayout">
+        <Sidebar />
 
-      <div
-        style={{
-          flex: 1,
-          minWidth: 0,
-        }}
-      >
-        <header
-          style={{
-            height: "70px",
-            padding: "0 30px",
-            background: "#ffffff",
-            borderBottom: "1px solid #e5e7eb",
+        <div className="dashboardMain">
+          <header className="dashboardHeader">
+            <div className="dashboardHeaderTitle">Dashboard</div>
 
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <h3
-            style={{
-              margin: 0,
-            }}
-          >
-            Dashboard
-          </h3>
+            <div className="dashboardUser">
+              <span className="dashboardAvatar" aria-hidden="true">
+                {user.displayRole
+                  ?.split(" ")
+                  .map((part) => part[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase() || "U"}
+              </span>
 
-          <div>
-            <strong>
-              {user.displayRole}
-            </strong>
-            {" | "}
-            {user.displayTenant}
-          </div>
-        </header>
+              <div className="dashboardUserText">
+                <strong>{user.displayRole}</strong>
+                <span>{user.displayTenant}</span>
+              </div>
+            </div>
+          </header>
 
-        <main
-          style={{
-            padding: "30px",
-          }}
-        >
-          <h1
-            style={{
-              marginBottom: "5px",
-            }}
-          >
-            Welcome to Neuro LXP
-          </h1>
+          <main className="dashboardContent">
+            <section className="dashboardWelcome">
+              <div>
+                <h1>Welcome to Neuro LXP</h1>
+                <p>{user.displayTenant || user.tenantType}</p>
+              </div>
 
-          <p
-            style={{
-              color: "#6b7280",
-            }}
-          >
-            {user.displayTenant || user.tenantType}
-          </p>
+              <div className="dashboardRoleChip">
+                {user.displayRole}
+              </div>
+            </section>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(220px, 1fr))",
+            <section className="dashboardCards" aria-label="Dashboard summary">
+              {dashboardCards.map((card) => (
+                <DashboardCard
+                  key={card.title}
+                  title={card.title}
+                  value={card.value}
+                  icon={card.icon}
+                />
+              ))}
+            </section>
 
-              gap: "20px",
-              marginTop: "30px",
-            }}
-          >
-            <DashboardCard
-              title="Total Users"
-              value="1,240"
-            />
+            <section className="calendarQuickCard">
+              <div className="calendarQuickIcon" aria-hidden="true">
+                <span className="calendarQuickIconTop" />
+                <span className="calendarQuickIconGrid">▦</span>
+              </div>
 
-            <DashboardCard
-              title="Courses"
-              value="24"
-            />
+              <div className="calendarQuickContent">
+                <p className="calendarQuickEyebrow">Calendar</p>
+                <h2>Calendar Management</h2>
+                <p>
+                  Manage schedules, events, publishing and calendar activities
+                  from one place.
+                </p>
 
-            <DashboardCard
-              title="Assessments"
-              value="18"
-            />
-
-            <DashboardCard
-              title="Calendar Events"
-              value="12"
-            />
-          </div>
-
-          <div
-            style={{
-              marginTop: "30px",
-              background: "#ffffff",
-              border: "1px solid #e5e7eb",
-              borderRadius: "12px",
-              padding: "25px",
-            }}
-          >
-            <h2>
-              Calendar Management
-            </h2>
-
-            <p>
-              Click{" "}
-              <strong>
-                Calendar Management
-              </strong>{" "}
-              from the left sidebar to open the calendar.
-            </p>
-          </div>
-        </main>
+                <button
+                  type="button"
+                  className="calendarQuickButton"
+                  onClick={() => router.push("/calendarmanagment")}
+                >
+                  Open Calendar Management
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </section>
+          </main>
+        </div>
       </div>
     </div>
   );
@@ -191,35 +139,22 @@ export default function DashboardPage() {
 function DashboardCard({
   title,
   value,
+  icon,
 }: {
   title: string;
   value: string;
+  icon: string;
 }) {
   return (
-    <div
-      style={{
-        background: "#ffffff",
-        padding: "22px",
-        borderRadius: "12px",
-        border: "1px solid #e5e7eb",
-      }}
-    >
-      <p
-        style={{
-          margin: 0,
-          color: "#6b7280",
-        }}
-      >
-        {title}
-      </p>
+    <article className="dashboardCard">
+      <div className="dashboardCardIcon" aria-hidden="true">
+        {icon}
+      </div>
 
-      <h2
-        style={{
-          marginBottom: 0,
-        }}
-      >
-        {value}
-      </h2>
-    </div>
+      <div className="dashboardCardText">
+        <p>{title}</p>
+        <h2>{value}</h2>
+      </div>
+    </article>
   );
 }

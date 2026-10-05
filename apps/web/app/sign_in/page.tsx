@@ -67,11 +67,8 @@ const TENANT_OPTIONS = [
 ];
 
 export default function LoginPage() {
-  const [role, setRole] =
-    useState("");
-
-  const [tenantType, setTenantType] =
-    useState("");
+  const [role, setRole] = useState("");
+  const [tenantType, setTenantType] = useState("");
 
   /* ========================================
      SUPER ADMIN / PLATFORM ADMIN
@@ -86,16 +83,13 @@ export default function LoginPage() {
      ROLE CHANGE
   ======================================== */
 
-  const handleRoleChange = (
-    value: string
-  ) => {
+  const handleRoleChange = (value: string) => {
     setRole(value);
 
     /*
       Super Admin and Platform Admin
       work across all tenants.
     */
-
     if (
       value === "SUPER_ADMIN" ||
       value === "PLATFORM_ADMIN"
@@ -110,8 +104,7 @@ export default function LoginPage() {
 
   const loginDisabled =
     !role ||
-    (!isPlatformLevelRole &&
-      !tenantType);
+    (!isPlatformLevelRole && !tenantType);
 
   /* ========================================
      LOGIN
@@ -119,35 +112,22 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     if (!role) {
-      alert(
-        "Please select a role."
-      );
-
+      alert("Please select a role.");
       return;
     }
 
-    if (
-      !isPlatformLevelRole &&
-      !tenantType
-    ) {
-      alert(
-        "Please select a tenant."
-      );
-
+    if (!isPlatformLevelRole && !tenantType) {
+      alert("Please select a tenant.");
       return;
     }
 
-    const selectedRole =
-      ROLE_OPTIONS.find(
-        (item) =>
-          item.value === role
-      );
+    const selectedRole = ROLE_OPTIONS.find(
+      (item) => item.value === role
+    );
 
-    const selectedTenant =
-      TENANT_OPTIONS.find(
-        (item) =>
-          item.value === tenantType
-      );
+    const selectedTenant = TENANT_OPTIONS.find(
+      (item) => item.value === tenantType
+    );
 
     try {
       /* ========================================
@@ -155,37 +135,29 @@ export default function LoginPage() {
       ======================================== */
 
       const apiUrl =
-        process.env
-          .NEXT_PUBLIC_API_URL ||
+        process.env.NEXT_PUBLIC_API_URL ||
         "http://localhost:3000";
 
-      const response =
-        await fetch(
-          `${apiUrl}/auth/calendar-login`,
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-
-            body: JSON.stringify({
-              role,
-
-              tenantType:
-                isPlatformLevelRole
-                  ? undefined
-                  : tenantType,
-            }),
-          }
-        );
+      const response = await fetch(
+        `${apiUrl}/auth/calendar-login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            role,
+            tenantType: isPlatformLevelRole
+              ? undefined
+              : tenantType,
+          }),
+        }
+      );
 
       if (!response.ok) {
-        const errorData =
-          await response
-            .json()
-            .catch(() => null);
+        const errorData = await response
+          .json()
+          .catch(() => null);
 
         alert(
           errorData?.message ||
@@ -198,7 +170,6 @@ export default function LoginPage() {
       const backendLogin =
         (await response.json()) as {
           accessToken: string;
-
           user: {
             id: string;
             name: string;
@@ -218,26 +189,16 @@ export default function LoginPage() {
 
       const loginData = {
         loggedIn: true,
-
         role,
-
         displayRole:
-          selectedRole?.label ||
-          role,
-
-        tenantType:
-          isPlatformLevelRole
-            ? "ALL"
-            : tenantType,
-
-        displayTenant:
-          isPlatformLevelRole
-            ? "All Tenants"
-            : selectedTenant?.label ||
-              tenantType,
-
-        loginTime:
-          new Date().toISOString(),
+          selectedRole?.label || role,
+        tenantType: isPlatformLevelRole
+          ? "ALL"
+          : tenantType,
+        displayTenant: isPlatformLevelRole
+          ? "All Tenants"
+          : selectedTenant?.label || tenantType,
+        loginTime: new Date().toISOString(),
       };
 
       console.log(
@@ -275,57 +236,14 @@ export default function LoginPage() {
 
       localStorage.setItem(
         "calendar_auth_user",
-        JSON.stringify(
-          backendLogin.user
-        )
+        JSON.stringify(backendLogin.user)
       );
 
       /* ========================================
-         NAVIGATE TO CALENDAR MANAGEMENT
-
-         Role + tenant selected above are saved
-         before navigation.
-
-         The Calendar Management header can now
-         read:
-         - calendar_dummy_login
-         - calendar_current_role
-         - calendar_current_tenant
-
-         Backend Calendar APIs can now read:
-         - calendar_access_token
-
-         Examples:
-
-         SUPER_ADMIN
-         -> Calendar Management - All Tenants
-         -> Super Admin
-
-         PLATFORM_ADMIN
-         -> Calendar Management - All Tenants
-         -> Platform Admin
-
-         TENANT_ADMIN + UNIVERSITY
-         -> University & College Calendar
-         -> Institute Admin
-
-         COORDINATOR + BOOTCAMP
-         -> Bootcamp Calendar
-         -> Coordinator
-
-         FACULTY + SKILL_ACADEMY
-         -> Skill Academy Calendar
-         -> Faculty
-
-         LEARNER + CORPORATE
-         -> Corporate Calendar
-         -> Student
-         -> View Only
-
+         NAVIGATE TO DASHBOARD
       ======================================== */
 
-      window.location.href =
-        "/calendarmanagment";
+      window.location.href = "/dashboard";
     } catch (error) {
       console.error(
         "Calendar backend login failed:",
@@ -371,9 +289,7 @@ export default function LoginPage() {
         </p>
 
         <div className="loginForm">
-          {/* =============================
-              ROLE
-          ============================= */}
+          {/* ROLE */}
 
           <div className="loginField">
             <label htmlFor="role">
@@ -397,16 +313,10 @@ export default function LoginPage() {
                 {ROLE_OPTIONS.map(
                   (option) => (
                     <option
-                      key={
-                        option.value
-                      }
-                      value={
-                        option.value
-                      }
+                      key={option.value}
+                      value={option.value}
                     >
-                      {
-                        option.label
-                      }
+                      {option.label}
                     </option>
                   )
                 )}
@@ -419,13 +329,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* =============================
-              TENANT
-
-              Hidden only for:
-              - Super Admin
-              - Platform Admin
-          ============================= */}
+          {/* TENANT */}
 
           {role &&
             !isPlatformLevelRole && (
@@ -437,16 +341,10 @@ export default function LoginPage() {
                 <div className="loginSelectWrap">
                   <select
                     id="tenant"
-                    value={
-                      tenantType
-                    }
-                    onChange={(
-                      event
-                    ) =>
+                    value={tenantType}
+                    onChange={(event) =>
                       setTenantType(
-                        event
-                          .target
-                          .value
+                        event.target.value
                       )
                     }
                   >
@@ -455,20 +353,12 @@ export default function LoginPage() {
                     </option>
 
                     {TENANT_OPTIONS.map(
-                      (
-                        option
-                      ) => (
+                      (option) => (
                         <option
-                          key={
-                            option.value
-                          }
-                          value={
-                            option.value
-                          }
+                          key={option.value}
+                          value={option.value}
                         >
-                          {
-                            option.label
-                          }
+                          {option.label}
                         </option>
                       )
                     )}
@@ -482,24 +372,17 @@ export default function LoginPage() {
               </div>
             )}
 
-          {/* =============================
-              PLATFORM ROLE INFORMATION
-          ============================= */}
+          {/* PLATFORM ROLE INFORMATION */}
 
           {isPlatformLevelRole && (
             <p
               style={{
                 margin: 0,
-
-                fontSize:
-                  "13px",
-
-                color:
-                  "#6b7280",
+                fontSize: "13px",
+                color: "#6b7280",
               }}
             >
-              This role has access
-              to all tenants.
+              This role has access to all tenants.
             </p>
           )}
 
@@ -508,12 +391,8 @@ export default function LoginPage() {
           <button
             type="button"
             className="loginButton"
-            disabled={
-              loginDisabled
-            }
-            onClick={
-              handleLogin
-            }
+            disabled={loginDisabled}
+            onClick={handleLogin}
           >
             Login
           </button>

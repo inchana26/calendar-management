@@ -1626,6 +1626,33 @@ const priorities: string[] = ["Low", "Medium", "High", "Critical"];
 
 
 
+
+function formatDisplayDate(value: string) {
+  if (!value) return "";
+
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return value;
+
+  return `${match[3]}-${match[2]}-${match[1]}`;
+}
+
+function getLocalTodayValue() {
+  const now = new Date();
+
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+function getCurrentLocalTimeValue() {
+  const now = new Date();
+
+  return `${String(now.getHours()).padStart(2, "0")}:${String(
+    now.getMinutes()
+  ).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+}
+
 function normalizeEventTenant(tenantType: string) {
 
   const value = (tenantType || "").trim().toUpperCase();
@@ -1958,6 +1985,18 @@ function CustomDatePicker({
 
 }) {
 
+  const [calendarView, setCalendarView] = useState<
+    "days" | "months" | "years"
+  >("days");
+
+  const [yearPageStart, setYearPageStart] = useState(
+    Math.floor(month.getFullYear() / 12) * 12
+  );
+
+  useEffect(() => {
+    setYearPageStart(Math.floor(month.getFullYear() / 12) * 12);
+  }, [month]);
+
   const year = month.getFullYear();
 
   const monthIndex = month.getMonth();
@@ -1968,7 +2007,20 @@ function CustomDatePicker({
 
   const previousMonthDays = new Date(year, monthIndex, 0).getDate();
 
-
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   const cells = Array.from({ length: 42 }, (_, index) => {
 
@@ -1990,11 +2042,11 @@ function CustomDatePicker({
 
   });
 
-
-
   const selectedDate = value ? new Date(`${value}T00:00:00`) : null;
 
-
+  const minimumDate = minDate
+    ? new Date(`${minDate}T00:00:00`)
+    : null;
 
   const moveMonth = (amount: number) => {
 
@@ -2002,124 +2054,333 @@ function CustomDatePicker({
 
   };
 
-
-
   const selectDay = (day: number, offset: number) => {
 
     const date = new Date(year, monthIndex + offset, day);
 
     const formatted =
-
       `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
     onSelect(formatted);
 
   };
 
+  const selectMonth = (nextMonthIndex: number) => {
+    onMonthChange(new Date(year, nextMonthIndex, 1));
+    setCalendarView("days");
+  };
 
+  const selectYear = (nextYear: number) => {
+    onMonthChange(new Date(nextYear, monthIndex, 1));
+    setCalendarView("days");
+  };
+
+  const moveCalendarHeader = (amount: number) => {
+    if (calendarView === "years") {
+      setYearPageStart((current) => current + amount * 12);
+      return;
+    }
+
+    if (calendarView === "months") {
+      onMonthChange(new Date(year + amount, monthIndex, 1));
+      return;
+    }
+
+    moveMonth(amount);
+  };
+
+  const yearOptions = Array.from(
+    { length: 12 },
+    (_, index) => yearPageStart + index
+  );
 
   return (
 
     <div className="neoCalendarPopup">
 
-      <div className="neoCalendarHeader">
+      <div className="neoCalendarPickerHeader">
 
-        <button type="button" onClick={() => moveMonth(-1)}>
+        <button
+          type="button"
+          className="neoCalendarNavButton"
+          onClick={() => moveCalendarHeader(-1)}
+          aria-label={
+            calendarView === "years"
+              ? "Previous years"
+              : calendarView === "months"
+                ? "Previous year"
+                : "Previous month"
+          }
+        >
 
-          <Image src={icons.arrowLeft} alt="" width={16} height={16} />
+          <Image
+            src={icons.arrowLeft}
+            alt=""
+            width={16}
+            height={16}
+          />
 
         </button>
 
-        <strong>
+        <button
+          type="button"
+          className={`neoCalendarSelectButton ${
+            calendarView === "months" ? "active" : ""
+          }`}
+          onClick={() =>
+            setCalendarView((current) =>
+              current === "months" ? "days" : "months"
+            )
+          }
+        >
 
-          {month.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+          <span>{monthNames[monthIndex]}</span>
 
-        </strong>
+          <Image
+            src={icons.dropdown}
+            alt=""
+            width={14}
+            height={14}
+          />
 
-        <button type="button" onClick={() => moveMonth(1)}>
+        </button>
 
-          <Image src={icons.arrowRight} alt="" width={16} height={16} />
+        <button
+          type="button"
+          className={`neoCalendarSelectButton neoCalendarYearButton ${
+            calendarView === "years" ? "active" : ""
+          }`}
+          onClick={() => {
+            setYearPageStart(Math.floor(year / 12) * 12);
+            setCalendarView((current) =>
+              current === "years" ? "days" : "years"
+            );
+          }}
+        >
+
+          <span>{year}</span>
+
+          <Image
+            src={icons.dropdown}
+            alt=""
+            width={14}
+            height={14}
+          />
+
+        </button>
+
+        <button
+          type="button"
+          className="neoCalendarNavButton"
+          onClick={() => moveCalendarHeader(1)}
+          aria-label={
+            calendarView === "years"
+              ? "Next years"
+              : calendarView === "months"
+                ? "Next year"
+                : "Next month"
+          }
+        >
+
+          <Image
+            src={icons.arrowRight}
+            alt=""
+            width={16}
+            height={16}
+          />
 
         </button>
 
       </div>
 
+      {calendarView === "months" ? (
 
+        <div className="neoCalendarMonthGrid">
 
-      <div className="neoCalendarWeek">
+          {monthNames.map((monthName, index) => {
 
-        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+            const selected = index === monthIndex;
 
-          <span key={day}>{day}</span>
+            const monthEnd = new Date(year, index + 1, 0, 23, 59, 59, 999);
 
-        ))}
+            const disabled =
+              !!minimumDate &&
+              monthEnd.getTime() < minimumDate.getTime();
 
-      </div>
+            return (
 
+              <button
+                key={monthName}
+                type="button"
+                className={selected ? "selected" : ""}
+                disabled={disabled}
+                onClick={() => {
+                  if (!disabled) selectMonth(index);
+                }}
+                title={monthName}
+              >
+                {monthName}
+              </button>
 
+            );
 
-      <div className="neoCalendarGrid">
+          })}
 
-        {cells.map((cell, index) => {
+        </div>
 
-          const cellDate = new Date(year, monthIndex + cell.offset, cell.day);
+      ) : calendarView === "years" ? (
 
-          const selected =
+        <>
 
-            selectedDate &&
-
-            selectedDate.getFullYear() === cellDate.getFullYear() &&
-
-            selectedDate.getMonth() === cellDate.getMonth() &&
-
-            selectedDate.getDate() === cellDate.getDate();
-
-          const minimumDate = minDate
-            ? new Date(`${minDate}T00:00:00`)
-            : null;
-
-          const disabled =
-            !!minimumDate &&
-            cellDate.getTime() < minimumDate.getTime();
-
-
-
-          return (
+          <div className="neoCalendarYearRange">
 
             <button
-
               type="button"
-
-              key={`${cell.day}-${index}`}
-
-              className={`${disabled ? "outside" : ""} ${selected ? "selected" : ""}`}
-
-              disabled={disabled}
-
-              onClick={() => {
-                if (!disabled) {
-                  selectDay(cell.day, cell.offset);
-                }
-              }}
-
+              onClick={() => setYearPageStart((current) => current - 12)}
+              aria-label="Previous year range"
             >
 
-              {cell.day}
+              <Image
+                src={icons.arrowLeft}
+                alt=""
+                width={16}
+                height={16}
+              />
 
             </button>
 
-          );
+            <strong>
+              {yearPageStart} - {yearPageStart + 11}
+            </strong>
 
-        })}
+            <button
+              type="button"
+              onClick={() => setYearPageStart((current) => current + 12)}
+              aria-label="Next year range"
+            >
 
-      </div>
+              <Image
+                src={icons.arrowRight}
+                alt=""
+                width={16}
+                height={16}
+              />
+
+            </button>
+
+          </div>
+
+          <div className="neoCalendarYearGrid">
+
+            {yearOptions.map((yearOption) => {
+
+              const selected = yearOption === year;
+
+              const yearEnd = new Date(
+                yearOption,
+                11,
+                31,
+                23,
+                59,
+                59,
+                999
+              );
+
+              const disabled =
+                !!minimumDate &&
+                yearEnd.getTime() < minimumDate.getTime();
+
+              return (
+
+                <button
+                  key={yearOption}
+                  type="button"
+                  className={selected ? "selected" : ""}
+                  disabled={disabled}
+                  onClick={() => {
+                    if (!disabled) selectYear(yearOption);
+                  }}
+                >
+                  {yearOption}
+                </button>
+
+              );
+
+            })}
+
+          </div>
+
+        </>
+
+      ) : (
+
+        <>
+
+          <div className="neoCalendarWeek">
+
+            {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+
+              <span key={day}>{day}</span>
+
+            ))}
+
+          </div>
+
+          <div className="neoCalendarGrid">
+
+            {cells.map((cell, index) => {
+
+              const cellDate = new Date(
+                year,
+                monthIndex + cell.offset,
+                cell.day
+              );
+
+              const selected =
+                selectedDate &&
+                selectedDate.getFullYear() === cellDate.getFullYear() &&
+                selectedDate.getMonth() === cellDate.getMonth() &&
+                selectedDate.getDate() === cellDate.getDate();
+
+              const disabled =
+                !!minimumDate &&
+                cellDate.getTime() < minimumDate.getTime();
+
+              return (
+
+                <button
+                  type="button"
+                  key={`${cell.day}-${index}`}
+                  className={`${disabled ? "outside" : ""} ${
+                    selected ? "selected" : ""
+                  }`}
+                  disabled={disabled}
+                  onClick={() => {
+                    if (!disabled) {
+                      selectDay(cell.day, cell.offset);
+                    }
+                  }}
+                >
+
+                  {cell.day}
+
+                </button>
+
+              );
+
+            })}
+
+          </div>
+
+        </>
+
+      )}
 
     </div>
 
   );
 
 }
-
 
 
 function CustomTimePicker({
@@ -2140,129 +2401,207 @@ function CustomTimePicker({
 
 }) {
 
-  const toMinutes = (timeValue: string) => {
+  const validValue = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(value)
+    ? value
+    : "";
 
-    const trimmed = (timeValue || "").trim();
+  const initialParts = validValue ? validValue.split(":") : ["", "", ""];
 
-    const twentyFourHourMatch = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+  const [draftHour, setDraftHour] = useState(initialParts[0]);
+  const [draftMinute, setDraftMinute] = useState(initialParts[1]);
+  const [draftSecond, setDraftSecond] = useState(initialParts[2]);
 
-    if (twentyFourHourMatch) {
-
-      return Number(twentyFourHourMatch[1]) * 60 + Number(twentyFourHourMatch[2]);
-
+  useEffect(() => {
+    if (/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(value)) {
+      const [nextHour, nextMinute, nextSecond] = value.split(":");
+      setDraftHour(nextHour);
+      setDraftMinute(nextMinute);
+      setDraftSecond(nextSecond);
+    } else {
+      setDraftHour("");
+      setDraftMinute("");
+      setDraftSecond("");
     }
+  }, [value]);
 
+  const hours = Array.from({ length: 24 }, (_, index) =>
+    String(index).padStart(2, "0")
+  );
 
+  const minutes = Array.from({ length: 60 }, (_, index) =>
+    String(index).padStart(2, "0")
+  );
 
-    const twelveHourMatch = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  const seconds = Array.from({ length: 60 }, (_, index) =>
+    String(index).padStart(2, "0")
+  );
 
-    if (twelveHourMatch) {
+  const normalizedMinTime =
+    minTime && /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/.test(minTime)
+      ? minTime
+      : "";
 
-      let hour = Number(twelveHourMatch[1]);
+  const [minHour, minMinute, minSecond] = normalizedMinTime
+    ? normalizedMinTime.split(":")
+    : ["", "", ""];
 
-      const minute = Number(twelveHourMatch[2]);
+  const visibleHours =
+    minHour
+      ? hours.filter((item) => Number(item) >= Number(minHour))
+      : hours;
 
-      const period = twelveHourMatch[3].toUpperCase();
+  const visibleMinutes =
+    minHour &&
+    minMinute &&
+    draftHour === minHour
+      ? minutes.filter((item) => Number(item) >= Number(minMinute))
+      : minutes;
 
+  const visibleSeconds =
+    minHour &&
+    minMinute &&
+    minSecond &&
+    draftHour === minHour &&
+    draftMinute === minMinute
+      ? seconds.filter((item) => Number(item) > Number(minSecond))
+      : seconds;
 
-
-      if (period === "AM" && hour === 12) hour = 0;
-
-      if (period === "PM" && hour !== 12) hour += 12;
-
-
-
-      return hour * 60 + minute;
-
+  const commitIfComplete = (
+    nextHour: string,
+    nextMinute: string,
+    nextSecond: string
+  ) => {
+    if (nextHour && nextMinute && nextSecond) {
+      onSelect(`${nextHour}:${nextMinute}:${nextSecond}`);
     }
-
-
-
-    return -1;
-
   };
 
+  const selectHour = (nextHour: string) => {
+    setDraftHour(nextHour);
 
+    let nextMinute = draftMinute;
+    let nextSecond = draftSecond;
 
-  const minimumMinutes = minTime ? toMinutes(minTime) : -1;
+    if (
+      minHour &&
+      minMinute &&
+      nextHour === minHour &&
+      nextMinute &&
+      Number(nextMinute) < Number(minMinute)
+    ) {
+      nextMinute = "";
+      nextSecond = "";
+      setDraftMinute("");
+      setDraftSecond("");
+    }
 
+    commitIfComplete(nextHour, nextMinute, nextSecond);
+  };
 
+  const selectMinute = (nextMinute: string) => {
+    setDraftMinute(nextMinute);
 
-  const times = Array.from({ length: 48 }, (_, index) => {
+    let nextSecond = draftSecond;
 
-    const hour = Math.floor(index / 2);
+    if (
+      minHour &&
+      minMinute &&
+      minSecond &&
+      draftHour === minHour &&
+      nextMinute === minMinute &&
+      nextSecond &&
+      Number(nextSecond) <= Number(minSecond)
+    ) {
+      nextSecond = "";
+      setDraftSecond("");
+    }
 
-    const minute = index % 2 === 0 ? "00" : "30";
+    commitIfComplete(draftHour, nextMinute, nextSecond);
+  };
 
-    return `${String(hour).padStart(2, "0")}:${minute}`;
-
-  }).filter((time) => {
-
-    if (minimumMinutes < 0) return true;
-
-    return toMinutes(time) > minimumMinutes;
-
-  });
-
-
+  const selectSecond = (nextSecond: string) => {
+    setDraftSecond(nextSecond);
+    commitIfComplete(draftHour, draftMinute, nextSecond);
+  };
 
   return (
 
-    <div className="neoTimePopup">
+    <div className="neoTimePopup neoTimePopupThree">
 
-      {times.length > 0 ? (
+      <div className="neoTimeColumn">
 
-        times.map((time) => (
+        <div className="neoTimeHeader">HH</div>
 
-          <button
+        <div className="neoTimeScroll" role="listbox" aria-label="Hour">
 
-            type="button"
+          {visibleHours.map((item) => (
 
-            key={time}
+            <button
+              type="button"
+              key={item}
+              className={draftHour === item ? "selected" : ""}
+              onClick={() => selectHour(item)}
+            >
+              {item}
+            </button>
 
-            className={value === time ? "selected" : ""}
-
-            onClick={() => onSelect(time)}
-
-          >
-
-            {time}
-
-          </button>
-
-        ))
-
-      ) : (
-
-        <div
-
-          style={{
-
-            padding: "12px",
-
-            textAlign: "center",
-
-            fontSize: "12px",
-
-            color: "#6B7280",
-
-          }}
-
-        >
-
-          No later time available
+          ))}
 
         </div>
 
-      )}
+      </div>
+
+      <div className="neoTimeColumn">
+
+        <div className="neoTimeHeader">MM</div>
+
+        <div className="neoTimeScroll" role="listbox" aria-label="Minute">
+
+          {visibleMinutes.map((item) => (
+
+            <button
+              type="button"
+              key={item}
+              className={draftMinute === item ? "selected" : ""}
+              onClick={() => selectMinute(item)}
+            >
+              {item}
+            </button>
+
+          ))}
+
+        </div>
+
+      </div>
+
+      <div className="neoTimeColumn">
+
+        <div className="neoTimeHeader">SS</div>
+
+        <div className="neoTimeScroll" role="listbox" aria-label="Second">
+
+          {visibleSeconds.map((item) => (
+
+            <button
+              type="button"
+              key={item}
+              className={draftSecond === item ? "selected" : ""}
+              onClick={() => selectSecond(item)}
+            >
+              {item}
+            </button>
+
+          ))}
+
+        </div>
+
+      </div>
 
     </div>
 
   );
 
 }
-
-
 
 type AddEventPageProps = {
 
@@ -2288,7 +2627,7 @@ export default function AddEventPage({
 
   const [openPicker, setOpenPicker] = useState<
 
-    "startDate" | "endDate" | "startTime" | "endTime" | null
+    "startDate" | "endDate" | "startTime" | "endTime" | "publishDate" | "publishTime" | null
 
   >(null);
 
@@ -2302,7 +2641,7 @@ export default function AddEventPage({
 
   const router = useRouter();
 
-  const [openDropdown, setOpenDropdown] = useState<"title" | "subtitle" | "priority" | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<"title" | "subtitle" | "priority" | "publishAudience" | "publishTenant" | "publishOrganization" | "publishActor" | null>(null);
 
   const [title, setTitle] = useState("");
 
@@ -2509,6 +2848,418 @@ export default function AddEventPage({
   const [reuseOriginalTitle, setReuseOriginalTitle] = useState("");
 
 
+  type PublishMode = "none" | "publish" | "schedule";
+
+  const [publishMode, setPublishMode] = useState<PublishMode>("none");
+  const [showPublishOptions, setShowPublishOptions] = useState(false);
+  const [publishOrganizer, setPublishOrganizer] = useState("");
+  type PublishAudienceType =
+    | ""
+    | "All"
+    | "Tenant Only"
+    | "Actor Only"
+    | "Tenant + Actor"
+    | "Specific Tenant"
+    | "Specific Actor"
+    | "Specific Organization + Actor";
+
+  const [publishAudienceType, setPublishAudienceType] =
+    useState<PublishAudienceType>("");
+  const [publishTenant, setPublishTenant] = useState("");
+  const [publishOrganization, setPublishOrganization] = useState("");
+  const [publishActor, setPublishActor] = useState("");
+  const [publishSelectedTenants, setPublishSelectedTenants] = useState<string[]>([]);
+  const [publishSelectedActors, setPublishSelectedActors] = useState<string[]>([]);
+  const [publishOrganizations, setPublishOrganizations] = useState<
+    Array<{ tenant: string; organization: string }>
+  >([]);
+  const [publishTargets, setPublishTargets] = useState<
+    Array<{ tenant: string; organization: string; actor: string }>
+  >([]);
+  const [publishScheduleDate, setPublishScheduleDate] = useState("");
+  const [publishScheduleTime, setPublishScheduleTime] = useState("");
+  const [isAddingPublishTarget, setIsAddingPublishTarget] = useState(false);
+
+  const publishTenants = [
+    "University & College",
+    "Skill Academy",
+    "Bootcamp",
+    "Corporate",
+    "Government",
+    "NGO",
+  ];
+
+  const publishOrganizationsByTenant: Record<string, string[]> = {
+    "University & College": [
+      "North Valley University",
+      "Greenfield University",
+      "City Central College",
+      "Riverside College",
+      "Sunrise Institute of Technology",
+      "Horizon School of Management",
+      "Metro Arts & Science College",
+      "Lakeside Engineering College",
+    ],
+    "Skill Academy": [
+      "NextStep Skill Academy",
+      "BrightPath Skills Center",
+      "SkillForge Academy",
+      "CareerBridge Academy",
+      "FutureReady Skills Hub",
+      "ProLearn Academy",
+      "TalentSpring Academy",
+      "Elevate Skills Institute",
+    ],
+    Bootcamp: [
+      "CodeSprint Bootcamp",
+      "DevLaunch Bootcamp",
+      "TechRise Bootcamp",
+      "FullStack Forge",
+      "CloudSprint Bootcamp",
+      "DataCraft Bootcamp",
+      "UX Launchpad",
+      "AI Builder Bootcamp",
+    ],
+    Corporate: [
+      "Apex Global Pvt Ltd",
+      "NovaTech Solutions",
+      "BluePeak Industries",
+      "Vertex Systems",
+      "Orbit Enterprises",
+      "PrimeWorks Ltd",
+      "NexaCorp",
+      "Summit Business Services",
+    ],
+    Government: [
+      "Department of Digital Services",
+      "State Training Institute",
+      "Public Administration Academy",
+      "District Learning Centre",
+      "Government Skills Mission",
+      "Civil Services Training Centre",
+      "Municipal Training Academy",
+      "Public Sector Learning Hub",
+    ],
+    NGO: [
+      "Hope Foundation",
+      "Community Reach Trust",
+      "BrightFuture Foundation",
+      "CareBridge NGO",
+      "PeopleFirst Foundation",
+      "GreenEarth Trust",
+      "YouthRise Foundation",
+      "Social Impact Network",
+    ],
+  };
+
+  /*
+   * Publish audience hierarchy follows the signed-in role.
+   *
+   * SUPER_ADMIN    -> Platform Admin + all tenant actors below
+   * PLATFORM_ADMIN -> all tenant actors below
+   * TENANT_ADMIN   -> Coordinator + Faculty + Student
+   * COORDINATOR    -> Faculty + Student
+   * FACULTY        -> Student
+   *
+   * Platform Admin is global, so it is available for Actor Only /
+   * Specific Actor, but it is not shown inside Tenant + Actor or
+   * Specific Organization + Actor because those are tenant-scoped.
+   */
+  const publishActors = (() => {
+    switch (currentRole) {
+      case "SUPER_ADMIN":
+        return [
+          "Platform Admins",
+          "Institute Admins",
+          "Coordinators",
+          "Faculty",
+          "Students",
+        ];
+
+      case "PLATFORM_ADMIN":
+        return [
+          "Institute Admins",
+          "Coordinators",
+          "Faculty",
+          "Students",
+        ];
+
+      case "TENANT_ADMIN":
+        return [
+          "Coordinators",
+          "Faculty",
+          "Students",
+        ];
+
+      case "COORDINATOR":
+        return [
+          "Faculty",
+          "Students",
+        ];
+
+      case "FACULTY":
+        return [
+          "Students",
+        ];
+
+      default:
+        return [];
+    }
+  })();
+
+  const publishTenantActors = publishActors.filter(
+    (actor) => actor !== "Platform Admins"
+  );
+
+
+  const normalizePublishTenantLabel = (value: string) => {
+    const normalized = (value || "").trim().toUpperCase();
+
+    const tenantLabelMap: Record<string, string> = {
+      UNIVERSITY: "University & College",
+      UNIVERSITY_COLLEGE: "University & College",
+      "UNIVERSITY & COLLEGE": "University & College",
+      SKILL_ACADEMY: "Skill Academy",
+      "SKILL ACADEMY": "Skill Academy",
+      BOOTCAMP: "Bootcamp",
+      CORPORATE: "Corporate",
+      GOVERNMENT: "Government",
+      NGO: "NGO",
+    };
+
+    return tenantLabelMap[normalized] || value.trim();
+  };
+
+  const availablePublishTenants = (() => {
+    if (
+      currentRole === "SUPER_ADMIN" ||
+      currentRole === "PLATFORM_ADMIN"
+    ) {
+      return publishTenants;
+    }
+
+    if (
+      currentRole === "TENANT_ADMIN" ||
+      currentRole === "COORDINATOR" ||
+      currentRole === "FACULTY"
+    ) {
+      const tenantLabel = normalizePublishTenantLabel(currentTenant);
+
+      return publishTenants.includes(tenantLabel)
+        ? [tenantLabel]
+        : [];
+    }
+
+    return [];
+  })();
+
+  const normalizePublishActorValue = (value: string) => {
+    const normalized = (value || "").trim().toLowerCase();
+
+    const actorMap: Record<string, string> = {
+      "platform admin": "Platform Admins",
+      "platform admins": "Platform Admins",
+      "institute admin": "Institute Admins",
+      "institute admins": "Institute Admins",
+      "academy admin": "Institute Admins",
+      "bootcamp admin": "Institute Admins",
+      "corporate admin": "Institute Admins",
+      "tenant admin": "Institute Admins",
+      coordinator: "Coordinators",
+      coordinators: "Coordinators",
+      "program coordinator": "Coordinators",
+      "cohort coordinator": "Coordinators",
+      "l&d coordinator": "Coordinators",
+      faculty: "Faculty",
+      trainer: "Faculty",
+      instructor: "Faculty",
+      student: "Students",
+      students: "Students",
+      learner: "Students",
+      employee: "Students",
+    };
+
+    return actorMap[normalized] || value.trim();
+  };
+
+  const getPublishActorLabel = (tenantName: string, actor: string) => {
+    const labels: Record<string, Record<string, string>> = {
+      "University & College": {
+        "Platform Admins": "Platform Admin",
+        "Institute Admins": "Institute Admin",
+        "Coordinators": "Coordinator",
+        Faculty: "Faculty",
+        Students: "Student",
+      },
+      "Skill Academy": {
+        "Platform Admins": "Platform Admin",
+        "Institute Admins": "Academy Admin",
+        "Coordinators": "Program Coordinator",
+        Faculty: "Trainer",
+        Students: "Learner",
+      },
+      Bootcamp: {
+        "Institute Admins": "Bootcamp Admin",
+        "Coordinators": "Cohort Coordinator",
+        Faculty: "Instructor",
+        Students: "Learner",
+      },
+      Corporate: {
+        "Institute Admins": "Corporate Admin",
+        "Coordinators": "L&D Coordinator",
+        Faculty: "Trainer",
+        Students: "Employee",
+      },
+      Government: {
+        "Institute Admins": "Department Admin",
+        "Coordinators": "Program Coordinator",
+        Faculty: "Trainer",
+        Students: "Employee",
+      },
+      NGO: {
+        "Institute Admins": "NGO Admin",
+        "Coordinators": "Program Coordinator",
+        Faculty: "Trainer",
+        Students: "Volunteer / Learner",
+      },
+    };
+
+    return labels[tenantName]?.[actor] || actor;
+  };
+
+  const isTenantScopedPublisher =
+    currentRole === "TENANT_ADMIN" ||
+    currentRole === "COORDINATOR" ||
+    currentRole === "FACULTY";
+
+
+  const resetPublishTargetSelection = () => {
+    setPublishTenant("");
+    setPublishOrganization("");
+    setPublishActor("");
+    setOpenDropdown(null);
+  };
+
+  const selectPublishAudienceType = (
+    value: PublishAudienceType
+  ) => {
+    setPublishAudienceType(value);
+    resetPublishTargetSelection();
+
+    // Broad modes do not need another dropdown.
+    // Tenant Only = complete tenant list.
+    // Actor Only = complete actor list.
+    setPublishSelectedTenants(
+      value === "Tenant Only" ? availablePublishTenants : []
+    );
+    setPublishSelectedActors(
+      value === "Actor Only" ? publishActors : []
+    );
+
+    // Specific modes keep the existing selector/chip behavior.
+    setPublishOrganizations([]);
+    setPublishTargets([]);
+    setIsAddingPublishTarget(false);
+  };
+
+  const addSelectedTenant = (tenantValue: string) => {
+    if (!tenantValue) return;
+
+    setPublishSelectedTenants((previous) =>
+      previous.includes(tenantValue)
+        ? previous
+        : [...previous, tenantValue]
+    );
+
+    setPublishTenant("");
+    setOpenDropdown(null);
+  };
+
+  const addSelectedActor = (actorValue: string) => {
+    if (!actorValue) return;
+
+    setPublishSelectedActors((previous) =>
+      previous.includes(actorValue)
+        ? previous
+        : [...previous, actorValue]
+    );
+
+    setPublishActor("");
+    setOpenDropdown(null);
+  };
+
+  const addPublishOrganization = (
+    tenantValue: string,
+    organizationValue: string
+  ) => {
+    if (!tenantValue || !organizationValue) return;
+
+    setPublishOrganizations((previous) => {
+      const exists = previous.some(
+        (item) =>
+          item.tenant === tenantValue &&
+          item.organization === organizationValue
+      );
+
+      return exists
+        ? previous
+        : [
+            ...previous,
+            {
+              tenant: tenantValue,
+              organization: organizationValue,
+            },
+          ];
+    });
+
+    setPublishOrganization("");
+    setOpenDropdown(null);
+    setIsAddingPublishTarget(false);
+  };
+
+  const completePublishTargetIfPossible = (
+    nextTenant: string,
+    nextOrganization: string,
+    nextActor: string
+  ) => {
+    const tenantValue =
+      isTenantScopedPublisher && currentTenant
+        ? currentTenant
+        : nextTenant;
+
+    if (!tenantValue || !nextOrganization || !nextActor) return;
+
+    setPublishTargets((previous) => {
+      const exists = previous.some(
+        (item) =>
+          item.tenant === tenantValue &&
+          item.organization === nextOrganization &&
+          item.actor === nextActor
+      );
+
+      return exists
+        ? previous
+        : [
+            ...previous,
+            {
+              tenant: tenantValue,
+              organization: nextOrganization,
+              actor: nextActor,
+            },
+          ];
+    });
+
+    setPublishOrganization("");
+    setPublishActor("");
+    setOpenDropdown(null);
+    setIsAddingPublishTarget(false);
+  };
+
+  const publishAudienceDisplayValue =
+    publishAudienceType === "All" ? "Default" : publishAudienceType;
+
+
+
 
   useEffect(() => {
 
@@ -2591,6 +3342,9 @@ export default function AddEventPage({
           description?: string;
 
           attachment?: string;
+          scheduledPublishAt?: string;
+          createdBy?: string;
+          organizer?: string;
 
         };
 
@@ -2664,15 +3418,76 @@ export default function AddEventPage({
 
       setEndDate(source.endDate || selectedDate);
 
-      setStartTime(source.startTime || source.start || "");
+      setStartTime(normalizeBackendTime(source.startTime || source.start || ""));
 
-      setEndTime(source.endTime || source.end || "");
+      setEndTime(normalizeBackendTime(source.endTime || source.end || ""));
 
       setPriority(source.priority || "");
 
       setDescription(source.description || "");
 
       setAttachment(source.attachment || "");
+
+      /*
+       * EDIT MODE:
+       * Open as a normal edit form.
+       *
+       * Do NOT automatically select Publish / Schedule Publish and do NOT
+       * preselect an Audience. The existing status/audience stay preserved
+       * on the event until the user explicitly clicks Publish or
+       * Schedule Publish and chooses new publish options.
+       */
+      if (action.mode === "edit") {
+        const statusValue = String(source.status || "Saved").toLowerCase();
+
+        setPublishMode("none");
+        setShowPublishOptions(false);
+        setPublishAudienceType("");
+        setPublishSelectedTenants([]);
+        setPublishSelectedActors([]);
+        setPublishOrganizations([]);
+        setPublishTargets([]);
+        setPublishTenant("");
+        setPublishOrganization("");
+        setPublishActor("");
+        setPublishOrganizer(source.organizer || "");
+
+        if (
+          statusValue === "scheduled" &&
+          source.scheduledPublishAt
+        ) {
+          const scheduledDate = new Date(source.scheduledPublishAt);
+
+          if (!Number.isNaN(scheduledDate.getTime())) {
+            setPublishScheduleDate(
+              `${scheduledDate.getFullYear()}-${String(
+                scheduledDate.getMonth() + 1
+              ).padStart(2, "0")}-${String(
+                scheduledDate.getDate()
+              ).padStart(2, "0")}`
+            );
+
+            setPublishScheduleTime(
+              `${String(scheduledDate.getHours()).padStart(2, "0")}:${String(
+                scheduledDate.getMinutes()
+              ).padStart(2, "0")}:${String(
+                scheduledDate.getSeconds()
+              ).padStart(2, "0")}`
+            );
+          }
+        } else {
+          setPublishScheduleDate("");
+          setPublishScheduleTime("");
+        }
+      } else {
+        setPublishMode("none");
+        setPublishAudienceType("");
+        setPublishTargets([]);
+        setPublishTenant("");
+        setPublishActor("");
+        setPublishScheduleDate("");
+        setPublishScheduleTime("");
+      }
 
       setCalendarMonth(new Date(source.year, source.month, 1));
 
@@ -3266,47 +4081,34 @@ export default function AddEventPage({
 
     const trimmed = (value || "").trim();
 
-
-
-    if (/^\d{2}:\d{2}$/.test(trimmed)) {
-
+    if (/^\d{2}:\d{2}:\d{2}$/.test(trimmed)) {
       return trimmed;
-
     }
 
+    if (/^\d{2}:\d{2}$/.test(trimmed)) {
+      return `${trimmed}:00`;
+    }
 
-
-    const twelveHourMatch = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-
-
+    const twelveHourMatch = trimmed.match(
+      /^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)$/i
+    );
 
     if (twelveHourMatch) {
 
       let hour = Number(twelveHourMatch[1]);
-
       const minute = twelveHourMatch[2];
-
-      const period = twelveHourMatch[3].toUpperCase();
-
-
+      const second = twelveHourMatch[3] || "00";
+      const period = twelveHourMatch[4].toUpperCase();
 
       if (period === "AM" && hour === 12) hour = 0;
-
       if (period === "PM" && hour !== 12) hour += 12;
 
-
-
-      return `${String(hour).padStart(2, "0")}:${minute}`;
-
+      return `${String(hour).padStart(2, "0")}:${minute}:${second}`;
     }
 
-
-
-    return "00:00";
+    return "00:00:00";
 
   };
-
-
 
   const toBackendDateTime = (dateValue: string, timeValue: string) => {
 
@@ -3314,7 +4116,7 @@ export default function AddEventPage({
 
     const selectedTime = normalizeBackendTime(timeValue);
 
-    const value = new Date(`${selectedDate}T${selectedTime}:00`);
+    const value = new Date(`${selectedDate}T${selectedTime}`);
 
 
 
@@ -3446,7 +4248,12 @@ export default function AddEventPage({
 
     backendId?: string,
 
-    attachmentValue?: string
+    attachmentValue?: string,
+
+    publishOptions?: {
+      audiences?: Array<{ audienceId: string; audienceType: string }>;
+      scheduledPublishAt?: string | null;
+    }
 
   ) => {
 
@@ -3461,46 +4268,39 @@ export default function AddEventPage({
     }
 
 
-
     const backendPayload = {
-
       title: finalTitle,
-
       subtitle: subtitle || undefined,
-
       description: description || undefined,
-
       startDate: toBackendDateTime(startDate, startTime),
-
       endDate: toBackendDateTime(endDate || startDate, endTime || startTime),
-
       startTime: normalizeBackendTime(startTime),
-
       endTime: normalizeBackendTime(endTime || startTime),
-
       location: subtitle || "TBA",
-
       priority: priority || undefined,
-
       attachment: attachmentValue ?? (attachment || undefined),
-
       status: toBackendStatus(currentStatus),
 
-      audiences: currentTenant
+      scheduledPublishAt:
+        publishOptions?.scheduledPublishAt === undefined
+          ? undefined
+          : publishOptions.scheduledPublishAt,
 
-        ? [
-
-            {
-
-              audienceId: normalizeEventTenant(currentTenant),
-
-              audienceType: "TENANT",
-
-            },
-
-          ]
-
-        : [],
+      ...(backendId && publishOptions?.audiences === undefined
+        ? {}
+        : {
+            audiences:
+              publishOptions?.audiences !== undefined
+                ? publishOptions.audiences
+                : currentTenant
+                  ? [
+                      {
+                        audienceId: normalizeEventTenant(currentTenant),
+                        audienceType: "TENANT",
+                      },
+                    ]
+                  : [],
+          }),
 
     };
 
@@ -3560,7 +4360,7 @@ export default function AddEventPage({
 
         ...backendPayload,
 
-        status: "SAVED",
+        status: toBackendStatus(currentStatus),
 
       }),
 
@@ -3587,7 +4387,7 @@ export default function AddEventPage({
 
 
   const validateEventForm = () => {
-    const requiredFields = [
+    const saveOnlyRequiredFields = [
       title,
       subtitle,
       startDate,
@@ -3598,16 +4398,33 @@ export default function AddEventPage({
       description,
     ];
 
+    const publishRequiredFields = [
+      title,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+    ];
+
+    const requiredFields =
+      publishMode === "none"
+        ? saveOnlyRequiredFields
+        : publishRequiredFields;
+
     if (requiredFields.some((value) => !String(value || "").trim())) {
-      setFormError("Please fill all required fields before saving or updating the event.");
+      setFormError(
+        publishMode === "none"
+          ? "Please fill all required fields before saving or updating the event."
+          : "Please fill Event Title, Start Date, End Date, Start Time and End Time before publishing."
+      );
       return false;
     }
 
     const startDateTime = new Date(
-      `${startDate}T${normalizeBackendTime(startTime)}:00`
+      `${startDate}T${normalizeBackendTime(startTime)}`
     );
     const endDateTime = new Date(
-      `${endDate}T${normalizeBackendTime(endTime)}:00`
+      `${endDate}T${normalizeBackendTime(endTime)}`
     );
 
     if (
@@ -3618,6 +4435,16 @@ export default function AddEventPage({
       return false;
     }
 
+    if (
+      startDate === getLocalTodayValue() &&
+      startDateTime.getTime() <= Date.now()
+    ) {
+      setFormError(
+        "Start time for today must be later than the current time."
+      );
+      return false;
+    }
+
     if (endDateTime.getTime() <= startDateTime.getTime()) {
       setFormError(
         startDate === endDate
@@ -3625,6 +4452,69 @@ export default function AddEventPage({
           : "End date must be later than or equal to start date."
       );
       return false;
+    }
+
+    if (publishMode !== "none") {
+      if (!publishAudienceType) {
+        setFormError("Please select Audience before publishing.");
+        return false;
+      }
+
+      if (
+        publishAudienceType === "Specific Tenant" &&
+        publishOrganizations.length === 0
+      ) {
+        setFormError(
+          "Please select at least one Institute / Organization before publishing."
+        );
+        return false;
+      }
+
+      if (
+        publishAudienceType === "Tenant + Actor" &&
+        publishSelectedTenants.length === 0
+      ) {
+        setFormError("Please select at least one Tenant before publishing.");
+        return false;
+      }
+
+      if (
+        (publishAudienceType === "Specific Actor" ||
+          publishAudienceType === "Tenant + Actor") &&
+        publishSelectedActors.length === 0
+      ) {
+        setFormError("Please select at least one Actor before publishing.");
+        return false;
+      }
+
+      if (
+        publishAudienceType === "Specific Organization + Actor" &&
+        publishTargets.length === 0
+      ) {
+        setFormError(
+          "Please select the Institute / Organization and Actor before publishing."
+        );
+        return false;
+      }
+    }
+
+    if (publishMode === "schedule") {
+      if (!publishScheduleDate || !publishScheduleTime) {
+        setFormError("Please select publish date and time.");
+        return false;
+      }
+
+      const scheduledDate = new Date(
+        `${publishScheduleDate}T${normalizeBackendTime(publishScheduleTime)}`
+      );
+
+      if (
+        Number.isNaN(scheduledDate.getTime()) ||
+        scheduledDate.getTime() <= Date.now()
+      ) {
+        setFormError("Please select a future publish date and time.");
+        return false;
+      }
     }
 
     setFormError("");
@@ -3706,6 +4596,87 @@ export default function AddEventPage({
       // An invalid login record should not prevent saving the event.
     }
 
+    const backendAudiences =
+      publishAudienceType === "All"
+        ? []
+        : publishAudienceType === "Tenant Only"
+          ? availablePublishTenants.map((tenantValue) => ({
+              audienceId: tenantValue,
+              audienceType: "TENANT",
+            }))
+          : publishAudienceType === "Actor Only"
+            ? publishActors.map((actorValue) => ({
+                audienceId: actorValue,
+                audienceType: "ROLE",
+              }))
+            : publishAudienceType === "Specific Tenant"
+              ? publishOrganizations.map((item) => ({
+                  audienceId: `${item.tenant}::${item.organization}`,
+                  audienceType: "ORGANIZATION",
+                }))
+              : publishAudienceType === "Specific Actor"
+                ? publishSelectedActors.map((actorValue) => ({
+                    audienceId: actorValue,
+                    audienceType: "ROLE",
+                  }))
+                : publishAudienceType === "Tenant + Actor"
+                  ? publishSelectedTenants.flatMap((tenantValue) =>
+                      publishSelectedActors.map((actorValue) => ({
+                        audienceId: `${tenantValue}::${actorValue}`,
+                        audienceType: "TARGET",
+                      }))
+                    )
+                  : publishTargets.map((item) => ({
+                      audienceId: `${item.tenant}::${item.organization}::${item.actor}`,
+                      audienceType: "TARGET",
+                    }));
+
+    const scheduledPublishAt =
+      publishMode === "schedule"
+        ? new Date(
+            `${publishScheduleDate}T${normalizeBackendTime(publishScheduleTime)}`
+          ).toISOString()
+        : null;
+
+    const sourceStatusForEdit =
+      formMode === "edit"
+        ? String(sourceEvent?.status || "Saved")
+        : "Saved";
+
+    const finalBackendStatus =
+      publishMode === "publish"
+        ? "Published"
+        : publishMode === "schedule"
+          ? "Scheduled"
+          : formMode === "edit"
+            ? sourceStatusForEdit
+            : "Saved";
+
+    const publishAudienceLabel =
+      publishAudienceType === "All"
+        ? "All Tenants & Actors"
+        : publishAudienceType === "Tenant Only"
+          ? "All Tenants"
+          : publishAudienceType === "Actor Only"
+            ? "All Actors"
+            : publishAudienceType === "Specific Tenant"
+              ? publishOrganizations
+                  .map((item) => `${item.tenant} - ${item.organization}`)
+                  .join(", ")
+              : publishAudienceType === "Specific Actor"
+                ? publishSelectedActors.join(", ")
+                : publishAudienceType === "Tenant + Actor"
+                  ? `${publishSelectedTenants.join(", ")} | ${publishSelectedActors.join(", ")}`
+                  : publishTargets
+                      .map(
+                        (item) =>
+                          `${item.tenant} - ${item.organization} - ${getPublishActorLabel(
+                            item.tenant,
+                            item.actor
+                          )}`
+                      )
+                      .join(", ");
+
     const eventPayload = {
 
       ...(formMode === "edit" && sourceEvent ? sourceEvent : {}),
@@ -3762,13 +4733,53 @@ export default function AddEventPage({
 
           : 0,
 
-      status:
+      status: finalBackendStatus,
 
-        formMode === "edit" && sourceEvent && typeof sourceEvent.status === "string"
+      organizer:
+        publishMode === "none"
+          ? (formMode === "edit" ? (sourceEvent as any)?.organizer : undefined)
+          : publishOrganizer.trim() || undefined,
 
-          ? sourceEvent.status
+      scheduledPublishAt:
+        publishMode === "schedule"
+          ? scheduledPublishAt || undefined
+          : formMode === "edit"
+            ? sourceEvent?.scheduledPublishAt
+            : undefined,
 
-          : "Saved",
+      audience:
+        publishMode === "none"
+          ? (formMode === "edit" ? sourceEvent?.audience : undefined)
+          : publishAudienceLabel,
+
+      tenant:
+        publishMode === "none"
+          ? (formMode === "edit" ? sourceEvent?.tenant : undefined)
+          : publishAudienceType === "All" ||
+              publishAudienceType === "Actor Only" ||
+              publishAudienceType === "Specific Actor"
+            ? undefined
+            : publishAudienceType === "Tenant Only"
+              ? availablePublishTenants.join(", ")
+              : publishAudienceType === "Specific Tenant"
+                ? Array.from(
+                    new Set(publishOrganizations.map((item) => item.tenant))
+                  ).join(", ")
+                : publishAudienceType === "Tenant + Actor"
+                  ? publishSelectedTenants.join(", ")
+                : publishTargets.map((item) => item.tenant).join(", "),
+
+      role:
+        publishMode === "none"
+          ? (formMode === "edit" ? sourceEvent?.role : undefined)
+          : publishAudienceType === "Actor Only"
+            ? publishActors.join(", ")
+            : publishAudienceType === "Specific Actor" ||
+                publishAudienceType === "Tenant + Actor"
+              ? publishSelectedActors.join(", ")
+              : publishAudienceType === "Specific Organization + Actor"
+                ? publishTargets.map((item) => item.actor).join(", ")
+                : undefined,
 
       color:
 
@@ -3796,11 +4807,22 @@ export default function AddEventPage({
 
           finalTitle,
 
-          eventPayload.status,
+          finalBackendStatus,
 
           existingBackendId,
 
-          finalAttachment
+          finalAttachment,
+
+          {
+            audiences:
+              publishMode === "none" ? undefined : backendAudiences,
+            scheduledPublishAt:
+              publishMode === "none"
+                ? undefined
+                : publishMode === "schedule"
+                  ? scheduledPublishAt
+                  : null,
+          }
 
         );
 
@@ -3818,11 +4840,20 @@ export default function AddEventPage({
 
           finalTitle,
 
-          "Saved",
+          finalBackendStatus,
 
           undefined,
 
-          finalAttachment
+          finalAttachment,
+
+          {
+            audiences:
+              publishMode === "none" ? undefined : backendAudiences,
+            scheduledPublishAt:
+              publishMode === "schedule"
+                ? scheduledPublishAt
+                : null,
+          }
 
         );
 
@@ -4128,7 +5159,7 @@ export default function AddEventPage({
 
                   >
 
-                    <span>{startDate || "Select date"}</span>
+                    <span>{startDate ? formatDisplayDate(startDate) : "Select date"}</span>
 
                     <span className="neoPickerIcon">
 
@@ -4156,6 +5187,19 @@ export default function AddEventPage({
 
                         setFormError("");
                         setStartDate(value);
+
+                        if (
+                          value === getLocalTodayValue() &&
+                          startTime &&
+                          normalizeBackendTime(startTime) <=
+                            getCurrentLocalTimeValue()
+                        ) {
+                          setStartTime("");
+                          setEndTime("");
+                          setFormError(
+                            "Today selected. Please choose a start time later than the current time."
+                          );
+                        }
 
                         if (endDate && endDate < value) {
                           setEndDate("");
@@ -4190,7 +5234,7 @@ export default function AddEventPage({
 
                   >
 
-                    <span>{endDate || "Select date"}</span>
+                    <span>{endDate ? formatDisplayDate(endDate) : "Select date"}</span>
 
                     <span className="neoPickerIcon">
 
@@ -4269,15 +5313,28 @@ export default function AddEventPage({
 
                       setOpenDropdown(null);
 
-                      setFormError("");
+                      const willOpen = openPicker !== "startTime";
 
-                      setOpenPicker("startTime");
+                      if (
+                        willOpen &&
+                        startDate === getLocalTodayValue()
+                      ) {
+                        setFormError(
+                          `Today selected. Choose a start time later than ${getCurrentLocalTimeValue()}.`
+                        );
+                      } else {
+                        setFormError("");
+                      }
+
+                      setOpenPicker(
+                        openPicker === "startTime" ? null : "startTime"
+                      );
 
                     }}
 
                   >
 
-                    <span>{startTime || "00:00"}</span>
+                    <span>{startTime || "00:00:00"}</span>
 
                     <span className="neoPickerIcon">
 
@@ -4295,20 +5352,39 @@ export default function AddEventPage({
 
                       value={startTime}
 
+                      minTime={
+                        startDate === getLocalTodayValue()
+                          ? getCurrentLocalTimeValue()
+                          : undefined
+                      }
+
                       onSelect={(value) => {
 
-                        setFormError("");
+                        if (
+                          startDate === getLocalTodayValue() &&
+                          normalizeBackendTime(value) <=
+                            getCurrentLocalTimeValue()
+                        ) {
+                          setFormError(
+                            "That time has already passed. Please select a later start time."
+                          );
+                          return;
+                        }
 
+                        setFormError("");
                         setStartTime(value);
 
                         if (
                           endTime &&
-                          normalizeBackendTime(endTime) <= normalizeBackendTime(value)
+                          startDate &&
+                          endDate &&
+                          startDate === endDate &&
+                          normalizeBackendTime(endTime) <=
+                            normalizeBackendTime(value)
                         ) {
                           setEndTime("");
                         }
 
-                        setOpenPicker(null);
 
                       }}
 
@@ -4338,13 +5414,15 @@ export default function AddEventPage({
 
                       setFormError("");
 
-                      setOpenPicker("endTime");
+                      setOpenPicker(
+                        openPicker === "endTime" ? null : "endTime"
+                      );
 
                     }}
 
                   >
 
-                    <span>{endTime || "00:00"}</span>
+                    <span>{endTime || "00:00:00"}</span>
 
                     <span className="neoPickerIcon">
 
@@ -4362,13 +5440,25 @@ export default function AddEventPage({
 
                       value={endTime}
 
-                      minTime={startTime ? normalizeBackendTime(startTime) : undefined}
+
+                      minTime={
+                        startDate &&
+                        endDate &&
+                        startDate === endDate &&
+                        startTime
+                          ? normalizeBackendTime(startTime)
+                          : undefined
+                      }
 
                       onSelect={(value) => {
 
                         if (
                           startTime &&
-                          normalizeBackendTime(value) <= normalizeBackendTime(startTime)
+                          startDate &&
+                          endDate &&
+                          startDate === endDate &&
+                          normalizeBackendTime(value) <=
+                            normalizeBackendTime(startTime)
                         ) {
                           setFormError("End time must be later than start time.");
                           return;
@@ -4377,7 +5467,6 @@ export default function AddEventPage({
                         setFormError("");
                         setEndTime(value);
 
-                        setOpenPicker(null);
 
                       }}
 
@@ -4477,6 +5566,557 @@ export default function AddEventPage({
             </div>
 
 
+            {showPublishOptions && publishMode !== "none" && (
+              <div className="publishInlineSection">
+                <label className="publishInlineLabel">
+                  {publishMode === "schedule" ? "SCHEDULE PUBLISH" : "PUBLISH"}
+                </label>
+
+                <div className="publishInlineFields">
+
+                  <div className="fieldGroup publishInlineField">
+                    <label>ORGANIZER</label>
+                    <input
+                      className="publishOrganizerInput"
+                      value={publishOrganizer}
+                      placeholder="Enter Organizer (Optional)"
+                      onChange={(event) => {
+                        setPublishOrganizer(event.target.value);
+                        setFormError("");
+                      }}
+                    />
+                  </div>
+
+                  <div className="fieldGroup publishInlineField">
+                    <label>AUDIENCE</label>
+
+                    <FormDropdown
+                      placeholder="Select Audience"
+                      value={publishAudienceDisplayValue}
+                      options={[
+                        "Default",
+                        "Tenant Only",
+                        "Actor Only",
+                        "Specific Tenant",
+                      ]}
+                      open={openDropdown === "publishAudience"}
+                      onToggle={() =>
+                        setOpenDropdown(
+                          openDropdown === "publishAudience"
+                            ? null
+                            : "publishAudience"
+                        )
+                      }
+                      onSelect={(value) => {
+                        selectPublishAudienceType(
+                          (value === "Default" ? "All" : value) as PublishAudienceType
+                        );
+                        setOpenDropdown(null);
+                        setFormError("");
+                      }}
+                    />
+
+                  </div>
+
+                  {publishAudienceType === "Specific Tenant" && (
+                    <>
+                      {!isTenantScopedPublisher && (
+                        <div className="fieldGroup publishInlineField">
+                          <label>TENANT</label>
+                          <FormDropdown
+                            placeholder="Select Tenant"
+                            value={publishTenant}
+                            options={availablePublishTenants}
+                            open={openDropdown === "publishTenant"}
+                            onToggle={() =>
+                              setOpenDropdown(
+                                openDropdown === "publishTenant"
+                                  ? null
+                                  : "publishTenant"
+                              )
+                            }
+                            onSelect={(value) => {
+                              setPublishTenant(value);
+                              setPublishOrganization("");
+                              setOpenDropdown(null);
+                              setFormError("");
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {isTenantScopedPublisher && (
+                        <div className="fieldGroup publishInlineField">
+                          <label>TENANT</label>
+                          <div className="publishReadOnlyField">
+                            {normalizePublishTenantLabel(currentTenant) || "Current Tenant"}
+                          </div>
+                        </div>
+                      )}
+
+                      {(isTenantScopedPublisher || publishTenant) && (
+                        <div className="fieldGroup publishInlineField">
+                          <label>INSTITUTE / ORGANIZATION</label>
+                          <FormDropdown
+                            placeholder="Select Institute / Organization"
+                            value={publishOrganization}
+                            options={
+                              publishOrganizationsByTenant[
+                                isTenantScopedPublisher
+                                  ? normalizePublishTenantLabel(currentTenant)
+                                  : publishTenant
+                              ] || []
+                            }
+                            open={openDropdown === "publishOrganization"}
+                            onToggle={() =>
+                              setOpenDropdown(
+                                openDropdown === "publishOrganization"
+                                  ? null
+                                  : "publishOrganization"
+                              )
+                            }
+                            onSelect={(value) => {
+                              const tenantValue = isTenantScopedPublisher
+                                ? normalizePublishTenantLabel(currentTenant)
+                                : publishTenant;
+
+                              setPublishOrganization(value);
+                              addPublishOrganization(tenantValue, value);
+                              setFormError("");
+                            }}
+                            searchable
+                          />
+                        </div>
+                      )}
+
+                      {publishOrganizations.length > 0 && (
+                        <div className="publishTargetList">
+                          {publishOrganizations.map((item) => (
+                            <span
+                              key={`${item.tenant}-${item.organization}`}
+                              className="publishTargetChip"
+                            >
+                              <span className="publishTargetChipText">
+                                {item.tenant} - {item.organization}
+                              </span>
+                              <button
+                                type="button"
+                                className="publishTargetRemove"
+                                onClick={() =>
+                                  setPublishOrganizations((previous) =>
+                                    previous.filter(
+                                      (target) =>
+                                        !(
+                                          target.tenant === item.tenant &&
+                                          target.organization === item.organization
+                                        )
+                                    )
+                                  )
+                                }
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {publishAudienceType === "Specific Actor" && (
+                    <>
+                      <div className="fieldGroup publishInlineField">
+                        <label>ACTOR</label>
+                        <FormDropdown
+                          placeholder="Select Actor"
+                          value={publishActor}
+                          options={publishActors}
+                          open={openDropdown === "publishActor"}
+                          onToggle={() =>
+                            setOpenDropdown(
+                              openDropdown === "publishActor"
+                                ? null
+                                : "publishActor"
+                            )
+                          }
+                          onSelect={(value) => {
+                            addSelectedActor(value);
+                            setFormError("");
+                          }}
+                        />
+                      </div>
+
+                      {publishSelectedActors.length > 0 && (
+                        <div className="publishTargetList">
+                          {publishSelectedActors.map((actorValue) => (
+                            <span key={actorValue} className="publishTargetChip">
+                              <span className="publishTargetChipText">{actorValue}</span>
+                              <button
+                                type="button"
+                                className="publishTargetRemove"
+                                onClick={() =>
+                                  setPublishSelectedActors((previous) =>
+                                    previous.filter((item) => item !== actorValue)
+                                  )
+                                }
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {publishAudienceType === "Tenant + Actor" && (
+                    <>
+                      <div className="fieldGroup publishInlineField">
+                        <label>TENANT</label>
+                        <FormDropdown
+                          placeholder="Select Tenant"
+                          value={publishTenant}
+                          options={availablePublishTenants}
+                          open={openDropdown === "publishTenant"}
+                          onToggle={() =>
+                            setOpenDropdown(
+                              openDropdown === "publishTenant"
+                                ? null
+                                : "publishTenant"
+                            )
+                          }
+                          onSelect={(value) => {
+                            addSelectedTenant(value);
+                            setFormError("");
+                          }}
+                        />
+                      </div>
+
+                      <div className="fieldGroup publishInlineField">
+                        <label>ACTOR</label>
+                        <FormDropdown
+                          placeholder="Select Actor"
+                          value={publishActor}
+                          options={publishTenantActors}
+                          open={openDropdown === "publishActor"}
+                          onToggle={() =>
+                            setOpenDropdown(
+                              openDropdown === "publishActor"
+                                ? null
+                                : "publishActor"
+                            )
+                          }
+                          onSelect={(value) => {
+                            addSelectedActor(value);
+                            setFormError("");
+                          }}
+                        />
+                      </div>
+
+                      {(publishSelectedTenants.length > 0 ||
+                        publishSelectedActors.length > 0) && (
+                        <div className="publishTargetList">
+                          {publishSelectedTenants.map((tenantValue) => (
+                            <span
+                              key={`tenant-${tenantValue}`}
+                              className="publishTargetChip"
+                            >
+                              <span className="publishTargetChipText">{tenantValue}</span>
+                              <button
+                                type="button"
+                                className="publishTargetRemove"
+                                onClick={() =>
+                                  setPublishSelectedTenants((previous) =>
+                                    previous.filter((item) => item !== tenantValue)
+                                  )
+                                }
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+
+                          {publishSelectedActors.map((actorValue) => (
+                            <span
+                              key={`actor-${actorValue}`}
+                              className="publishTargetChip"
+                            >
+                              <span className="publishTargetChipText">{actorValue}</span>
+                              <button
+                                type="button"
+                                className="publishTargetRemove"
+                                onClick={() =>
+                                  setPublishSelectedActors((previous) =>
+                                    previous.filter((item) => item !== actorValue)
+                                  )
+                                }
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {publishAudienceType === "Specific Organization + Actor" && (
+                    <>
+                      {!isTenantScopedPublisher && (
+                        <div className="fieldGroup publishInlineField">
+                          <label>TENANT</label>
+                          <FormDropdown
+                            placeholder="Select Tenant"
+                            value={publishTenant}
+                            options={availablePublishTenants}
+                            open={openDropdown === "publishTenant"}
+                            onToggle={() =>
+                              setOpenDropdown(
+                                openDropdown === "publishTenant"
+                                  ? null
+                                  : "publishTenant"
+                              )
+                            }
+                            onSelect={(value) => {
+                              setPublishTenant(value);
+                              setPublishOrganization("");
+                              setPublishActor("");
+                              setOpenDropdown(null);
+                              setFormError("");
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {isTenantScopedPublisher && (
+                        <div className="fieldGroup publishInlineField">
+                          <label>TENANT</label>
+                          <div className="publishReadOnlyField">
+                            {currentTenant || "Current Tenant"}
+                          </div>
+                        </div>
+                      )}
+
+                      {(isTenantScopedPublisher || publishTenant) && (
+                        <div className="fieldGroup publishInlineField">
+                          <label>INSTITUTE / ORGANIZATION</label>
+                          <FormDropdown
+                            placeholder="Select Institute / Organization"
+                            value={publishOrganization}
+                            options={
+                              publishOrganizationsByTenant[
+                                isTenantScopedPublisher
+                                  ? normalizePublishTenantLabel(currentTenant)
+                                  : publishTenant
+                              ] || []
+                            }
+                            open={openDropdown === "publishOrganization"}
+                            onToggle={() =>
+                              setOpenDropdown(
+                                openDropdown === "publishOrganization"
+                                  ? null
+                                  : "publishOrganization"
+                              )
+                            }
+                            onSelect={(value) => {
+                              const tenantValue = isTenantScopedPublisher
+                                ? normalizePublishTenantLabel(currentTenant)
+                                : publishTenant;
+
+                              setPublishOrganization(value);
+                              setOpenDropdown(null);
+                              setFormError("");
+
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {publishAudienceType === "Specific Organization + Actor" &&
+                        publishOrganization && (
+                          <div className="fieldGroup publishInlineField">
+                            <label>ACTOR</label>
+                            <FormDropdown
+                              placeholder="Select Actor"
+                              value={publishActor}
+                              options={publishTenantActors.map((actor) =>
+                                getPublishActorLabel(
+                                  isTenantScopedPublisher
+                                    ? normalizePublishTenantLabel(currentTenant)
+                                    : publishTenant,
+                                  actor
+                                )
+                              )}
+                              open={openDropdown === "publishActor"}
+                              onToggle={() =>
+                                setOpenDropdown(
+                                  openDropdown === "publishActor"
+                                    ? null
+                                    : "publishActor"
+                                )
+                              }
+                              onSelect={(displayValue) => {
+                                const tenantValue = isTenantScopedPublisher
+                                  ? normalizePublishTenantLabel(currentTenant)
+                                  : publishTenant;
+
+                                const actorValue =
+                                  publishTenantActors.find(
+                                    (actor) =>
+                                      getPublishActorLabel(tenantValue, actor) ===
+                                      displayValue
+                                  ) || displayValue;
+
+                                setPublishActor(actorValue);
+                                setOpenDropdown(null);
+                                setFormError("");
+
+                                completePublishTargetIfPossible(
+                                  tenantValue,
+                                  publishOrganization,
+                                  actorValue
+                                );
+                              }}
+                            />
+                          </div>
+                        )}
+
+                      {publishTargets.length > 0 &&
+                        publishAudienceType === "Specific Organization + Actor" && (
+                          <div className="publishTargetList">
+                            {publishTargets.map((item) => (
+                              <span
+                                key={`${item.tenant}-${item.organization}-${item.actor}`}
+                                className="publishTargetChip"
+                              >
+                                <span className="publishTargetChipText">
+                                  {item.tenant} - {item.organization} -{" "}
+                                  {getPublishActorLabel(item.tenant, item.actor)}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="publishTargetRemove"
+                                  onClick={() =>
+                                    setPublishTargets((previous) =>
+                                      previous.filter(
+                                        (target) =>
+                                          !(
+                                            target.tenant === item.tenant &&
+                                            target.organization === item.organization &&
+                                            target.actor === item.actor
+                                          )
+                                      )
+                                    )
+                                  }
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                    </>
+                  )}
+
+                  {publishMode === "schedule" && (
+                    <div className="publishScheduleGrid">
+
+                      <div className="fieldGroup publishInlineField">
+                        <label>PUBLISH DATE</label>
+                        <div className="customPickerWrap">
+                          <button
+                            type="button"
+                            className="neoPickerField"
+                            onClick={() => {
+                              setOpenDropdown(null);
+                              setOpenPicker(
+                                openPicker === "publishDate"
+                                  ? null
+                                  : "publishDate"
+                              );
+                            }}
+                          >
+                            <span>
+                              {publishScheduleDate
+                                ? formatDisplayDate(publishScheduleDate)
+                                : "Select date"}
+                            </span>
+
+                            <span className="neoPickerIcon">
+                              <Image
+                                src={icons.calendar}
+                                alt=""
+                                width={18}
+                                height={18}
+                              />
+                            </span>
+                          </button>
+
+                          {openPicker === "publishDate" && (
+                            <CustomDatePicker
+                              value={publishScheduleDate}
+                              month={calendarMonth}
+                              onMonthChange={setCalendarMonth}
+                              minDate={new Date().toLocaleDateString("en-CA")}
+                              onSelect={(value) => {
+                                setPublishScheduleDate(value);
+                                setOpenPicker(null);
+                                setFormError("");
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="fieldGroup publishInlineField">
+                        <label>PUBLISH TIME</label>
+                        <div className="customPickerWrap">
+                          <button
+                            type="button"
+                            className="neoPickerField"
+                            onClick={() => {
+                              setOpenDropdown(null);
+                              setOpenPicker(
+                                openPicker === "publishTime"
+                                  ? null
+                                  : "publishTime"
+                              );
+                            }}
+                          >
+                            <span>
+                              {publishScheduleTime || "00:00:00"}
+                            </span>
+
+                            <span className="neoPickerIcon">
+                              <Image
+                                src={icons.clock}
+                                alt=""
+                                width={18}
+                                height={18}
+                              />
+                            </span>
+                          </button>
+
+                          {openPicker === "publishTime" && (
+                            <CustomTimePicker
+                              value={publishScheduleTime}
+                              onSelect={(value) => {
+                                setPublishScheduleTime(value);
+                                setFormError("");
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
+
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            )}
+
+
 
             {formError && (
               <div
@@ -4498,31 +6138,7 @@ export default function AddEventPage({
             )}
 
             {formMode === "edit" ? (
-              <div className="formActions editEventActions">
-                <button
-                  type="button"
-                  className="deleteButton"
-                  onClick={deleteEvent}
-                >
-                  Delete
-                </button>
-
-                <div className="editEventRightActions">
-                  <button
-                    type="button"
-                    className="cancelButton"
-                    onClick={cancelForm}
-                  >
-                    Cancel
-                  </button>
-
-                  <button type="submit" className="updateButton">
-                    Update Event
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="formActions">
+              <div className="formActions editEventActions footerActionButtons">
                 <button
                   type="button"
                   className="cancelButton"
@@ -4531,8 +6147,148 @@ export default function AddEventPage({
                   Cancel
                 </button>
 
-                <button type="submit" className="saveButton">
-                  Save Event
+                <button
+                  type="submit"
+                  className="updateButton"
+                  onClick={() => {
+                    setPublishMode("none");
+                    setShowPublishOptions(false);
+                    setOpenDropdown(null);
+                    setOpenPicker(null);
+                    setFormError("");
+                  }}
+                >
+                  Update Event
+                </button>
+
+                <button
+                  type={
+                    showPublishOptions && publishMode === "publish"
+                      ? "submit"
+                      : "button"
+                  }
+                  className={`publishFooterButton ${
+                    showPublishOptions && publishMode === "publish"
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    if (
+                      !showPublishOptions ||
+                      publishMode !== "publish"
+                    ) {
+                      setPublishMode("publish");
+                      setShowPublishOptions(true);
+                      setOpenDropdown(null);
+                      setOpenPicker(null);
+                      setFormError("");
+                    }
+                  }}
+                >
+                  Publish
+                </button>
+
+                <button
+                  type={
+                    showPublishOptions && publishMode === "schedule"
+                      ? "submit"
+                      : "button"
+                  }
+                  className={`schedulePublishFooterButton ${
+                    showPublishOptions && publishMode === "schedule"
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    if (
+                      !showPublishOptions ||
+                      publishMode !== "schedule"
+                    ) {
+                      setPublishMode("schedule");
+                      setShowPublishOptions(true);
+                      setOpenDropdown(null);
+                      setOpenPicker(null);
+                      setFormError("");
+                    }
+                  }}
+                >
+                  Schedule Publish
+                </button>
+              </div>
+            ) : (
+              <div className="formActions footerActionButtons">
+                <button
+                  type="button"
+                  className="cancelButton"
+                  onClick={cancelForm}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="saveButton"
+                  onClick={() => {
+                    setPublishMode("none");
+                    setShowPublishOptions(false);
+                    setFormError("");
+                  }}
+                >
+                  {formMode === "reuse" ? "Save as New" : "Save Event"}
+                </button>
+
+                <button
+                  type={
+                    showPublishOptions && publishMode === "publish"
+                      ? "submit"
+                      : "button"
+                  }
+                  className={`publishFooterButton ${
+                    showPublishOptions && publishMode === "publish"
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    if (
+                      !showPublishOptions ||
+                      publishMode !== "publish"
+                    ) {
+                      setPublishMode("publish");
+                      setShowPublishOptions(true);
+                      setOpenDropdown(null);
+                      setOpenPicker(null);
+                      setFormError("");
+                    }
+                  }}
+                >
+                  Publish
+                </button>
+
+                <button
+                  type={
+                    showPublishOptions && publishMode === "schedule"
+                      ? "submit"
+                      : "button"
+                  }
+                  className={`schedulePublishFooterButton ${
+                    showPublishOptions && publishMode === "schedule"
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    if (
+                      !showPublishOptions ||
+                      publishMode !== "schedule"
+                    ) {
+                      setPublishMode("schedule");
+                      setShowPublishOptions(true);
+                      setOpenDropdown(null);
+                      setOpenPicker(null);
+                      setFormError("");
+                    }
+                  }}
+                >
+                  Schedule Publish
                 </button>
               </div>
             )}

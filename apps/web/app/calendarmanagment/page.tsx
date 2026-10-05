@@ -29,7 +29,7 @@ const icons = {
 };
 
 type CalendarView = "month" | "week" | "day";
-type EventStatus = "Published" | "Saved" | "Scheduled" | "Paused" | "Closed";
+type EventStatus = "Published" | "Saved" | "Scheduled" | "Paused" | "Closed" | "Cancelled";
 
 type CalendarLogin = {
   loggedIn?: boolean;
@@ -57,6 +57,9 @@ type CalendarEvent = {
   role?: string;
   department?: string;
   audience?: string;
+  audienceDetails?: string;
+  audienceIds?: string[];
+  audienceTypes?: string[];
   eventTitle?: string;
   eventSubtitle?: string;
   subtitle?: string;
@@ -84,7 +87,8 @@ type BackendEventStatus =
   | "SCHEDULED"
   | "PUBLISHED"
   | "PAUSED"
-  | "CLOSED";
+  | "CLOSED"
+  | "CANCELLED";
 
 type BackendEvent = {
   id: string;
@@ -127,6 +131,7 @@ function backendStatusToCalendarStatus(
     PUBLISHED: "Published",
     PAUSED: "Paused",
     CLOSED: "Closed",
+    CANCELLED: "Cancelled",
   };
 
   return statusMap[status];
@@ -158,6 +163,230 @@ function eventCreatorLabel(createdBy?: string) {
   }
 
   return (createdBy || "").trim();
+}
+
+function formatAudienceTenantLabel(value: string) {
+  const normalized = (value || "").trim().toUpperCase();
+
+  const tenantLabels: Record<string, string> = {
+    ALL: "All Tenants",
+    UNIVERSITY: "University & College",
+    UNIVERSITY_COLLEGE: "University & College",
+    "UNIVERSITY & COLLEGE": "University & College",
+    SKILL_ACADEMY: "Skill Academy",
+    "SKILL ACADEMY": "Skill Academy",
+    BOOTCAMP: "Bootcamp",
+    CORPORATE: "Corporate",
+    GOVERNMENT: "Government",
+    NGO: "NGO",
+  };
+
+  return tenantLabels[normalized] || value.trim();
+}
+
+function formatAudienceActorLabel(tenantName: string, value: string) {
+  const normalizedActor = (value || "")
+    .trim()
+    .replace(/[-_]+/g, " ")
+    .toUpperCase();
+
+  const actorKey =
+    normalizedActor === "PLATFORM ADMIN" ||
+    normalizedActor === "PLATFORM ADMINS"
+      ? "Platform Admins"
+      : normalizedActor === "TENANT ADMIN" ||
+          normalizedActor === "INSTITUTE ADMIN" ||
+          normalizedActor === "INSTITUTE ADMINS" ||
+          normalizedActor === "ACADEMY ADMIN" ||
+          normalizedActor === "BOOTCAMP ADMIN" ||
+          normalizedActor === "CORPORATE ADMIN"
+        ? "Institute Admins"
+        : normalizedActor === "COORDINATOR" ||
+            normalizedActor === "COORDINATORS" ||
+            normalizedActor === "PROGRAM COORDINATOR" ||
+            normalizedActor === "COHORT COORDINATOR" ||
+            normalizedActor === "L&D COORDINATOR"
+          ? "Coordinators"
+          : normalizedActor === "FACULTY" ||
+              normalizedActor === "TRAINER" ||
+              normalizedActor === "INSTRUCTOR"
+            ? "Faculty"
+            : normalizedActor === "STUDENT" ||
+                normalizedActor === "STUDENTS" ||
+                normalizedActor === "LEARNER" ||
+                normalizedActor === "EMPLOYEE"
+              ? "Students"
+              : value.trim();
+
+  if (actorKey === "Platform Admins") {
+    return "Platform Admin";
+  }
+
+  const labels: Record<string, Record<string, string>> = {
+    "University & College": {
+      "Institute Admins": "Institute Admin",
+      Coordinators: "Coordinator",
+      Faculty: "Faculty",
+      Students: "Student",
+    },
+    "Skill Academy": {
+      "Institute Admins": "Academy Admin",
+      Coordinators: "Program Coordinator",
+      Faculty: "Trainer",
+      Students: "Learner",
+    },
+    Bootcamp: {
+      "Institute Admins": "Bootcamp Admin",
+      Coordinators: "Cohort Coordinator",
+      Faculty: "Instructor",
+      Students: "Learner",
+    },
+    Corporate: {
+      "Institute Admins": "Corporate Admin",
+      Coordinators: "L&D Coordinator",
+      Faculty: "Trainer",
+      Students: "Employee",
+    },
+    Government: {
+      "Institute Admins": "Department Admin",
+      Coordinators: "Program Coordinator",
+      Faculty: "Trainer",
+      Students: "Employee",
+    },
+    NGO: {
+      "Institute Admins": "NGO Admin",
+      Coordinators: "Program Coordinator",
+      Faculty: "Trainer",
+      Students: "Volunteer / Learner",
+    },
+  };
+
+  return labels[tenantName]?.[actorKey] || actorKey;
+}
+
+function getBackendAudienceDetails(event: BackendEvent) {
+  const audiences = event.audiences || [];
+
+  if (audiences.length === 0) {
+    return event.status === "SAVED" ? "" : "All";
+  }
+
+  /*
+   * Broad Tenant Only publishing sends every tenant as separate TENANT
+   * audience rows. On the card we keep that readable as just "Tenant"
+   * instead of printing every tenant name.
+   */
+  const tenantAudienceIds = audiences
+    .filter(
+      (item) => String(item.audienceType || "").toUpperCase() === "TENANT"
+    )
+    .map((item) => formatAudienceTenantLabel(item.audienceId))
+    .filter(Boolean);
+
+  const allTenantLabels = [
+    "University & College",
+    "Skill Academy",
+    "Bootcamp",
+    "Corporate",
+    "Government",
+    "NGO",
+  ];
+
+  const isAllTenantAudience =
+    audiences.length === tenantAudienceIds.length &&
+    allTenantLabels.every((tenantName) =>
+      tenantAudienceIds.includes(tenantName)
+    );
+
+  if (isAllTenantAudience) {
+    return "Tenant";
+  }
+
+  /*
+   * Broad Actor Only publishing sends the complete actor hierarchy as ROLE
+   * rows. Collapse that to "Actor" instead of showing a long actor list.
+   */
+  const roleAudienceCount = audiences.filter(
+    (item) => String(item.audienceType || "").toUpperCase() === "ROLE"
+  ).length;
+
+  const creator = String(event.createdBy || "").toUpperCase();
+  const expectedBroadActorCount =
+    creator.includes("SUPER_ADMIN") || creator.includes("SUPER-ADMIN")
+      ? 5
+      : creator.includes("PLATFORM_ADMIN") || creator.includes("PLATFORM-ADMIN")
+        ? 4
+        : creator.includes("TENANT_ADMIN") || creator.includes("TENANT-ADMIN")
+          ? 3
+          : creator.includes("COORDINATOR")
+            ? 2
+            : creator.includes("FACULTY")
+              ? 1
+              : 0;
+
+  if (
+    expectedBroadActorCount > 0 &&
+    audiences.length === roleAudienceCount &&
+    roleAudienceCount === expectedBroadActorCount
+  ) {
+    return "Actor";
+  }
+
+  const details = audiences
+    .map((item) => {
+      const audienceId = (item.audienceId || "").trim();
+      const audienceType = (item.audienceType || "").trim().toUpperCase();
+
+      if (!audienceId) return "";
+
+      if (audienceType === "TENANT") {
+        return `Tenant: ${formatAudienceTenantLabel(audienceId)}`;
+      }
+
+      if (audienceType === "ROLE") {
+        return `Actor: ${formatAudienceActorLabel("", audienceId)}`;
+      }
+
+      const parts = audienceId
+        .split("::")
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+      if (audienceType === "ORGANIZATION") {
+        const tenantLabel = formatAudienceTenantLabel(parts[0] || "");
+        const organization = parts[1] || "";
+
+        return [tenantLabel, organization].filter(Boolean).join(" · ");
+      }
+
+      if (audienceType === "TARGET") {
+        const tenantLabel = formatAudienceTenantLabel(parts[0] || "");
+
+        if (parts.length >= 3) {
+          const organization = parts.slice(1, -1).join(" · ");
+          const actor = formatAudienceActorLabel(
+            tenantLabel,
+            parts[parts.length - 1] || ""
+          );
+
+          return [tenantLabel, organization, actor]
+            .filter(Boolean)
+            .join(" · ");
+        }
+
+        const actor = formatAudienceActorLabel(
+          tenantLabel,
+          parts[parts.length - 1] || ""
+        );
+
+        return [tenantLabel, actor].filter(Boolean).join(" · ");
+      }
+
+      return audienceId;
+    })
+    .filter(Boolean);
+
+  return Array.from(new Set(details)).join("; ");
 }
 
 function backendEventToCalendarEvent(
@@ -213,12 +442,22 @@ function backendEventToCalendarEvent(
     role:
       event.audiences
         ?.filter((item) => item.audienceType === "TARGET")
-        .map((item) => item.audienceId.split("::")[1])
+        .map((item) => {
+          const parts = item.audienceId.split("::").filter(Boolean);
+          return parts[parts.length - 1] || "";
+        })
         .filter(Boolean)
         .join(", ") ||
       event.audiences?.find((item) => item.audienceType === "ROLE")?.audienceId,
     audience:
       event.audiences?.map((item) => item.audienceId).join(", ") || undefined,
+    audienceDetails: getBackendAudienceDetails(event) || undefined,
+    audienceIds:
+      event.audiences?.map((item) => item.audienceId).filter(Boolean) || [],
+    audienceTypes:
+      event.audiences
+        ?.map((item) => String(item.audienceType || "").toUpperCase())
+        .filter(Boolean) || [],
     priority: event.priority || undefined,
     attachment: event.attachment || undefined,
     scheduledPublishAt: event.scheduledPublishAt || undefined,
@@ -312,11 +551,1164 @@ async function downloadEventAttachment(attachment?: string) {
   window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
 
-const initialEvents: CalendarEvent[] = [];
+const initialEvents: CalendarEvent[] = [
+  {
+    id: 880001,
+    title: "Academic Calendar Review",
+    eventTitle: "Academic Calendar Review",
+    eventSubtitle: "Demo event 1",
+    subtitle: "Demo event 1",
+    date: "Oct 5, 2026",
+    day: 5,
+    month: 9,
+    year: 2026,
+    start: "09:00",
+    end: "10:00",
+    startDate: "2026-10-05",
+    endDate: "2026-10-05",
+    startTime: "09:00",
+    endTime: "10:00",
+    location: "North Valley University",
+    attendees: 30,
+    status: "Published",
+    color: "#2D55D7",
+    tenant: "University & College",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880002,
+    title: "Skill Development Workshop",
+    eventTitle: "Skill Development Workshop",
+    eventSubtitle: "Demo event 2",
+    subtitle: "Demo event 2",
+    date: "Oct 6, 2026",
+    day: 6,
+    month: 9,
+    year: 2026,
+    start: "10:00",
+    end: "11:00",
+    startDate: "2026-10-06",
+    endDate: "2026-10-06",
+    startTime: "10:00",
+    endTime: "11:00",
+    location: "NextStep Skill Academy",
+    attendees: 39,
+    status: "Saved",
+    color: "#2D55D7",
+    tenant: "Skill Academy",
+    role: "",
+    audience: "Skill Academy",
+    audienceDetails: "Tenant: Skill Academy",
+    audienceIds: ["Skill Academy"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880003,
+    title: "Bootcamp Kickoff",
+    eventTitle: "Bootcamp Kickoff",
+    eventSubtitle: "Demo event 3",
+    subtitle: "Demo event 3",
+    date: "Oct 7, 2026",
+    day: 7,
+    month: 9,
+    year: 2026,
+    start: "11:00",
+    end: "12:00",
+    startDate: "2026-10-07",
+    endDate: "2026-10-07",
+    startTime: "11:00",
+    endTime: "12:00",
+    location: "CodeSprint Bootcamp",
+    attendees: 48,
+    status: "Scheduled",
+    color: "#2D55D7",
+    tenant: "Bootcamp",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: "2026-10-07T18:00:00.000Z",
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880004,
+    title: "Employee Onboarding",
+    eventTitle: "Employee Onboarding",
+    eventSubtitle: "Demo event 4",
+    subtitle: "Demo event 4",
+    date: "Oct 8, 2026",
+    day: 8,
+    month: 9,
+    year: 2026,
+    start: "12:00",
+    end: "13:00",
+    startDate: "2026-10-08",
+    endDate: "2026-10-08",
+    startTime: "12:00",
+    endTime: "13:00",
+    location: "Apex Global Pvt Ltd",
+    attendees: 57,
+    status: "Paused",
+    color: "#2D55D7",
+    tenant: "Corporate",
+    role: "Faculty",
+    audience: "Corporate::Apex Global Pvt Ltd::Faculty",
+    audienceDetails: "Corporate · Apex Global Pvt Ltd · Faculty",
+    audienceIds: ["Corporate::Apex Global Pvt Ltd::Faculty"],
+    audienceTypes: ["TARGET"],
+    priority: "Critical",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880005,
+    title: "Digital Services Training",
+    eventTitle: "Digital Services Training",
+    eventSubtitle: "Demo event 5",
+    subtitle: "Demo event 5",
+    date: "Oct 9, 2026",
+    day: 9,
+    month: 9,
+    year: 2026,
+    start: "13:00",
+    end: "14:00",
+    startDate: "2026-10-09",
+    endDate: "2026-10-09",
+    startTime: "13:00",
+    endTime: "14:00",
+    location: "Department of Digital Services",
+    attendees: 66,
+    status: "Closed",
+    color: "#2D55D7",
+    tenant: "Government",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880006,
+    title: "Volunteer Orientation",
+    eventTitle: "Volunteer Orientation",
+    eventSubtitle: "Demo event 6",
+    subtitle: "Demo event 6",
+    date: "Oct 10, 2026",
+    day: 10,
+    month: 9,
+    year: 2026,
+    start: "14:00",
+    end: "15:00",
+    startDate: "2026-10-10",
+    endDate: "2026-10-10",
+    startTime: "14:00",
+    endTime: "15:00",
+    location: "Hope Foundation",
+    attendees: 75,
+    status: "Cancelled",
+    color: "#2D55D7",
+    tenant: "NGO",
+    role: "",
+    audience: "NGO",
+    audienceDetails: "Tenant: NGO",
+    audienceIds: ["NGO"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880007,
+    title: "Faculty Orientation",
+    eventTitle: "Faculty Orientation",
+    eventSubtitle: "Demo event 7",
+    subtitle: "Demo event 7",
+    date: "Oct 11, 2026",
+    day: 11,
+    month: 9,
+    year: 2026,
+    start: "15:00",
+    end: "16:00",
+    startDate: "2026-10-11",
+    endDate: "2026-10-11",
+    startTime: "15:00",
+    endTime: "16:00",
+    location: "North Valley University",
+    attendees: 84,
+    status: "Published",
+    color: "#2D55D7",
+    tenant: "University & College",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880008,
+    title: "Generative AI Session",
+    eventTitle: "Generative AI Session",
+    eventSubtitle: "Demo event 8",
+    subtitle: "Demo event 8",
+    date: "Oct 12, 2026",
+    day: 12,
+    month: 9,
+    year: 2026,
+    start: "09:00",
+    end: "10:00",
+    startDate: "2026-10-12",
+    endDate: "2026-10-12",
+    startTime: "09:00",
+    endTime: "10:00",
+    location: "NextStep Skill Academy",
+    attendees: 93,
+    status: "Saved",
+    color: "#2D55D7",
+    tenant: "Skill Academy",
+    role: "Faculty",
+    audience: "Skill Academy::NextStep Skill Academy::Faculty",
+    audienceDetails: "Skill Academy · NextStep Skill Academy · Faculty",
+    audienceIds: ["Skill Academy::NextStep Skill Academy::Faculty"],
+    audienceTypes: ["TARGET"],
+    priority: "Critical",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880009,
+    title: "Live Coding Session",
+    eventTitle: "Live Coding Session",
+    eventSubtitle: "Demo event 9",
+    subtitle: "Demo event 9",
+    date: "Oct 13, 2026",
+    day: 13,
+    month: 9,
+    year: 2026,
+    start: "10:00",
+    end: "11:00",
+    startDate: "2026-10-13",
+    endDate: "2026-10-13",
+    startTime: "10:00",
+    endTime: "11:00",
+    location: "CodeSprint Bootcamp",
+    attendees: 102,
+    status: "Scheduled",
+    color: "#2D55D7",
+    tenant: "Bootcamp",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: "2026-10-13T18:00:00.000Z",
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880010,
+    title: "Compliance Training",
+    eventTitle: "Compliance Training",
+    eventSubtitle: "Demo event 10",
+    subtitle: "Demo event 10",
+    date: "Oct 14, 2026",
+    day: 14,
+    month: 9,
+    year: 2026,
+    start: "11:00",
+    end: "12:00",
+    startDate: "2026-10-14",
+    endDate: "2026-10-14",
+    startTime: "11:00",
+    endTime: "12:00",
+    location: "Apex Global Pvt Ltd",
+    attendees: 111,
+    status: "Paused",
+    color: "#2D55D7",
+    tenant: "Corporate",
+    role: "",
+    audience: "Corporate",
+    audienceDetails: "Tenant: Corporate",
+    audienceIds: ["Corporate"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880011,
+    title: "Governance Review",
+    eventTitle: "Governance Review",
+    eventSubtitle: "Demo event 11",
+    subtitle: "Demo event 11",
+    date: "Oct 15, 2026",
+    day: 15,
+    month: 9,
+    year: 2026,
+    start: "12:00",
+    end: "13:00",
+    startDate: "2026-10-15",
+    endDate: "2026-10-15",
+    startTime: "12:00",
+    endTime: "13:00",
+    location: "Department of Digital Services",
+    attendees: 120,
+    status: "Closed",
+    color: "#2D55D7",
+    tenant: "Government",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880012,
+    title: "Community Outreach",
+    eventTitle: "Community Outreach",
+    eventSubtitle: "Demo event 12",
+    subtitle: "Demo event 12",
+    date: "Oct 16, 2026",
+    day: 16,
+    month: 9,
+    year: 2026,
+    start: "13:00",
+    end: "14:00",
+    startDate: "2026-10-16",
+    endDate: "2026-10-16",
+    startTime: "13:00",
+    endTime: "14:00",
+    location: "Hope Foundation",
+    attendees: 129,
+    status: "Cancelled",
+    color: "#2D55D7",
+    tenant: "NGO",
+    role: "Faculty",
+    audience: "NGO::Hope Foundation::Faculty",
+    audienceDetails: "NGO · Hope Foundation · Faculty",
+    audienceIds: ["NGO::Hope Foundation::Faculty"],
+    audienceTypes: ["TARGET"],
+    priority: "Critical",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880013,
+    title: "Student Induction",
+    eventTitle: "Student Induction",
+    eventSubtitle: "Demo event 13",
+    subtitle: "Demo event 13",
+    date: "Oct 17, 2026",
+    day: 17,
+    month: 9,
+    year: 2026,
+    start: "14:00",
+    end: "15:00",
+    startDate: "2026-10-17",
+    endDate: "2026-10-17",
+    startTime: "14:00",
+    endTime: "15:00",
+    location: "North Valley University",
+    attendees: 138,
+    status: "Published",
+    color: "#2D55D7",
+    tenant: "University & College",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880014,
+    title: "Career Readiness Program",
+    eventTitle: "Career Readiness Program",
+    eventSubtitle: "Demo event 14",
+    subtitle: "Demo event 14",
+    date: "Oct 18, 2026",
+    day: 18,
+    month: 9,
+    year: 2026,
+    start: "15:00",
+    end: "16:00",
+    startDate: "2026-10-18",
+    endDate: "2026-10-18",
+    startTime: "15:00",
+    endTime: "16:00",
+    location: "NextStep Skill Academy",
+    attendees: 147,
+    status: "Saved",
+    color: "#2D55D7",
+    tenant: "Skill Academy",
+    role: "",
+    audience: "Skill Academy",
+    audienceDetails: "Tenant: Skill Academy",
+    audienceIds: ["Skill Academy"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880015,
+    title: "Technical Assessment",
+    eventTitle: "Technical Assessment",
+    eventSubtitle: "Demo event 15",
+    subtitle: "Demo event 15",
+    date: "Oct 19, 2026",
+    day: 19,
+    month: 9,
+    year: 2026,
+    start: "09:00",
+    end: "10:00",
+    startDate: "2026-10-19",
+    endDate: "2026-10-19",
+    startTime: "09:00",
+    endTime: "10:00",
+    location: "CodeSprint Bootcamp",
+    attendees: 36,
+    status: "Scheduled",
+    color: "#2D55D7",
+    tenant: "Bootcamp",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: "2026-10-19T18:00:00.000Z",
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880016,
+    title: "Leadership Training",
+    eventTitle: "Leadership Training",
+    eventSubtitle: "Demo event 16",
+    subtitle: "Demo event 16",
+    date: "Oct 20, 2026",
+    day: 20,
+    month: 9,
+    year: 2026,
+    start: "10:00",
+    end: "11:00",
+    startDate: "2026-10-20",
+    endDate: "2026-10-20",
+    startTime: "10:00",
+    endTime: "11:00",
+    location: "Apex Global Pvt Ltd",
+    attendees: 45,
+    status: "Paused",
+    color: "#2D55D7",
+    tenant: "Corporate",
+    role: "Faculty",
+    audience: "Corporate::Apex Global Pvt Ltd::Faculty",
+    audienceDetails: "Corporate · Apex Global Pvt Ltd · Faculty",
+    audienceIds: ["Corporate::Apex Global Pvt Ltd::Faculty"],
+    audienceTypes: ["TARGET"],
+    priority: "Critical",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880017,
+    title: "Capacity Building Program",
+    eventTitle: "Capacity Building Program",
+    eventSubtitle: "Demo event 17",
+    subtitle: "Demo event 17",
+    date: "Oct 21, 2026",
+    day: 21,
+    month: 9,
+    year: 2026,
+    start: "11:00",
+    end: "12:00",
+    startDate: "2026-10-21",
+    endDate: "2026-10-21",
+    startTime: "11:00",
+    endTime: "12:00",
+    location: "Department of Digital Services",
+    attendees: 54,
+    status: "Closed",
+    color: "#2D55D7",
+    tenant: "Government",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880018,
+    title: "Impact Assessment Review",
+    eventTitle: "Impact Assessment Review",
+    eventSubtitle: "Demo event 18",
+    subtitle: "Demo event 18",
+    date: "Oct 22, 2026",
+    day: 22,
+    month: 9,
+    year: 2026,
+    start: "12:00",
+    end: "13:00",
+    startDate: "2026-10-22",
+    endDate: "2026-10-22",
+    startTime: "12:00",
+    endTime: "13:00",
+    location: "Hope Foundation",
+    attendees: 63,
+    status: "Cancelled",
+    color: "#2D55D7",
+    tenant: "NGO",
+    role: "",
+    audience: "NGO",
+    audienceDetails: "Tenant: NGO",
+    audienceIds: ["NGO"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880019,
+    title: "Research Review",
+    eventTitle: "Research Review",
+    eventSubtitle: "Demo event 19",
+    subtitle: "Demo event 19",
+    date: "Oct 23, 2026",
+    day: 23,
+    month: 9,
+    year: 2026,
+    start: "13:00",
+    end: "14:00",
+    startDate: "2026-10-23",
+    endDate: "2026-10-23",
+    startTime: "13:00",
+    endTime: "14:00",
+    location: "North Valley University",
+    attendees: 72,
+    status: "Published",
+    color: "#2D55D7",
+    tenant: "University & College",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880020,
+    title: "Cloud Fundamentals",
+    eventTitle: "Cloud Fundamentals",
+    eventSubtitle: "Demo event 20",
+    subtitle: "Demo event 20",
+    date: "Oct 24, 2026",
+    day: 24,
+    month: 9,
+    year: 2026,
+    start: "14:00",
+    end: "15:00",
+    startDate: "2026-10-24",
+    endDate: "2026-10-24",
+    startTime: "14:00",
+    endTime: "15:00",
+    location: "NextStep Skill Academy",
+    attendees: 81,
+    status: "Saved",
+    color: "#2D55D7",
+    tenant: "Skill Academy",
+    role: "Faculty",
+    audience: "Skill Academy::NextStep Skill Academy::Faculty",
+    audienceDetails: "Skill Academy · NextStep Skill Academy · Faculty",
+    audienceIds: ["Skill Academy::NextStep Skill Academy::Faculty"],
+    audienceTypes: ["TARGET"],
+    priority: "Critical",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880021,
+    title: "Sprint Planning",
+    eventTitle: "Sprint Planning",
+    eventSubtitle: "Demo event 21",
+    subtitle: "Demo event 21",
+    date: "Oct 25, 2026",
+    day: 25,
+    month: 9,
+    year: 2026,
+    start: "15:00",
+    end: "16:00",
+    startDate: "2026-10-25",
+    endDate: "2026-10-25",
+    startTime: "15:00",
+    endTime: "16:00",
+    location: "CodeSprint Bootcamp",
+    attendees: 90,
+    status: "Scheduled",
+    color: "#2D55D7",
+    tenant: "Bootcamp",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: "2026-10-25T18:00:00.000Z",
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880022,
+    title: "Cybersecurity Awareness",
+    eventTitle: "Cybersecurity Awareness",
+    eventSubtitle: "Demo event 22",
+    subtitle: "Demo event 22",
+    date: "Oct 26, 2026",
+    day: 26,
+    month: 9,
+    year: 2026,
+    start: "09:00",
+    end: "10:00",
+    startDate: "2026-10-26",
+    endDate: "2026-10-26",
+    startTime: "09:00",
+    endTime: "10:00",
+    location: "Apex Global Pvt Ltd",
+    attendees: 99,
+    status: "Paused",
+    color: "#2D55D7",
+    tenant: "Corporate",
+    role: "",
+    audience: "Corporate",
+    audienceDetails: "Tenant: Corporate",
+    audienceIds: ["Corporate"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880023,
+    title: "Public Service Workshop",
+    eventTitle: "Public Service Workshop",
+    eventSubtitle: "Demo event 23",
+    subtitle: "Demo event 23",
+    date: "Oct 27, 2026",
+    day: 27,
+    month: 9,
+    year: 2026,
+    start: "10:00",
+    end: "11:00",
+    startDate: "2026-10-27",
+    endDate: "2026-10-27",
+    startTime: "10:00",
+    endTime: "11:00",
+    location: "Department of Digital Services",
+    attendees: 108,
+    status: "Closed",
+    color: "#2D55D7",
+    tenant: "Government",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880024,
+    title: "Safeguarding Training",
+    eventTitle: "Safeguarding Training",
+    eventSubtitle: "Demo event 24",
+    subtitle: "Demo event 24",
+    date: "Oct 28, 2026",
+    day: 28,
+    month: 9,
+    year: 2026,
+    start: "11:00",
+    end: "12:00",
+    startDate: "2026-10-28",
+    endDate: "2026-10-28",
+    startTime: "11:00",
+    endTime: "12:00",
+    location: "Hope Foundation",
+    attendees: 117,
+    status: "Cancelled",
+    color: "#2D55D7",
+    tenant: "NGO",
+    role: "Faculty",
+    audience: "NGO::Hope Foundation::Faculty",
+    audienceDetails: "NGO · Hope Foundation · Faculty",
+    audienceIds: ["NGO::Hope Foundation::Faculty"],
+    audienceTypes: ["TARGET"],
+    priority: "Critical",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880025,
+    title: "Placement Training",
+    eventTitle: "Placement Training",
+    eventSubtitle: "Demo event 25",
+    subtitle: "Demo event 25",
+    date: "Oct 29, 2026",
+    day: 29,
+    month: 9,
+    year: 2026,
+    start: "12:00",
+    end: "13:00",
+    startDate: "2026-10-29",
+    endDate: "2026-10-29",
+    startTime: "12:00",
+    endTime: "13:00",
+    location: "North Valley University",
+    attendees: 126,
+    status: "Published",
+    color: "#2D55D7",
+    tenant: "University & College",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880026,
+    title: "Assessment Preparation",
+    eventTitle: "Assessment Preparation",
+    eventSubtitle: "Demo event 26",
+    subtitle: "Demo event 26",
+    date: "Oct 30, 2026",
+    day: 30,
+    month: 9,
+    year: 2026,
+    start: "13:00",
+    end: "14:00",
+    startDate: "2026-10-30",
+    endDate: "2026-10-30",
+    startTime: "13:00",
+    endTime: "14:00",
+    location: "NextStep Skill Academy",
+    attendees: 135,
+    status: "Saved",
+    color: "#2D55D7",
+    tenant: "Skill Academy",
+    role: "",
+    audience: "Skill Academy",
+    audienceDetails: "Tenant: Skill Academy",
+    audienceIds: ["Skill Academy"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880027,
+    title: "Project Demo",
+    eventTitle: "Project Demo",
+    eventSubtitle: "Demo event 27",
+    subtitle: "Demo event 27",
+    date: "Oct 31, 2026",
+    day: 31,
+    month: 9,
+    year: 2026,
+    start: "14:00",
+    end: "15:00",
+    startDate: "2026-10-31",
+    endDate: "2026-10-31",
+    startTime: "14:00",
+    endTime: "15:00",
+    location: "CodeSprint Bootcamp",
+    attendees: 144,
+    status: "Scheduled",
+    color: "#2D55D7",
+    tenant: "Bootcamp",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: "2026-10-31T18:00:00.000Z",
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880028,
+    title: "Manager Development",
+    eventTitle: "Manager Development",
+    eventSubtitle: "Demo event 28",
+    subtitle: "Demo event 28",
+    date: "Nov 1, 2026",
+    day: 1,
+    month: 10,
+    year: 2026,
+    start: "15:00",
+    end: "16:00",
+    startDate: "2026-11-01",
+    endDate: "2026-11-01",
+    startTime: "15:00",
+    endTime: "16:00",
+    location: "Apex Global Pvt Ltd",
+    attendees: 33,
+    status: "Paused",
+    color: "#2D55D7",
+    tenant: "Corporate",
+    role: "Faculty",
+    audience: "Corporate::Apex Global Pvt Ltd::Faculty",
+    audienceDetails: "Corporate · Apex Global Pvt Ltd · Faculty",
+    audienceIds: ["Corporate::Apex Global Pvt Ltd::Faculty"],
+    audienceTypes: ["TARGET"],
+    priority: "Critical",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880029,
+    title: "Policy Update Session",
+    eventTitle: "Policy Update Session",
+    eventSubtitle: "Demo event 29",
+    subtitle: "Demo event 29",
+    date: "Nov 2, 2026",
+    day: 2,
+    month: 10,
+    year: 2026,
+    start: "09:00",
+    end: "10:00",
+    startDate: "2026-11-02",
+    endDate: "2026-11-02",
+    startTime: "09:00",
+    endTime: "10:00",
+    location: "Department of Digital Services",
+    attendees: 42,
+    status: "Closed",
+    color: "#2D55D7",
+    tenant: "Government",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880030,
+    title: "Fundraising Review",
+    eventTitle: "Fundraising Review",
+    eventSubtitle: "Demo event 30",
+    subtitle: "Demo event 30",
+    date: "Nov 3, 2026",
+    day: 3,
+    month: 10,
+    year: 2026,
+    start: "10:00",
+    end: "11:00",
+    startDate: "2026-11-03",
+    endDate: "2026-11-03",
+    startTime: "10:00",
+    endTime: "11:00",
+    location: "Hope Foundation",
+    attendees: 51,
+    status: "Cancelled",
+    color: "#2D55D7",
+    tenant: "NGO",
+    role: "",
+    audience: "NGO",
+    audienceDetails: "Tenant: NGO",
+    audienceIds: ["NGO"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880031,
+    title: "Semester Planning",
+    eventTitle: "Semester Planning",
+    eventSubtitle: "Demo event 31",
+    subtitle: "Demo event 31",
+    date: "Nov 4, 2026",
+    day: 4,
+    month: 10,
+    year: 2026,
+    start: "11:00",
+    end: "12:00",
+    startDate: "2026-11-04",
+    endDate: "2026-11-04",
+    startTime: "11:00",
+    endTime: "12:00",
+    location: "North Valley University",
+    attendees: 60,
+    status: "Published",
+    color: "#2D55D7",
+    tenant: "University & College",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880032,
+    title: "Certification Guidance",
+    eventTitle: "Certification Guidance",
+    eventSubtitle: "Demo event 32",
+    subtitle: "Demo event 32",
+    date: "Nov 5, 2026",
+    day: 5,
+    month: 10,
+    year: 2026,
+    start: "12:00",
+    end: "13:00",
+    startDate: "2026-11-05",
+    endDate: "2026-11-05",
+    startTime: "12:00",
+    endTime: "13:00",
+    location: "NextStep Skill Academy",
+    attendees: 69,
+    status: "Saved",
+    color: "#2D55D7",
+    tenant: "Skill Academy",
+    role: "Faculty",
+    audience: "Skill Academy::NextStep Skill Academy::Faculty",
+    audienceDetails: "Skill Academy · NextStep Skill Academy · Faculty",
+    audienceIds: ["Skill Academy::NextStep Skill Academy::Faculty"],
+    audienceTypes: ["TARGET"],
+    priority: "Critical",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880033,
+    title: "Portfolio Review",
+    eventTitle: "Portfolio Review",
+    eventSubtitle: "Demo event 33",
+    subtitle: "Demo event 33",
+    date: "Nov 6, 2026",
+    day: 6,
+    month: 10,
+    year: 2026,
+    start: "13:00",
+    end: "14:00",
+    startDate: "2026-11-06",
+    endDate: "2026-11-06",
+    startTime: "13:00",
+    endTime: "14:00",
+    location: "CodeSprint Bootcamp",
+    attendees: 78,
+    status: "Scheduled",
+    color: "#2D55D7",
+    tenant: "Bootcamp",
+    role: "",
+    audience: "",
+    audienceDetails: "All",
+    audienceIds: [],
+    audienceTypes: [],
+    priority: "Low",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: "2026-11-06T18:00:00.000Z",
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880034,
+    title: "Town Hall Learning Session",
+    eventTitle: "Town Hall Learning Session",
+    eventSubtitle: "Demo event 34",
+    subtitle: "Demo event 34",
+    date: "Nov 7, 2026",
+    day: 7,
+    month: 10,
+    year: 2026,
+    start: "14:00",
+    end: "15:00",
+    startDate: "2026-11-07",
+    endDate: "2026-11-07",
+    startTime: "14:00",
+    endTime: "15:00",
+    location: "Apex Global Pvt Ltd",
+    attendees: 87,
+    status: "Paused",
+    color: "#2D55D7",
+    tenant: "Corporate",
+    role: "",
+    audience: "Corporate",
+    audienceDetails: "Tenant: Corporate",
+    audienceIds: ["Corporate"],
+    audienceTypes: ["TENANT"],
+    priority: "Medium",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  },
+  {
+    id: 880035,
+    title: "Department Review",
+    eventTitle: "Department Review",
+    eventSubtitle: "Demo event 35",
+    subtitle: "Demo event 35",
+    date: "Nov 8, 2026",
+    day: 8,
+    month: 10,
+    year: 2026,
+    start: "15:00",
+    end: "16:00",
+    startDate: "2026-11-08",
+    endDate: "2026-11-08",
+    startTime: "15:00",
+    endTime: "16:00",
+    location: "Department of Digital Services",
+    attendees: 96,
+    status: "Closed",
+    color: "#2D55D7",
+    tenant: "Government",
+    role: "Faculty",
+    audience: "Faculty",
+    audienceDetails: "Actor: Faculty",
+    audienceIds: ["Faculty"],
+    audienceTypes: ["ROLE"],
+    priority: "High",
+    description: "Dummy event for testing Calendar Management filters, statuses, cards and actions.",
+    scheduledPublishAt: undefined,
+    localOwner: "SUPER_ADMIN::",
+  }
+];
 
 const tenants = ["All Tenants", "University & College", "Skill Academy", "Bootcamp", "Corporate", "Government", "NGO"];
 const roles = ["All Roles", "Platform Admin", "Institute Admin", "Coordinator", "Faculty", "Student"];
-const statuses = ["All Status", "Published", "Saved", "Scheduled", "Paused", "Closed"];
+const statuses = ["All Status", "Published", "Saved", "Scheduled", "Paused", "Closed", "Cancelled"];
+
+/*
+ * Keep the Calendar organization filter identical to the organization list
+ * used by Add Event -> Specific Organization + Actor.
+ */
+const publishOrganizationsByTenant: Record<string, string[]> = {
+  "University & College": [
+    "North Valley University",
+    "Greenfield University",
+    "City Central College",
+    "Riverside College",
+    "Sunrise Institute of Technology",
+    "Horizon School of Management",
+    "Metro Arts & Science College",
+    "Lakeside Engineering College",
+  ],
+  "Skill Academy": [
+    "NextStep Skill Academy",
+    "BrightPath Skills Center",
+    "SkillForge Academy",
+    "CareerBridge Academy",
+    "FutureReady Skills Hub",
+    "ProLearn Academy",
+    "TalentSpring Academy",
+    "Elevate Skills Institute",
+  ],
+  Bootcamp: [
+    "CodeSprint Bootcamp",
+    "DevLaunch Bootcamp",
+    "TechRise Bootcamp",
+    "FullStack Forge",
+    "CloudSprint Bootcamp",
+    "DataCraft Bootcamp",
+    "UX Launchpad",
+    "AI Builder Bootcamp",
+  ],
+  Corporate: [
+    "Apex Global Pvt Ltd",
+    "NovaTech Solutions",
+    "BluePeak Industries",
+    "Vertex Systems",
+    "Orbit Enterprises",
+    "PrimeWorks Ltd",
+    "NexaCorp",
+    "Summit Business Services",
+  ],
+  Government: [
+    "Department of Digital Services",
+    "State Training Institute",
+    "Public Administration Academy",
+    "District Learning Centre",
+    "Government Skills Mission",
+    "Civil Services Training Centre",
+    "Municipal Training Academy",
+    "Public Sector Learning Hub",
+  ],
+  NGO: [
+    "Hope Foundation",
+    "Community Reach Trust",
+    "BrightFuture Foundation",
+    "CareBridge NGO",
+    "PeopleFirst Foundation",
+    "GreenEarth Trust",
+    "YouthRise Foundation",
+    "Social Impact Network",
+  ],
+};
 
 type DepartmentDivision = {
   label: string;
@@ -1164,6 +2556,7 @@ type FilterDropdownProps = {
   value: string;
   options: string[];
   open: boolean;
+  className?: string;
   onToggle: () => void;
   onSelect: (value: string) => void;
 };
@@ -1173,11 +2566,12 @@ function FilterDropdown({
   value,
   options,
   open,
+  className = "",
   onToggle,
   onSelect,
 }: FilterDropdownProps) {
   return (
-    <div className={`filterDropdown ${open ? "open" : ""}`}>
+    <div className={`filterDropdown ${className} ${open ? "open" : ""}`}>
       <button
         type="button"
         className="filterDropdownField"
@@ -1187,7 +2581,13 @@ function FilterDropdown({
       >
         <span className="filterDropdownText">
           <span className="filterDropdownLabel">{label}</span>
-          <span className="filterDropdownValue">{value.startsWith("All ") ? label : value}</span>
+          <span className="filterDropdownValue">
+            {className.includes("monthFilterDropdown")
+              ? value
+              : value.startsWith("All ")
+                ? label
+                : value}
+          </span>
         </span>
         <span className="filterDropdownChevron" aria-hidden="true" />
       </button>
@@ -1218,6 +2618,293 @@ function FilterDropdown({
               </button>
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+type AllUsersFilterMode =
+  | "All Audiences"
+  | "Tenant Only"
+  | "Actor Only"
+  | "Specific Tenant";
+
+
+const calendarMonthFilterOptions = [
+  "All Months",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+function getCalendarFilterYears(events: CalendarEvent[]) {
+  const startYear = 2016;
+
+  const eventYears = events
+    .map((event) => Number(event.year))
+    .filter((year) => Number.isFinite(year) && year > 0);
+
+  const latestEventYear =
+    eventYears.length > 0
+      ? Math.max(...eventYears)
+      : new Date().getFullYear();
+
+  const endYear = Math.max(startYear, latestEventYear);
+
+  return Array.from(
+    { length: endYear - startYear + 1 },
+    (_, index) => String(startYear + index)
+  );
+}
+
+type AllUsersFilterDropdownProps = {
+  value: AllUsersFilterMode;
+  touched: boolean;
+  tenant: string;
+  organization: string;
+  tenantOptions: string[];
+  organizationOptions: string[];
+  open: boolean;
+  level: "modes" | "tenants" | "organizations";
+  onToggle: () => void;
+  onLevelChange: (level: "modes" | "tenants" | "organizations") => void;
+  onModeSelect: (value: AllUsersFilterMode) => void;
+  onTenantSelect: (value: string) => void;
+  onOrganizationSelect: (value: string) => void;
+};
+
+function AllUsersFilterDropdown({
+  value,
+  touched,
+  tenant,
+  organization,
+  tenantOptions,
+  organizationOptions,
+  open,
+  level,
+  onToggle,
+  onLevelChange,
+  onModeSelect,
+  onTenantSelect,
+  onOrganizationSelect,
+}: AllUsersFilterDropdownProps) {
+  const [organizationSearch, setOrganizationSearch] = useState("");
+
+  const displayValue = !touched
+    ? "All Users"
+    : value === "All Audiences"
+      ? "Default"
+      : value === "Specific Tenant" && organization !== "All Organizations"
+        ? organization
+        : value === "Specific Tenant" && tenant !== "All Tenants"
+          ? tenant
+          : value;
+
+  const headerDisplayValue =
+    level === "tenants"
+      ? "Specific Tenant"
+      : displayValue;
+
+  const modeOptions: Array<{
+    label: string;
+    value: AllUsersFilterMode;
+  }> = [
+    { label: "Default", value: "All Audiences" },
+    { label: "Tenant Only", value: "Tenant Only" },
+    { label: "Actor Only", value: "Actor Only" },
+    { label: "Specific Tenant", value: "Specific Tenant" },
+  ];
+
+  return (
+    <div
+      className={`filterDropdown audienceFilterDropdown allUsersNestedDropdown ${
+        open ? "open" : ""
+      }`}
+    >
+      {(level === "tenants" || level === "organizations") && open && (
+        <button
+          type="button"
+          className="allUsersHeaderBackButton"
+          aria-label={
+            level === "organizations"
+              ? `Back to ${tenant}`
+              : "Back to Specific Tenant"
+          }
+          onClick={(event) => {
+            event.stopPropagation();
+            setOrganizationSearch("");
+
+            if (level === "organizations") {
+              onLevelChange("tenants");
+            } else {
+              onLevelChange("modes");
+            }
+          }}
+        >
+          <Icon src={icons.chevronLeft} size={16} />
+        </button>
+      )}
+
+      <button
+        type="button"
+        className={`filterDropdownField ${
+          (level === "tenants" || level === "organizations") && open
+            ? "withBackArrow"
+            : ""
+        }`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={onToggle}
+      >
+        <span className="filterDropdownText">
+          <span className="filterDropdownLabel">All Users</span>
+          <span className="filterDropdownValue">{headerDisplayValue}</span>
+        </span>
+        <span className="filterDropdownChevron" aria-hidden="true" />
+      </button>
+
+      {open && (
+        <div
+          className="filterDropdownMenu allUsersNestedMenu"
+          role="listbox"
+          aria-label="All Users"
+        >
+          {level === "modes" &&
+            modeOptions.map((option) => {
+              const selected = touched && option.value === value;
+
+              return (
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  className={`filterDropdownOption ${
+                    selected ? "selected" : ""
+                  }`}
+                  key={option.value}
+                  onClick={() => {
+                    if (option.value === "Specific Tenant") {
+                      onModeSelect("Specific Tenant");
+                      onLevelChange("tenants");
+                      return;
+                    }
+
+                    onModeSelect(option.value);
+                  }}
+                >
+                  <span className="filterRadio" aria-hidden="true">
+                    <span className="filterRadioOuter" />
+                    {!selected && <span className="filterRadioInner" />}
+                    {selected && (
+                      <span className="filterRadioCheck">
+                        <span className="filterTick" />
+                      </span>
+                    )}
+                  </span>
+                  <span className="allUsersOptionLabel">{option.label}</span>
+                </button>
+              );
+            })}
+
+          {level === "tenants" && (
+            <>
+              {tenantOptions
+                .filter((option) => option !== "All Tenants")
+                .map((option) => {
+                  const selected = option === tenant;
+
+                  return (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      className={`filterDropdownOption ${
+                        selected ? "selected" : ""
+                      }`}
+                      key={option}
+                      onClick={() => {
+                        setOrganizationSearch("");
+                        onTenantSelect(option);
+                        onLevelChange("organizations");
+                      }}
+                    >
+                      <span className="filterRadio" aria-hidden="true">
+                        <span className="filterRadioOuter" />
+                        {!selected && <span className="filterRadioInner" />}
+                        {selected && (
+                          <span className="filterRadioCheck">
+                            <span className="filterTick" />
+                          </span>
+                        )}
+                      </span>
+                      <span className="allUsersOptionLabel">{option}</span>
+                    </button>
+                  );
+                })}
+            </>
+          )}
+
+          {level === "organizations" && (
+            <>
+              <div className="allUsersOrganizationSearchWrap">
+                <input
+                  type="search"
+                  value={organizationSearch}
+                  onChange={(event) =>
+                    setOrganizationSearch(event.target.value)
+                  }
+                  placeholder={`Search ${tenant}`}
+                  aria-label={`Search ${tenant}`}
+                />
+              </div>
+
+              {organizationOptions
+                .filter((option) => option !== "All Organizations")
+                .filter((option) =>
+                  option
+                    .toLowerCase()
+                    .includes(organizationSearch.trim().toLowerCase())
+                )
+                .map((option) => {
+                  const selected = option === organization;
+
+                  return (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      className={`filterDropdownOption ${
+                        selected ? "selected" : ""
+                      }`}
+                      key={option}
+                      onClick={() => onOrganizationSelect(option)}
+                    >
+                      <span className="filterRadio" aria-hidden="true">
+                        <span className="filterRadioOuter" />
+                        {!selected && <span className="filterRadioInner" />}
+                        {selected && (
+                          <span className="filterRadioCheck">
+                            <span className="filterTick" />
+                          </span>
+                        )}
+                      </span>
+                      <span>{option}</span>
+                    </button>
+                  );
+                })}
+            </>
+          )}
         </div>
       )}
     </div>
@@ -1380,21 +3067,114 @@ function getCalendarEventDateRange(event: CalendarEvent) {
     : { start: end, end: actualStart };
 }
 
+function getDynamicCalendarAnchorDate(events: CalendarEvent[]) {
+  const today = new Date();
+  const todayStart = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  ).getTime();
+
+  const validEventDates = events
+    .map((event) => {
+      const date = new Date(event.year, event.month, event.day);
+
+      return Number.isNaN(date.getTime())
+        ? null
+        : {
+            date,
+            time: date.getTime(),
+          };
+    })
+    .filter(
+      (
+        item
+      ): item is {
+        date: Date;
+        time: number;
+      } => Boolean(item)
+    )
+    .sort((a, b) => a.time - b.time);
+
+  if (!validEventDates.length) {
+    return today;
+  }
+
+  const nextOrCurrentEvent =
+    validEventDates.find((item) => item.time >= todayStart) ||
+    validEventDates[validEventDates.length - 1];
+
+  return new Date(nextOrCurrentEvent.date);
+}
+
 export default function CalendarManagementPage() {
   const router = useRouter();
   const [login, setLogin] = useState<CalendarLogin | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 8, 1));
+  const [currentDate, setCurrentDate] = useState(() => {
+    const anchorDate = getDynamicCalendarAnchorDate(initialEvents);
+    return new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+  });
   const [view, setView] = useState<CalendarView>("month");
+  const [calendarPickerOpen, setCalendarPickerOpen] = useState<
+    "month" | "year" | null
+  >(null);
+  const [calendarYearRangeStart, setCalendarYearRangeStart] = useState(() => {
+    const anchorYear = getDynamicCalendarAnchorDate(initialEvents).getFullYear();
+    return anchorYear - 5;
+  });
+  type AudienceFilterType =
+    | "All Audiences"
+    | "Tenant Only"
+    | "Actor Only"
+    | "Tenant + Actor"
+    | "Specific Tenant"
+    | "Specific Actor"
+    | "Specific Organization + Actor";
+
+  const audienceFilterOptions: AudienceFilterType[] = [
+    "All Audiences",
+    "Tenant Only",
+    "Actor Only",
+    "Tenant + Actor",
+    "Specific Tenant",
+    "Specific Actor",
+    "Specific Organization + Actor",
+  ];
+
+  const [audienceFilter, setAudienceFilter] =
+    useState<AudienceFilterType>("All Audiences");
+  const [allUsersFilterLevel, setAllUsersFilterLevel] = useState<
+    "modes" | "tenants" | "organizations"
+  >("modes");
+  const [allUsersFilterTouched, setAllUsersFilterTouched] = useState(false);
   const [tenant, setTenant] = useState("All Tenants");
   const [role, setRole] = useState("All Roles");
+  const [organization, setOrganization] = useState("All Organizations");
   const [status, setStatus] = useState("All Status");
   const [department, setDepartment] = useState("All Departments");
   const [selectedDepartmentDivision, setSelectedDepartmentDivision] = useState("");
   const [openFilter, setOpenFilter] = useState<
-    "tenant" | "division" | "department" | "role" | "status" | null
+    | "audience"
+    | "tenant"
+    | "organization"
+    | "division"
+    | "department"
+    | "role"
+    | "status"
+    | "listMonth"
+    | "listYear"
+    | null
   >(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [scheduleTab, setScheduleTab] = useState<"All" | EventStatus | "My Events">("All");
+  const [contentView, setContentView] = useState<
+    "Calendar" | "All" | "Published" | "Saved" | "My Events" | "My Schedules"
+  >("Calendar");
+  const [eventSearchQuery, setEventSearchQuery] = useState("");
+  const [listMonthFilter, setListMonthFilter] = useState("All Months");
+  const [listMonthFilterTouched, setListMonthFilterTouched] = useState(false);
+  const [listYearFilter, setListYearFilter] = useState("All Years");
+  const [listYearFilterTouched, setListYearFilterTouched] = useState(false);
   // IMPORTANT: Server and first client render must start with the same data.
   // Reading localStorage inside the useState initializer causes a hydration mismatch.
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
@@ -1404,15 +3184,33 @@ export default function CalendarManagementPage() {
   const [eventFormOpen, setEventFormOpen] = useState(false);
   const mobileEventTouchStartX = useRef<number | null>(null);
   const [bulkOpen, setBulkOpen] = useState(false);
+
+  const [addMenuOpen, setAddMenuOpen] = useState<"desktop" | "mobile" | null>(
+    null
+  );
+  const desktopAddButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileAddButtonRef = useRef<HTMLButtonElement>(null);
+  const [addMenuPosition, setAddMenuPosition] = useState({
+    top: 0,
+    left: 0,
+  });
   const [exportOpen, setExportOpen] = useState(false);
   const [exportMonth, setExportMonth] = useState("");
-  const [exportYear, setExportYear] = useState("2026");
+  const [exportYear, setExportYear] = useState(() =>
+    String(getDynamicCalendarAnchorDate(initialEvents).getFullYear())
+  );
   const [exportDropdown, setExportDropdown] = useState<"month" | "year" | null>(null);
   const [exportMessage, setExportMessage] = useState("");
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [scheduleDate, setScheduleDate] = useState(new Date(2026, 8, 7));
-  const [weekDate, setWeekDate] = useState(new Date(2026, 8, 13));
-  const [dayDate, setDayDate] = useState(new Date(2026, 8, 19));
+  const [scheduleDate, setScheduleDate] = useState(() =>
+    getDynamicCalendarAnchorDate(initialEvents)
+  );
+  const [weekDate, setWeekDate] = useState(() =>
+    getDynamicCalendarAnchorDate(initialEvents)
+  );
+  const [dayDate, setDayDate] = useState(() =>
+    getDynamicCalendarAnchorDate(initialEvents)
+  );
   const [dayPopup, setDayPopup] = useState<{ day: number; event: CalendarEvent } | null>(null);
   const [dayEventList, setDayEventList] = useState<{ day: number; events: CalendarEvent[] } | null>(null);
   const [reminderEvent, setReminderEvent] = useState<CalendarEvent | null>(null);
@@ -1489,6 +3287,7 @@ export default function CalendarManagementPage() {
         setRole("Student");
         setStatus("All Status");
         setScheduleTab("All");
+        setContentView("Calendar");
         setOpenFilter(null);
         setOpenMenu(null);
       }
@@ -1545,7 +3344,100 @@ export default function CalendarManagementPage() {
     tenantLabelByType[login?.tenantType || ""] ||
     "All Tenants";
 
+  const isEventCreatedBySignedInUser = (event: CalendarEvent) => {
+    const normalizedCreatedBy = (event.createdBy || "")
+      .trim()
+      .toUpperCase();
+
+    const localOwner = login?.role
+      ? `${login.role}::${login.tenantType || ""}`
+      : "";
+
+    if (localOwner && event.localOwner === localOwner) {
+      return true;
+    }
+
+    if (!normalizedCreatedBy || !login?.role) {
+      return false;
+    }
+
+    if (login.role === "SUPER_ADMIN") {
+      return normalizedCreatedBy === "CALENDAR-SUPER_ADMIN";
+    }
+
+    if (login.role === "PLATFORM_ADMIN") {
+      return normalizedCreatedBy === "CALENDAR-PLATFORM_ADMIN";
+    }
+
+    const tenantTypeFromDisplay: Record<string, string> = {
+      "University & College": "UNIVERSITY_COLLEGE",
+      "Skill Academy": "SKILL_ACADEMY",
+      Bootcamp: "BOOTCAMP",
+      Corporate: "CORPORATE",
+      Government: "GOVERNMENT",
+      NGO: "NGO",
+    };
+
+    const currentTenantType = (
+      login.tenantType ||
+      tenantTypeFromDisplay[login.displayTenant || ""] ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+
+    const exactSignedInUserId = currentTenantType
+      ? `CALENDAR-${login.role}-${currentTenantType}`
+      : `CALENDAR-${login.role}`;
+
+    return normalizedCreatedBy === exactSignedInUserId;
+  };
+
+  const isReceivedPublishedCard = (event: CalendarEvent) =>
+    event.status === "Published" &&
+    Boolean(event.createdBy) &&
+    !isEventCreatedBySignedInUser(event);
+
+  const getReceivedEventDisplayStatus = (
+    event: CalendarEvent
+  ): EventStatus => {
+    if (!isReceivedPublishedCard(event)) {
+      return event.status;
+    }
+
+    const endDateValue = (event.endDate || "").trim();
+    const endTimeValue = (event.endTime || event.end || "").trim();
+
+    if (!endDateValue) {
+      return "Published";
+    }
+
+    const normalizedEndTime =
+      /^\d{2}:\d{2}:\d{2}$/.test(endTimeValue)
+        ? endTimeValue
+        : /^\d{2}:\d{2}$/.test(endTimeValue)
+          ? `${endTimeValue}:00`
+          : "23:59:59";
+
+    const endDateTime = new Date(
+      `${endDateValue}T${normalizedEndTime}`
+    );
+
+    if (
+      !Number.isNaN(endDateTime.getTime()) &&
+      endDateTime.getTime() <= Date.now()
+    ) {
+      return "Closed";
+    }
+
+    return "Published";
+  };
+
   const showTenantFilter =
+    login?.role === "SUPER_ADMIN" ||
+    login?.role === "PLATFORM_ADMIN";
+
+  const showPublishAudienceFilters =
     login?.role === "SUPER_ADMIN" ||
     login?.role === "PLATFORM_ADMIN";
 
@@ -1560,6 +3452,58 @@ export default function CalendarManagementPage() {
     tenantFilterData[activeFilterTenant] ||
     tenantFilterData["All Tenants"];
 
+  /*
+   * Calendar Role/Actor filter labels must follow the same tenant-specific
+   * terminology already used in Add Event publishing.
+   *
+   * This tenant-label conversion is used ONLY for SUPER_ADMIN and
+   * PLATFORM_ADMIN because those roles can change the Tenant filter.
+   *
+   * Institute Admin / Coordinator / Faculty keep their existing filter
+   * behavior exactly as before.
+   */
+  const calendarActorLabelsByTenant: Record<
+    string,
+    Record<string, string>
+  > = {
+    "University & College": {
+      "Institute Admin": "Institute Admin",
+      Coordinator: "Coordinator",
+      Faculty: "Faculty",
+      Student: "Student",
+    },
+    "Skill Academy": {
+      "Institute Admin": "Academy Admin",
+      Coordinator: "Program Coordinator",
+      Faculty: "Trainer",
+      Student: "Learner",
+    },
+    Bootcamp: {
+      "Institute Admin": "Bootcamp Admin",
+      Coordinator: "Cohort Coordinator",
+      Faculty: "Instructor",
+      Student: "Learner",
+    },
+    Corporate: {
+      "Institute Admin": "Corporate Admin",
+      Coordinator: "L&D Coordinator",
+      Faculty: "Trainer",
+      Student: "Employee",
+    },
+    Government: {
+      "Institute Admin": "Department Admin",
+      Coordinator: "Program Coordinator",
+      Faculty: "Trainer",
+      Student: "Employee",
+    },
+    NGO: {
+      "Institute Admin": "NGO Admin",
+      Coordinator: "Program Coordinator",
+      Faculty: "Trainer",
+      Student: "Volunteer / Learner",
+    },
+  };
+
   const availableRoleOptions = (() => {
     const tenantRoles = currentTenantFilterData.roles;
 
@@ -1568,36 +3512,93 @@ export default function CalendarManagementPage() {
       ...tenantRoles.filter((item) => allowedRoles.includes(item)),
     ];
 
-    switch (login?.role) {
-      case "SUPER_ADMIN":
+    /*
+     * SUPER ADMIN / PLATFORM ADMIN:
+     * when a concrete Tenant is selected, display that tenant's Actor names
+     * exactly like Add Event.
+     */
+    if (
+      login?.role === "SUPER_ADMIN" ||
+      login?.role === "PLATFORM_ADMIN"
+    ) {
+      const allowedCanonicalRoles =
+        login.role === "SUPER_ADMIN"
+          ? [
+              "Platform Admin",
+              "Institute Admin",
+              "Coordinator",
+              "Faculty",
+              "Student",
+            ]
+          : [
+              "Institute Admin",
+              "Coordinator",
+              "Faculty",
+              "Student",
+            ];
+
+      /*
+       * "All Tenants" has no single tenant terminology, so keep the existing
+       * generic role names. Platform Admin remains global here.
+       */
+      if (activeFilterTenant === "All Tenants") {
         return [
           "All Roles",
-          ...tenantRoles,
+          ...tenantRoles.filter((item) =>
+            allowedCanonicalRoles.includes(item)
+          ),
         ];
+      }
 
-      case "PLATFORM_ADMIN":
-        return allowOnly([
-          "Institute Admin",
-          "Coordinator",
-          "Faculty",
-          "Student",
-        ]);
+      const tenantActorLabels =
+        calendarActorLabelsByTenant[activeFilterTenant] || {};
 
+      return [
+        "All Roles",
+        ...tenantRoles
+          .filter(
+            (item) =>
+              item !== "Platform Admin" &&
+              allowedCanonicalRoles.includes(item)
+          )
+          .map((item) => tenantActorLabels[item] || item),
+      ];
+    }
+
+    /*
+     * Tenant-scoped users keep the SAME hierarchy as before,
+     * but the visible Actor names now follow their signed-in tenant.
+     *
+     * Example:
+     * Corporate Institute Admin -> L&D Coordinator, Trainer, Employee
+     * University Institute Admin -> Coordinator, Faculty, Student
+     */
+    const tenantActorLabels =
+      calendarActorLabelsByTenant[activeFilterTenant] || {};
+
+    const mapTenantActorOptions = (allowedRoles: string[]) => [
+      "All Roles",
+      ...tenantRoles
+        .filter((item) => allowedRoles.includes(item))
+        .map((item) => tenantActorLabels[item] || item),
+    ];
+
+    switch (login?.role) {
       case "TENANT_ADMIN":
-        return allowOnly([
+        return mapTenantActorOptions([
           "Coordinator",
           "Faculty",
           "Student",
         ]);
 
       case "COORDINATOR":
-        return allowOnly([
+        return mapTenantActorOptions([
           "Faculty",
           "Student",
         ]);
 
       case "FACULTY":
-        return allowOnly([
+        return mapTenantActorOptions([
           "Student",
         ]);
 
@@ -1620,6 +3621,76 @@ export default function CalendarManagementPage() {
 
   const availableDepartmentOptions =
     selectedDivisionData?.departments || [];
+
+  const availableOrganizationOptions = useMemo(() => {
+    const normalizeTenantForOrganization = (value: string) =>
+      formatAudienceTenantLabel(value);
+
+    const selectedTenant =
+      tenant === "All Tenants" ? "" : tenant;
+
+    const organizations = new Set<string>();
+
+    // Always show the same organizations that are available in Add Event.
+    if (selectedTenant) {
+      (publishOrganizationsByTenant[selectedTenant] || []).forEach(
+        (organizationName) => organizations.add(organizationName)
+      );
+    } else {
+      Object.values(publishOrganizationsByTenant).forEach((items) => {
+        items.forEach((organizationName) =>
+          organizations.add(organizationName)
+        );
+      });
+    }
+
+    // Also keep any organization already stored on real published events.
+    events.forEach((event) => {
+      const ids =
+        event.audienceIds?.length
+          ? event.audienceIds
+          : (event.audience || "")
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean);
+
+      ids.forEach((audienceId) => {
+        const parts = audienceId
+          .split("::")
+          .map((part) => part.trim())
+          .filter(Boolean);
+
+        if (parts.length < 3) return;
+
+        const tenantLabel = normalizeTenantForOrganization(parts[0] || "");
+        const organizationName = parts.slice(1, -1).join(" · ");
+
+        if (
+          organizationName &&
+          (!selectedTenant || tenantLabel === selectedTenant)
+        ) {
+          organizations.add(organizationName);
+        }
+      });
+    });
+
+    return ["All Organizations", ...Array.from(organizations).sort()];
+  }, [events, tenant]);
+
+  const showAudienceTenantFilter =
+    audienceFilter === "All Audiences" ||
+    audienceFilter === "Tenant + Actor" ||
+    audienceFilter === "Specific Tenant" ||
+    audienceFilter === "Specific Organization + Actor";
+
+  const showAudienceRoleFilter =
+    audienceFilter === "All Audiences" ||
+    audienceFilter === "Tenant + Actor" ||
+    audienceFilter === "Specific Actor" ||
+    audienceFilter === "Specific Organization + Actor";
+
+  const showAudienceOrganizationFilter =
+    audienceFilter === "Specific Organization + Actor";
 
   // Learner/Student remains read-only. Other signed-in roles can use
   // the filter row, with Role options restricted by the hierarchy above.
@@ -1698,6 +3769,122 @@ export default function CalendarManagementPage() {
     return nextEvents;
   };
 
+  const refreshCalendarAccessToken = async () => {
+    const storedLogin = window.localStorage.getItem("calendar_dummy_login");
+
+    if (!storedLogin) {
+      window.localStorage.removeItem("calendar_access_token");
+      return null;
+    }
+
+    try {
+      const parsedLogin = JSON.parse(storedLogin) as CalendarLogin;
+
+      if (!parsedLogin.role) {
+        window.localStorage.removeItem("calendar_access_token");
+        return null;
+      }
+
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+      const requestBody: {
+        role: string;
+        tenantType?: string;
+      } = {
+        role: parsedLogin.role,
+      };
+
+      if (
+        parsedLogin.role !== "SUPER_ADMIN" &&
+        parsedLogin.role !== "PLATFORM_ADMIN" &&
+        parsedLogin.tenantType
+      ) {
+        requestBody.tenantType = parsedLogin.tenantType;
+      }
+
+      const response = await fetch(`${apiUrl}/auth/calendar-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        window.localStorage.removeItem("calendar_access_token");
+        return null;
+      }
+
+      const authResult = (await response.json()) as {
+        accessToken?: string;
+      };
+
+      if (!authResult.accessToken) {
+        window.localStorage.removeItem("calendar_access_token");
+        return null;
+      }
+
+      window.localStorage.setItem(
+        "calendar_access_token",
+        authResult.accessToken
+      );
+
+      return authResult.accessToken;
+    } catch {
+      window.localStorage.removeItem("calendar_access_token");
+      return null;
+    }
+  };
+
+  const calendarAuthenticatedFetch = async (
+    input: RequestInfo | URL,
+    init: RequestInit = {}
+  ) => {
+    const sendRequest = async (token: string) => {
+      const headers = new Headers(init.headers || {});
+      headers.set("Authorization", `Bearer ${token}`);
+
+      return fetch(input, {
+        ...init,
+        headers,
+      });
+    };
+
+    let token = window.localStorage.getItem("calendar_access_token");
+
+    if (!token) {
+      token = await refreshCalendarAccessToken();
+    }
+
+    if (!token) {
+      return new Response(
+        JSON.stringify({
+          message: "Unauthorized",
+          statusCode: 401,
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
+    let response = await sendRequest(token);
+
+    if (response.status === 401) {
+      const refreshedToken = await refreshCalendarAccessToken();
+
+      if (refreshedToken) {
+        response = await sendRequest(refreshedToken);
+      }
+    }
+
+    return response;
+  };
+
   const patchBackendEvent = async (
     event: CalendarEvent,
     data: Record<string, unknown>
@@ -1708,7 +3895,7 @@ export default function CalendarManagementPage() {
     if (!token) return null;
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-    const response = await fetch(`${apiUrl}/events/${event.backendId}`, {
+    const response = await calendarAuthenticatedFetch(`${apiUrl}/events/${event.backendId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -1740,7 +3927,7 @@ export default function CalendarManagementPage() {
       let response: Response;
 
       if (event.backendId) {
-        response = await fetch(`${apiUrl}/events/${event.backendId}`, {
+        response = await calendarAuthenticatedFetch(`${apiUrl}/events/${event.backendId}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -1753,7 +3940,7 @@ export default function CalendarManagementPage() {
             event.day
           ).padStart(2, "0")}`;
 
-        response = await fetch(`${apiUrl}/events/by-details`, {
+        response = await calendarAuthenticatedFetch(`${apiUrl}/events/by-details`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -1796,7 +3983,15 @@ export default function CalendarManagementPage() {
     try {
       const parsed = JSON.parse(storedEvents) as CalendarEvent[];
       if (Array.isArray(parsed)) {
-        setEvents(parsed);
+        const demoIds = new Set(initialEvents.map((event) => event.id));
+        const storedWithoutDemoDuplicates = parsed.filter(
+          (event) => !demoIds.has(event.id)
+        );
+
+        setEvents([
+          ...initialEvents,
+          ...storedWithoutDemoDuplicates,
+        ]);
       }
     } catch {
       // Keep initialEvents if stored data is invalid.
@@ -1819,7 +4014,7 @@ export default function CalendarManagementPage() {
         const apiUrl =
           process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-        const response = await fetch(`${apiUrl}/events`, {
+        const response = await calendarAuthenticatedFetch(`${apiUrl}/events`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -1827,9 +4022,11 @@ export default function CalendarManagementPage() {
         });
 
         if (!response.ok) {
+          const errorText = await response.text().catch(() => "");
           console.error(
             "Failed to load backend calendar events:",
-            response.status
+            response.status,
+            errorText
           );
           return;
         }
@@ -1838,7 +4035,9 @@ export default function CalendarManagementPage() {
 
         if (!Array.isArray(backendEvents)) return;
 
-        const mappedEvents = backendEvents.map(backendEventToCalendarEvent);
+        const mappedEvents = backendEvents.map(
+          backendEventToCalendarEvent
+        );
 
         /*
          * EVENT PERSISTENCE FIX
@@ -1995,9 +4194,59 @@ export default function CalendarManagementPage() {
     return Number.isNaN(endDateTime.getTime()) ? null : endDateTime;
   };
 
-  // Published events stay in the calendar until the user explicitly
-  // changes their status or deletes them. They are no longer auto-closed
-  // when the event end date/time passes.
+  // Automatically close Published events only after their actual end
+  // date/time passes. Explicitly cancelled events remain "Cancelled".
+  useEffect(() => {
+    const closeFinishedEvents = () => {
+      const now = Date.now();
+
+      setEvents((previousEvents) => {
+        let changed = false;
+
+        const nextEvents = previousEvents.map((event) => {
+          if (event.status !== "Published") {
+            return event;
+          }
+
+          const endDateTime = getEventEndDateTime(event);
+
+          if (!endDateTime || endDateTime.getTime() > now) {
+            return event;
+          }
+
+          changed = true;
+
+          // Natural event completion remains CLOSED.
+          void patchBackendEvent(event, { status: "CLOSED" });
+
+          return {
+            ...event,
+            status: "Closed" as EventStatus,
+          };
+        });
+
+        if (!changed) {
+          return previousEvents;
+        }
+
+        window.localStorage.setItem(
+          "calendar:events",
+          JSON.stringify(nextEvents)
+        );
+
+        return nextEvents;
+      });
+    };
+
+    closeFinishedEvents();
+
+    const closeIntervalId = window.setInterval(
+      closeFinishedEvents,
+      1000
+    );
+
+    return () => window.clearInterval(closeIntervalId);
+  }, []);
 
   // Convert Scheduled events to Published automatically when their
   // scheduled date/time is reached. The check also works after a reload
@@ -2072,13 +4321,15 @@ export default function CalendarManagementPage() {
       setCurrentDate(
         new Date(eventWithDepartment.year, eventWithDepartment.month, 1)
       );
-      setScheduleDate(
-        new Date(
-          eventWithDepartment.year,
-          eventWithDepartment.month,
-          eventWithDepartment.day
-        )
+      const eventDate = new Date(
+        eventWithDepartment.year,
+        eventWithDepartment.month,
+        eventWithDepartment.day
       );
+
+      setScheduleDate(eventDate);
+      setWeekDate(eventDate);
+      setDayDate(eventDate);
       setSelectedDay(null);
       setScheduleTab("All");
       setStatus("All Status");
@@ -2136,9 +4387,15 @@ export default function CalendarManagementPage() {
         setCurrentDate(
           new Date(result.event.year, result.event.month, 1)
         );
-        setScheduleDate(
-          new Date(result.event.year, result.event.month, result.event.day)
+        const editedEventDate = new Date(
+          result.event.year,
+          result.event.month,
+          result.event.day
         );
+
+        setScheduleDate(editedEventDate);
+        setWeekDate(editedEventDate);
+        setDayDate(editedEventDate);
         setSelectedDay(null);
         setScheduleTab("All");
         setStatus("All Status");
@@ -2147,6 +4404,42 @@ export default function CalendarManagementPage() {
       window.localStorage.removeItem("calendar:event-result");
     }
   }, []);
+
+  const calendarMonthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const calendarYearRange = Array.from(
+    { length: 12 },
+    (_, index) => calendarYearRangeStart + index
+  );
+
+  const selectCalendarMonth = (monthIndex: number) => {
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), monthIndex, 1)
+    );
+    setSelectedDay(null);
+    setCalendarPickerOpen(null);
+  };
+
+  const selectCalendarYear = (yearValue: number) => {
+    setCurrentDate(
+      new Date(yearValue, currentDate.getMonth(), 1)
+    );
+    setSelectedDay(null);
+    setCalendarPickerOpen(null);
+  };
 
   const monthCells = useMemo(() => daysForMonth(currentDate), [currentDate]);
   const monthName = currentDate.toLocaleString("en-US", { month: "long", year: "numeric" });
@@ -2277,14 +4570,34 @@ export default function CalendarManagementPage() {
       if (!raw) return "";
       if (raw.includes("super admin")) return "super admin";
       if (raw.includes("platform admin")) return "platform admin";
-      if (raw.includes("institute admin") || raw.includes("tenant admin")) return "institute admin";
+      if (
+        raw.includes("institute admin") ||
+        raw.includes("tenant admin") ||
+        raw.includes("academy admin") ||
+        raw.includes("bootcamp admin") ||
+        raw.includes("corporate admin") ||
+        raw.includes("department admin") ||
+        raw.includes("ngo admin")
+      ) {
+        return "institute admin";
+      }
+
       if (raw.includes("coordinator")) return "coordinator";
-      if (raw.includes("faculty")) return "faculty";
+
+      if (
+        raw.includes("faculty") ||
+        raw.includes("trainer") ||
+        raw.includes("instructor")
+      ) {
+        return "faculty";
+      }
+
       if (
         raw.includes("student") ||
         raw.includes("learner") ||
         raw.includes("employee") ||
-        raw.includes("trainee")
+        raw.includes("trainee") ||
+        raw.includes("volunteer")
       ) {
         return "student";
       }
@@ -2302,12 +4615,98 @@ export default function CalendarManagementPage() {
     const selectedRole = normalizeRole(role);
 
     return events.filter((event) => {
-      const statusMatch = status === "All Status" || event.status === status;
+      const effectiveStatus = getReceivedEventDisplayStatus(event);
+      const statusMatch =
+        status === "All Status" || effectiveStatus === status;
+
+      const rawAudienceIds =
+        event.audienceIds?.length
+          ? event.audienceIds
+          : (event.audience || "")
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean);
+
+      const rawAudienceTypes =
+        event.audienceTypes?.length
+          ? event.audienceTypes.map((item) => item.toUpperCase())
+          : [];
+
+      const targetParts = rawAudienceIds
+        .filter((item) => item.includes("::"))
+        .map((item) =>
+          item
+            .split("::")
+            .map((part) => part.trim())
+            .filter(Boolean)
+        );
+
+      const allTenantRows =
+        rawAudienceTypes.length > 0 &&
+        rawAudienceTypes.every((item) => item === "TENANT");
+
+      const allRoleRows =
+        rawAudienceTypes.length > 0 &&
+        rawAudienceTypes.every((item) => item === "ROLE");
+
+      const allTargetRows =
+        rawAudienceTypes.length > 0 &&
+        rawAudienceTypes.every((item) => item === "TARGET");
+
+      const isBroadTenantOnly =
+        allTenantRows &&
+        (event.audienceDetails || "").trim() === "Tenant";
+
+      const isBroadActorOnly =
+        allRoleRows &&
+        (event.audienceDetails || "").trim() === "Actor";
+
+      const isTenantActorTarget =
+        allTargetRows &&
+        targetParts.length > 0 &&
+        targetParts.every((parts) => parts.length === 2);
+
+      const isOrganizationActorTarget =
+        allTargetRows &&
+        targetParts.some((parts) => parts.length >= 3);
+
+      const audienceModeMatch =
+        !showPublishAudienceFilters ||
+        audienceFilter === "All Audiences" ||
+        (audienceFilter === "Tenant Only" && isBroadTenantOnly) ||
+        (audienceFilter === "Actor Only" && isBroadActorOnly) ||
+        (audienceFilter === "Tenant + Actor" && isTenantActorTarget) ||
+        (
+          audienceFilter === "Specific Tenant" &&
+          (
+            (allTenantRows && !isBroadTenantOnly) ||
+            isOrganizationActorTarget
+          )
+        ) ||
+        (
+          audienceFilter === "Specific Actor" &&
+          allRoleRows &&
+          !isBroadActorOnly
+        ) ||
+        (
+          audienceFilter === "Specific Organization + Actor" &&
+          isOrganizationActorTarget
+        );
+
+      const selectedOrganizationMatch =
+        !showPublishAudienceFilters ||
+        organization === "All Organizations" ||
+        targetParts.some(
+          (parts) =>
+            parts.length >= 3 &&
+            parts.slice(1, -1).join(" · ") === organization
+        );
+
       const isMySchedulesTab = scheduleTab === "My Events";
       const tabMatch =
         scheduleTab === "All" ||
         isMySchedulesTab ||
-        event.status === scheduleTab;
+        effectiveStatus === scheduleTab;
       const dayMatch = selectedDay === null || event.day === selectedDay;
 
       const eventDepartment = (event.department || "").trim();
@@ -2315,20 +4714,46 @@ export default function CalendarManagementPage() {
         department === "All Departments" ||
         eventDepartment === department;
 
-      const normalizedEventTenant = normalizeTenant(event.tenant);
+      const normalizedEventTenants = (event.tenant || "")
+        .split(",")
+        .map((item) => normalizeTenant(item))
+        .filter(Boolean);
 
-      // Institute Admin / Coordinator / Faculty are permanently scoped to the
-      // tenant selected during sign in. Super Admin / Platform Admin use the
-      // Tenant dropdown. Existing events without tenant metadata stay visible
-      // as shared/general events.
+      const normalizedEventTenant =
+        normalizedEventTenants[0] || "";
+
+      // Multiple publish targets can contain several tenants.
       const tenantMatch =
         normalizedActiveTenant === "ALL TENANTS" ||
         !event.tenant ||
-        normalizedEventTenant === normalizedActiveTenant ||
-        normalizedEventTenant === "ALL TENANTS";
+        normalizedEventTenants.includes(normalizedActiveTenant) ||
+        normalizedEventTenants.includes("ALL TENANTS");
 
       const eventRoleSource = event.role || event.audience || "";
-      const normalizedEventRole = normalizeRole(eventRoleSource);
+
+      const normalizedEventRoles = [
+        ...(event.role || "")
+          .split(",")
+          .map((item) => normalizeRole(item))
+          .filter(Boolean),
+        ...rawAudienceIds
+          .map((item) => {
+            const parts = item
+              .split("::")
+              .map((part) => part.trim())
+              .filter(Boolean);
+
+            return normalizeRole(
+              parts.length > 1
+                ? parts[parts.length - 1]
+                : item
+            );
+          })
+          .filter(Boolean),
+      ];
+
+      const normalizedEventRole =
+        normalizedEventRoles[0] || normalizeRole(eventRoleSource);
 
       const exactAssignedTenantMatch =
         !!event.tenant &&
@@ -2337,7 +4762,7 @@ export default function CalendarManagementPage() {
       const exactAssignedRoleMatch =
         !!event.role &&
         !!signedInAudienceRole &&
-        normalizedEventRole === signedInAudienceRole;
+        normalizedEventRoles.includes(signedInAudienceRole);
 
       // A received event belongs to this user only when the published
       // Tenant + Actor pair matches this signed-in tenant and role.
@@ -2348,7 +4773,13 @@ export default function CalendarManagementPage() {
         .map((item) => item.trim())
         .filter((item) => item.includes("::"))
         .some((item) => {
-          const [targetTenant = "", targetRole = ""] = item.split("::");
+          const parts = item
+            .split("::")
+            .map((part) => part.trim())
+            .filter(Boolean);
+
+          const targetTenant = parts[0] || "";
+          const targetRole = parts[parts.length - 1] || "";
 
           return (
             normalizeTenant(targetTenant) === normalizeTenant(signedInTenant) &&
@@ -2376,9 +4807,9 @@ export default function CalendarManagementPage() {
             ? true
             : (
                 role === "All Roles" ||
-                !normalizedEventRole ||
-                normalizedEventRole === selectedRole ||
-                normalizedEventRole === "all"
+                normalizedEventRoles.length === 0 ||
+                normalizedEventRoles.includes(selectedRole) ||
+                normalizedEventRoles.includes("all")
               );
 
       const exactSignedInUserId = (() => {
@@ -2541,25 +4972,53 @@ export default function CalendarManagementPage() {
         exactReceivedAudienceMatch;
 
       if (isMySchedulesTab) {
-        return isReceivedPublishedEvent && dayMatch;
+        return (
+          !isStudentView &&
+          isReceivedPublishedEvent &&
+          statusMatch &&
+          audienceModeMatch &&
+          selectedOrganizationMatch &&
+          dayMatch
+        );
       }
 
-      if (
-        isReceivedPublishedEvent &&
-        (scheduleTab === "All" || scheduleTab === "Published")
-      ) {
-        return statusMatch && tabMatch && dayMatch;
+      if (isReceivedPublishedEvent) {
+        // A received event is read-only for the recipient.
+        // Show it in Calendar / All Events and My Events only.
+        // Do not place it in the recipient's Published / Saved /
+        // Scheduled / Paused management sections.
+        if (scheduleTab === "All" || isMySchedulesTab) {
+          return (
+            statusMatch &&
+            audienceModeMatch &&
+            selectedOrganizationMatch &&
+            dayMatch
+          );
+        }
+
+        return false;
       }
 
       // Never hide the creator's own Add / Reuse / Publish event merely
       // because it was assigned to another Tenant + Actor.
       // Also keep a just-created local event visible until backend refresh.
       if (isCreatedBySignedInUser || isLocallyManagedEvent) {
-        return statusMatch && tabMatch && dayMatch && departmentMatch;
+        return (
+          statusMatch &&
+          audienceModeMatch &&
+          selectedOrganizationMatch &&
+          tabMatch &&
+          dayMatch &&
+          departmentMatch &&
+          tenantMatch &&
+          roleMatch
+        );
       }
 
       return (
         statusMatch &&
+        audienceModeMatch &&
+        selectedOrganizationMatch &&
         tabMatch &&
         dayMatch &&
         departmentMatch &&
@@ -2572,6 +5031,8 @@ export default function CalendarManagementPage() {
   }, [
     events,
     status,
+    audienceFilter,
+    organization,
     scheduleTab,
     selectedDay,
     department,
@@ -2581,15 +5042,256 @@ export default function CalendarManagementPage() {
     tenant,
     role,
     signedInAudienceRole,
+    showPublishAudienceFilters,
+  ]);
+
+  const getCalendarViewAnchorDate = () => {
+    if (selectedDay !== null) {
+      return new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        selectedDay
+      );
+    }
+
+    const eventsInDisplayedMonth = visibleEvents
+      .filter(
+        (event) =>
+          event.year === currentDate.getFullYear() &&
+          event.month === currentDate.getMonth()
+      )
+      .slice()
+      .sort((a, b) => {
+        const dateDifference =
+          new Date(a.year, a.month, a.day).getTime() -
+          new Date(b.year, b.month, b.day).getTime();
+
+        if (dateDifference !== 0) return dateDifference;
+
+        return getWeekEventHour(a) - getWeekEventHour(b);
+      });
+
+    if (eventsInDisplayedMonth.length > 0) {
+      const event = eventsInDisplayedMonth[0];
+
+      return new Date(event.year, event.month, event.day);
+    }
+
+    return new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
+  };
+
+  const changeCalendarView = (nextView: CalendarView) => {
+    if (nextView === "week") {
+      setWeekDate(getCalendarViewAnchorDate());
+    } else if (nextView === "day") {
+      setDayDate(getCalendarViewAnchorDate());
+    }
+
+    setView(nextView);
+  };
+
+  /*
+   * LIST VIEW SEARCH
+   * Used only by All Events, Published, Saved, My Events and
+   * Student -> My Schedules. Calendar view stays unchanged.
+   *
+   * A phrase can match any text shown/stored on the event card:
+   * title, subtitle, date, time, location, status, priority,
+   * audience, description, attachment or publisher.
+   */
+  const tenantKpiData = useMemo(() => {
+    const tenantNames = tenants.filter((item) => item !== "All Tenants");
+
+    const eventTenantNames = (event: CalendarEvent) => {
+      const matchedTenants = new Set<string>();
+
+      const addTenant = (value?: string) => {
+        const normalized = formatAudienceTenantLabel(value || "");
+
+        if (tenantNames.includes(normalized)) {
+          matchedTenants.add(normalized);
+        }
+      };
+
+      /*
+       * 1. Direct tenant metadata.
+       * 2. TENANT / ORGANIZATION / TARGET audience rows.
+       * 3. TARGET ids such as Tenant::Organization::Actor.
+       *
+       * This keeps KPI numbers tied to the live event list, not to the
+       * hard-coded organization master list.
+       */
+      (event.tenant || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .forEach(addTenant);
+
+      (event.audienceIds || []).forEach((audienceId) => {
+        const parts = String(audienceId || "")
+          .split("::")
+          .map((part) => part.trim())
+          .filter(Boolean);
+
+        addTenant(parts[0] || audienceId);
+      });
+
+      return Array.from(matchedTenants);
+    };
+
+    const items = tenantNames.map((tenantName) => ({
+      name: tenantName,
+      count: events.reduce(
+        (count, event) =>
+          count + (eventTenantNames(event).includes(tenantName) ? 1 : 0),
+        0
+      ),
+    }));
+
+    return {
+      /*
+       * Total Events counts unique live events that belong to at least one
+       * tenant. Individual tenant cards show their own current event count.
+       */
+      total: events.filter((event) => eventTenantNames(event).length > 0).length,
+      items,
+    };
+  }, [events]);
+
+  const listYearOptions = useMemo(
+    () => getCalendarFilterYears(events),
+    [events]
+  );
+
+  useEffect(() => {
+    if (
+      listYearFilter !== "All Years" &&
+      !listYearOptions.includes(listYearFilter)
+    ) {
+      setListYearFilter("All Years");
+      setListYearFilterTouched(false);
+    }
+  }, [listYearFilter, listYearOptions]);
+
+  const listVisibleEvents = useMemo(() => {
+    /*
+     * LIST FILTER FIX
+     *
+     * Month and Year must work even when the Search box is empty.
+     * Previously this function returned visibleEvents immediately when there
+     * was no search query, so selecting November/Year did not filter the list.
+     *
+     * All existing Audience / Tenant / Actor / Organization / Status filters
+     * are already applied in visibleEvents above. This layer only adds the
+     * list Month, Year and optional Search filtering.
+     */
+    if (contentView === "Calendar") {
+      return visibleEvents;
+    }
+
+    const query = eventSearchQuery.trim().toLowerCase().replace(/\s+/g, " ");
+
+    const searchableDate = (value?: string) => {
+      const raw = (value || "").trim();
+      const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+      return match
+        ? `${raw} ${match[3]}-${match[2]}-${match[1]}`
+        : raw;
+    };
+
+    return visibleEvents.filter((event) => {
+      if (listMonthFilter !== "All Months") {
+        const monthIndex =
+          calendarMonthFilterOptions.indexOf(listMonthFilter) - 1;
+
+        if (monthIndex >= 0 && event.month !== monthIndex) {
+          return false;
+        }
+      }
+
+      if (
+        listYearFilter !== "All Years" &&
+        Number(event.year) !== Number(listYearFilter)
+      ) {
+        return false;
+      }
+
+      /*
+       * Month / Year filtering must still work when Search is empty.
+       * Only run the text-match step when the user actually typed a query.
+       */
+      if (!query) {
+        return true;
+      }
+
+      const attachmentName =
+        parseStoredAttachment(event.attachment).originalName;
+
+      const searchableText = [
+        event.title,
+        event.eventTitle,
+        event.subtitle,
+        event.eventSubtitle,
+        event.date,
+        searchableDate(event.startDate),
+        searchableDate(event.endDate),
+        event.start,
+        event.end,
+        event.startTime,
+        event.endTime,
+        event.location,
+        event.status,
+        event.priority,
+        event.department,
+        event.tenant,
+        event.role,
+        event.audience,
+        event.audienceDetails,
+        event.description,
+        attachmentName,
+        event.createdBy,
+        eventCreatorLabel(event.createdBy),
+        ...(event.audienceIds || []),
+        ...(event.audienceTypes || []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+
+      return searchableText.includes(query);
+    });
+  }, [
+    visibleEvents,
+    eventSearchQuery,
+    contentView,
+    listMonthFilter,
+    listYearFilter,
   ]);
 
   useEffect(() => {
     setMobileEventIndex((currentIndex) => {
-      if (visibleEvents.length === 0) return 0;
-      return Math.min(currentIndex, visibleEvents.length - 1);
+      if (listVisibleEvents.length === 0) return 0;
+      return Math.min(currentIndex, listVisibleEvents.length - 1);
     });
     setOpenMenu(null);
-  }, [visibleEvents.length, scheduleTab, status, selectedDay, tenant, role]);
+  }, [
+    listVisibleEvents.length,
+    eventSearchQuery,
+    contentView,
+    scheduleTab,
+    status,
+    audienceFilter,
+    organization,
+    selectedDay,
+    tenant,
+    role,
+  ]);
 
   const moveMonth = (amount: number) =>
     setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() + amount, 1));
@@ -2609,8 +5311,10 @@ export default function CalendarManagementPage() {
   });
 
   const clearFilters = () => {
+    setAudienceFilter("All Audiences");
     setTenant(isTenantScopedRole ? signedInTenant : "All Tenants");
     setRole("All Roles");
+    setOrganization("All Organizations");
     setStatus("All Status");
     setDepartment("All Departments");
     setSelectedDepartmentDivision("");
@@ -2650,15 +5354,21 @@ export default function CalendarManagementPage() {
     setCancelReason("");
   };
 
-  const confirmCancelPublishedEvent = () => {
+  const confirmCancelPublishedEvent = async () => {
     if (!cancelEvent) return;
 
-    void patchBackendEvent(cancelEvent, { status: "CLOSED" });
+    const updatedBackendEvent = cancelEvent.backendId
+      ? await patchBackendEvent(cancelEvent, { status: "CANCELLED" })
+      : null;
+
+    if (cancelEvent.backendId && !updatedBackendEvent) {
+      return;
+    }
 
     setEvents((previousEvents) => {
       const nextEvents = previousEvents.map((item) =>
         item.id === cancelEvent.id
-          ? { ...item, status: "Closed" as EventStatus }
+          ? { ...item, status: "Cancelled" as EventStatus }
           : item
       );
 
@@ -2668,7 +5378,34 @@ export default function CalendarManagementPage() {
     closeCancelEventModal();
   };
 
+  const openAddDropdown = (
+    source: "desktop" | "mobile",
+    button: HTMLButtonElement | null
+  ) => {
+    if (!button) return;
+
+    const rect = button.getBoundingClientRect();
+    const menuWidth = 190;
+    const viewportPadding = 10;
+
+    const left = Math.min(
+      Math.max(rect.left, viewportPadding),
+      Math.max(
+        viewportPadding,
+        window.innerWidth - menuWidth - viewportPadding
+      )
+    );
+
+    setAddMenuPosition({
+      top: rect.bottom + 8,
+      left,
+    });
+
+    setAddMenuOpen((current) => (current === source ? null : source));
+  };
+
   const handleAddEvent = () => {
+    setAddMenuOpen(null);
     setOpenMenu(null);
     window.localStorage.removeItem("calendar:event-action");
     window.localStorage.removeItem("calendar:selected-event");
@@ -2769,7 +5506,7 @@ export default function CalendarManagementPage() {
               return;
             }
 
-            const response = await fetch(`${apiUrl}/events/${backendId}`, {
+            const response = await calendarAuthenticatedFetch(`${apiUrl}/events/${backendId}`, {
               method: "DELETE",
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -2834,13 +5571,15 @@ export default function CalendarManagementPage() {
         setCurrentDate(
           new Date(eventWithDepartment.year, eventWithDepartment.month, 1)
         );
-        setScheduleDate(
-          new Date(
-            eventWithDepartment.year,
-            eventWithDepartment.month,
-            eventWithDepartment.day
-          )
+        const completedEventDate = new Date(
+          eventWithDepartment.year,
+          eventWithDepartment.month,
+          eventWithDepartment.day
         );
+
+        setScheduleDate(completedEventDate);
+        setWeekDate(completedEventDate);
+        setDayDate(completedEventDate);
         setSelectedDay(null);
         setScheduleTab("All");
         setStatus("All Status");
@@ -3178,7 +5917,7 @@ export default function CalendarManagementPage() {
         const apiUrl =
           process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-        const response = await fetch(`${apiUrl}/events`, {
+        const response = await calendarAuthenticatedFetch(`${apiUrl}/events`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -3504,7 +6243,6 @@ export default function CalendarManagementPage() {
     new Set([
       ...events.map((event) => String(event.year)),
       String(new Date().getFullYear()),
-      "2026",
     ])
   ).sort((a, b) => Number(a) - Number(b));
 
@@ -3929,10 +6667,23 @@ export default function CalendarManagementPage() {
             ).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`,
             location: location || "TBA",
             attendees: Number(attendees) || 0,
-            status:
-              rawStatus?.toLowerCase() === "published"
-                ? ("Published" as const)
-                : ("Saved" as const),
+            status: (() => {
+              const normalizedStatus = (rawStatus || "")
+                .trim()
+                .toLowerCase();
+
+              const csvStatusMap: Record<string, EventStatus> = {
+                published: "Published",
+                saved: "Saved",
+                scheduled: "Scheduled",
+                paused: "Paused",
+                closed: "Closed",
+                cancelled: "Cancelled",
+                canceled: "Cancelled",
+              };
+
+              return csvStatusMap[normalizedStatus] || "Saved";
+            })(),
             color: "#2d4cc8",
           };
         })
@@ -3962,7 +6713,7 @@ export default function CalendarManagementPage() {
         let existingBackendEvents: BackendEvent[] = [];
 
         try {
-          const existingResponse = await fetch(`${apiUrl}/events`, {
+          const existingResponse = await calendarAuthenticatedFetch(`${apiUrl}/events`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -4046,7 +6797,7 @@ export default function CalendarManagementPage() {
           }
 
           try {
-            const response = await fetch(`${apiUrl}/events`, {
+            const response = await calendarAuthenticatedFetch(`${apiUrl}/events`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -4059,10 +6810,16 @@ export default function CalendarManagementPage() {
                 startTime,
                 endTime,
                 location: event.location,
-                status:
-                  event.status === "Published"
-                    ? "PUBLISHED"
-                    : "SAVED",
+                status: (
+                  {
+                    Published: "PUBLISHED",
+                    Saved: "SAVED",
+                    Scheduled: "SCHEDULED",
+                    Paused: "PAUSED",
+                    Closed: "CLOSED",
+                    Cancelled: "CANCELLED",
+                  } satisfies Record<EventStatus, BackendEventStatus>
+                )[event.status],
               }),
             });
 
@@ -4107,6 +6864,8 @@ export default function CalendarManagementPage() {
             );
 
             setScheduleDate(uploadedDate);
+            setWeekDate(uploadedDate);
+            setDayDate(uploadedDate);
             setCurrentDate(
               new Date(
                 latestUploadedEvent.year,
@@ -4128,13 +6887,15 @@ export default function CalendarManagementPage() {
           uniqueParsed[uniqueParsed.length - 1];
 
         if (latestUploadedEvent) {
-          setScheduleDate(
-            new Date(
-              latestUploadedEvent.year,
-              latestUploadedEvent.month,
-              latestUploadedEvent.day
-            )
+          const uploadedDate = new Date(
+            latestUploadedEvent.year,
+            latestUploadedEvent.month,
+            latestUploadedEvent.day
           );
+
+          setScheduleDate(uploadedDate);
+          setWeekDate(uploadedDate);
+          setDayDate(uploadedDate);
           setCurrentDate(
             new Date(
               latestUploadedEvent.year,
@@ -4248,30 +7009,81 @@ export default function CalendarManagementPage() {
                     >
                       <Icon src={icons.export} /> <span>Export</span>
                     </button>
-                    <button className="neoButton addEventButton" onClick={handleAddEvent}>
-                      <Icon src={icons.add} /> <span>Add Event</span>
+                    <button
+                      ref={desktopAddButtonRef}
+                      type="button"
+                      className="neoButton addEventButton"
+                      aria-label="Add"
+                      aria-haspopup="menu"
+                      aria-expanded={addMenuOpen === "desktop"}
+                      onClick={() => {
+                        setBulkOpen(false);
+                        openAddDropdown(
+                          "desktop",
+                          desktopAddButtonRef.current
+                        );
+                      }}
+                    >
+                      <Icon src={icons.add} />
+                      <span>Add</span>
                     </button>
                   </>
                 )}
               </div>
             </section>
 
-            {!hideCalendarFilters && (
+            {!hideCalendarFilters && !showPublishAudienceFilters && (
             <section
               className={`calendarFilters ${
                 isTenantScopedRole ? "tenantScopedFilters" : ""
+              } ${
+                audienceFilter === "All Audiences"
+                  ? "audienceFiltersInitial"
+                  : "audienceFiltersSelected"
+              } ${
+                audienceFilter === "Specific Organization + Actor"
+                  ? "organizationActorFilters"
+                  : ""
               } ${mobileFiltersOpen ? "mobileFiltersOpen" : ""}`}
             >
-              {showTenantFilter ? (
+              {showPublishAudienceFilters && (
                 <FilterDropdown
+                  className="audienceFilterDropdown"
+                  label="All Users"
+                  value={audienceFilter}
+                  options={audienceFilterOptions}
+                  open={openFilter === "audience"}
+                  onToggle={() =>
+                    setOpenFilter(
+                      openFilter === "audience" ? null : "audience"
+                    )
+                  }
+                  onSelect={(value) => {
+                    setAudienceFilter(value as AudienceFilterType);
+                    setTenant("All Tenants");
+                    setRole("All Roles");
+                    setOrganization("All Organizations");
+                    setOpenFilter(null);
+                  }}
+                />
+              )}
+
+              {showTenantFilter && showPublishAudienceFilters && showAudienceTenantFilter ? (
+                <FilterDropdown
+                  className="tenantFilterDropdown"
                   label="Tenant"
                   value={tenant}
                   options={tenants}
                   open={openFilter === "tenant"}
-                  onToggle={() => setOpenFilter(openFilter === "tenant" ? null : "tenant")}
+                  onToggle={() =>
+                    setOpenFilter(
+                      openFilter === "tenant" ? null : "tenant"
+                    )
+                  }
                   onSelect={(value) => {
                     setTenant(value);
                     setRole("All Roles");
+                    setOrganization("All Organizations");
                     setStatus("All Status");
                     setDepartment("All Departments");
                     setSelectedDepartmentDivision("");
@@ -4294,9 +7106,6 @@ export default function CalendarManagementPage() {
                     onSelect={(value) => {
                       setSelectedDepartmentDivision(value);
                       setDepartment("All Departments");
-
-                      // Immediately open only the Department list that belongs
-                      // to the selected Division. No Next / Back control.
                       setOpenFilter("department");
                     }}
                   />
@@ -4325,46 +7134,321 @@ export default function CalendarManagementPage() {
                 </>
               ) : null}
 
-              <FilterDropdown
-                label="Role"
-                value={role}
-                options={availableRoleOptions}
-                open={openFilter === "role"}
-                onToggle={() => setOpenFilter(openFilter === "role" ? null : "role")}
-                onSelect={(value) => {
-                  setRole(value);
-                  setOpenFilter(null);
-                }}
-              />
+              {showPublishAudienceFilters && showAudienceOrganizationFilter && (
+                <FilterDropdown
+                  className="organizationFilterDropdown"
+                  label="Organization"
+                  value={organization}
+                  options={availableOrganizationOptions}
+                  open={openFilter === "organization"}
+                  onToggle={() =>
+                    setOpenFilter(
+                      openFilter === "organization"
+                        ? null
+                        : "organization"
+                    )
+                  }
+                  onSelect={(value) => {
+                    setOrganization(value);
+                    setOpenFilter(null);
+                  }}
+                />
+              )}
+
+              {(showPublishAudienceFilters ? showAudienceRoleFilter : true) && (
+                <FilterDropdown
+                  className="roleFilterDropdown"
+                  label="Role"
+                  value={role}
+                  options={availableRoleOptions}
+                  open={openFilter === "role"}
+                  onToggle={() =>
+                    setOpenFilter(
+                      openFilter === "role" ? null : "role"
+                    )
+                  }
+                  onSelect={(value) => {
+                    setRole(value);
+                    setOpenFilter(null);
+                  }}
+                />
+              )}
 
               <FilterDropdown
+                className="statusFilterDropdown"
                 label="Status"
                 value={status}
                 options={availableStatusOptions}
                 open={openFilter === "status"}
-                onToggle={() => setOpenFilter(openFilter === "status" ? null : "status")}
+                onToggle={() =>
+                  setOpenFilter(
+                    openFilter === "status" ? null : "status"
+                  )
+                }
                 onSelect={(value) => {
                   setStatus(value);
                   setOpenFilter(null);
                 }}
               />
 
-              <button className="neoButton clearButton" onClick={() => { clearFilters(); setMobileFiltersOpen(false); }}>Clear</button>
+              <button
+                className="neoButton clearButton"
+                onClick={() => {
+                  clearFilters();
+                  setMobileFiltersOpen(false);
+                }}
+              >
+                Clear
+              </button>
             </section>
             )}
 
-            <section className={`calendarWorkspace ${isStudentView ? "studentCalendarWorkspace" : ""} ${view === "week" ? "weekImageLayout" : view === "day" ? "dayImageLayout" : ""}`}>
-              <div className="calendarPanel">
+            <section
+              className={`calendarContentViewSwitch ${
+                isStudentView ? "studentContentViewSwitch" : ""
+              }`}
+              aria-label={
+                isStudentView
+                  ? "Student calendar views"
+                  : "Calendar management views"
+              }
+            >
+              {(isStudentView
+                ? (["Calendar", "My Schedules"] as const)
+                : ([
+                    "Calendar",
+                    "All",
+                    "Published",
+                    "Saved",
+                    "My Events",
+                  ] as const)
+              ).map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={contentView === item ? "active" : ""}
+                  onClick={() => {
+                    setContentView(item);
+                    setEventSearchQuery("");
+                    setOpenMenu(null);
+                    setOpenMenuSource(null);
+                    setSelectedDay(null);
+                    setMobileEventIndex(0);
+
+                    if (item === "Calendar") {
+                      setScheduleTab("All");
+                    } else if (item === "My Schedules") {
+                      // Student schedules are already audience-filtered by the
+                      // existing learner visibility logic.
+                      setScheduleTab("All");
+                    } else {
+                      setScheduleTab(item);
+                    }
+                  }}
+                >
+                  {item === "All" ? "All Events" : item}
+                </button>
+              ))}
+            </section>
+
+            <section
+              className={`calendarWorkspace ${
+                isStudentView ? "studentCalendarWorkspace" : ""
+              } ${
+                contentView === "Calendar"
+                  ? "calendarContentModeCalendar"
+                  : "calendarContentModeList"
+              } ${
+                view === "week"
+                  ? "weekImageLayout"
+                  : view === "day"
+                    ? "dayImageLayout"
+                    : ""
+              }`}
+            >
+              <div
+                className={`calendarPanel ${
+                  contentView !== "Calendar" ? "contentPanelHidden" : ""
+                }`}
+              >
                 <div className="mobileMonthHeadingRow">
-                  <h2>{view === "week" ? weekTitle : view === "day" ? dayTitle : monthName}</h2>
+                  {view === "month" ? (
+                    <div className="calendarMonthYearSelectors calendarMonthYearPickerShell">
+                      <button
+                        type="button"
+                        className={`calendarMonthYearPickerButton ${
+                          calendarPickerOpen === "month" ? "open" : ""
+                        }`}
+                        aria-label="Select month"
+                        aria-expanded={calendarPickerOpen === "month"}
+                        onClick={() =>
+                          setCalendarPickerOpen((previous) =>
+                            previous === "month" ? null : "month"
+                          )
+                        }
+                      >
+                        <span>{calendarMonthNames[currentDate.getMonth()]}</span>
+                        <Icon src={icons.chevronDown} size={18} />
+                      </button>
+
+                      <button
+                        type="button"
+                        className={`calendarMonthYearPickerButton calendarYearPickerButton ${
+                          calendarPickerOpen === "year" ? "open" : ""
+                        }`}
+                        aria-label="Select year"
+                        aria-expanded={calendarPickerOpen === "year"}
+                        onClick={() => {
+                          setCalendarYearRangeStart(
+                            currentDate.getFullYear() - 10
+                          );
+                          setCalendarPickerOpen((previous) =>
+                            previous === "year" ? null : "year"
+                          );
+                        }}
+                      >
+                        <span>{currentDate.getFullYear()}</span>
+                        <Icon src={icons.chevronDown} size={18} />
+                      </button>
+
+                      {calendarPickerOpen === "month" && (
+                        <div className="calendarMonthYearPopover calendarMonthPopover">
+                          <div className="calendarPickerHeader">
+                            <button
+                              type="button"
+                              className="calendarPickerHeaderArrow"
+                              aria-label="Previous month"
+                              onClick={() => {
+                                setCurrentDate(
+                                  new Date(
+                                    currentDate.getFullYear(),
+                                    currentDate.getMonth() - 1,
+                                    1
+                                  )
+                                );
+                                setSelectedDay(null);
+                              }}
+                            >
+                              <Icon src={icons.chevronLeft} size={24} />
+                            </button>
+
+                            <strong>
+                              {calendarMonthNames[currentDate.getMonth()]}
+                            </strong>
+
+                            <button
+                              type="button"
+                              className="calendarPickerHeaderArrow"
+                              aria-label="Next month"
+                              onClick={() => {
+                                setCurrentDate(
+                                  new Date(
+                                    currentDate.getFullYear(),
+                                    currentDate.getMonth() + 1,
+                                    1
+                                  )
+                                );
+                                setSelectedDay(null);
+                              }}
+                            >
+                              <Icon src={icons.chevronRight} size={24} />
+                            </button>
+                          </div>
+
+                          <div className="calendarMonthOptionGrid">
+                            {calendarMonthNames.map((monthLabel, monthIndex) => (
+                              <button
+                                type="button"
+                                key={monthLabel}
+                                className={`calendarMonthYearOption ${
+                                  currentDate.getMonth() === monthIndex
+                                    ? "active"
+                                    : ""
+                                }`}
+                                onClick={() => selectCalendarMonth(monthIndex)}
+                              >
+                                {monthLabel}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {calendarPickerOpen === "year" && (
+                        <div className="calendarMonthYearPopover calendarYearPopover">
+                          <div className="calendarPickerHeader calendarYearPickerHeader">
+                            <button
+                              type="button"
+                              className="calendarPickerHeaderArrow calendarPickerHeaderCircle"
+                              aria-label="Previous years"
+                              onClick={() =>
+                                setCalendarYearRangeStart(
+                                  (previous) => previous - 12
+                                )
+                              }
+                            >
+                              <Icon src={icons.chevronLeft} size={24} />
+                            </button>
+
+                            <strong>
+                              {calendarYearRangeStart} -{" "}
+                              {calendarYearRangeStart + 11}
+                            </strong>
+
+                            <button
+                              type="button"
+                              className="calendarPickerHeaderArrow calendarPickerHeaderCircle"
+                              aria-label="Next years"
+                              onClick={() =>
+                                setCalendarYearRangeStart(
+                                  (previous) => previous + 12
+                                )
+                              }
+                            >
+                              <Icon src={icons.chevronRight} size={24} />
+                            </button>
+                          </div>
+
+                          <div className="calendarYearOptionGrid">
+                            {calendarYearRange.map((yearValue) => (
+                              <button
+                                type="button"
+                                key={yearValue}
+                                className={`calendarMonthYearOption calendarYearOption ${
+                                  currentDate.getFullYear() === yearValue
+                                    ? "active"
+                                    : ""
+                                }`}
+                                onClick={() => selectCalendarYear(yearValue)}
+                              >
+                                {yearValue}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <h2>{view === "week" ? weekTitle : dayTitle}</h2>
+                  )}
 
                   {!isStudentView && (
                     <div className="mobileMonthHeadingActions">
                       <button
+                        ref={mobileAddButtonRef}
                         type="button"
                         className="mobileMonthHeadingButton"
-                        aria-label="Add event"
-                        onClick={handleAddEvent}
+                        aria-label="Add"
+                        aria-haspopup="menu"
+                        aria-expanded={addMenuOpen === "mobile"}
+                        onClick={() => {
+                          setMobileFiltersOpen(false);
+                          setOpenFilter(null);
+                          openAddDropdown(
+                            "mobile",
+                            mobileAddButtonRef.current
+                          );
+                        }}
                       >
                         <Icon src={icons.add} />
                       </button>
@@ -4376,6 +7460,7 @@ export default function CalendarManagementPage() {
                           aria-label="Calendar filters"
                           aria-expanded={mobileFiltersOpen}
                           onClick={() => {
+                            setAddMenuOpen(null);
                             setMobileFiltersOpen((previous) => !previous);
                             setOpenFilter(null);
                           }}
@@ -4390,19 +7475,38 @@ export default function CalendarManagementPage() {
                 <div className="calendarToolbar">
                   <div className="viewSwitch">
                     {(["month", "week", "day"] as CalendarView[]).map(item => (
-                      <button key={item} className={view === item ? "active" : ""} onClick={() => setView(item)}>
+                      <button
+                        key={item}
+                        className={view === item ? "active" : ""}
+                        onClick={() => changeCalendarView(item)}
+                      >
                         {item[0].toUpperCase() + item.slice(1)}
                       </button>
                     ))}
                   </div>
                   <div className="calendarNav">
                     <button className="todayButton" onClick={() => {
+                      const today = new Date();
+                      const todayDate = new Date(
+                        today.getFullYear(),
+                        today.getMonth(),
+                        today.getDate()
+                      );
+
+                      setScheduleDate(todayDate);
+
                       if (view === "week") {
-                        setWeekDate(new Date(2026, 8, 13));
+                        setWeekDate(todayDate);
                       } else if (view === "day") {
-                        setDayDate(new Date(2026, 8, 19));
+                        setDayDate(todayDate);
                       } else {
-                        setCurrentDate(new Date(2026, 8, 1));
+                        setCurrentDate(
+                          new Date(
+                            todayDate.getFullYear(),
+                            todayDate.getMonth(),
+                            1
+                          )
+                        );
                         setSelectedDay(null);
                       }
                     }}>
@@ -4533,7 +7637,13 @@ export default function CalendarManagementPage() {
 
                           {dayEventList?.day === cell.day && cell.current && !dayPopup && (
                             <span
-                              className="calendarDayEventList"
+                              className={`calendarDayEventList ${
+                                index % 7 <= 1
+                                  ? "calendarPopupAlignLeft"
+                                  : index % 7 >= 5
+                                    ? "calendarPopupAlignRight"
+                                    : "calendarPopupAlignCenter"
+                              }`}
                               onClick={(ev) => ev.stopPropagation()}
                             >
                               <span className="calendarDayEventListHeading">
@@ -4572,7 +7682,16 @@ export default function CalendarManagementPage() {
                           )}
 
                           {dayPopup?.day === cell.day && cell.current && (
-                            <span className="calendarDayPopup" onClick={(ev) => ev.stopPropagation()}>
+                            <span
+                              className={`calendarDayPopup ${
+                                index % 7 <= 1
+                                  ? "calendarPopupAlignLeft"
+                                  : index % 7 >= 5
+                                    ? "calendarPopupAlignRight"
+                                    : "calendarPopupAlignCenter"
+                              }`}
+                              onClick={(ev) => ev.stopPropagation()}
+                            >
                               <span className="calendarDayPopupTitle">
                                 <i style={{ background: dayPopup.event.color }} />
                                 <strong>{dayPopup.event.title}</strong>
@@ -4708,21 +7827,6 @@ export default function CalendarManagementPage() {
                                         </button>
                                       )}
 
-                                      {(dayPopup.event.status === "Saved" || dayPopup.event.status === "Scheduled" || dayPopup.event.status === "Published") && (
-                                        <button
-                                          type="button"
-                                          className="eventMenuAction"
-                                          onClick={(ev) => {
-                                            ev.stopPropagation();
-                                            setDayPopup(null);
-                                            openPublishModal(dayPopup.event);
-                                          }}
-                                        >
-                                          <span className="eventMenuCheck" aria-hidden="true" />
-                                          <span>Publish</span>
-                                        </button>
-                                      )}
-
                                       {(dayPopup.event.status === "Saved" || dayPopup.event.status === "Closed") && (
                                         <button
                                           type="button"
@@ -4850,63 +7954,219 @@ export default function CalendarManagementPage() {
                 )}
               </div>
 
-              <aside className={`schedulePanel ${view === "week" ? "weekSchedulePanelHidden" : view === "day" ? "daySchedulePanelHidden" : ""}`}>
-                <div
-                  className={`scheduleTabs ${
-                    isStudentView
-                      ? "studentScheduleTabs"
-                      : canReceiveAssignedSchedules
-                        ? "scheduleTabsWithMySchedules"
-                        : ""
-                  }`}
-                >
-                  {isStudentView ? (
+              <aside
+                className={`schedulePanel ${
+                  contentView === "Calendar" ? "contentPanelHidden" : ""
+                }`}
+              >
+                <div className="scheduleListHeader">
+                  <div>
+                    <strong>
+                      {contentView === "My Schedules"
+                        ? "My Schedules"
+                        : contentView === "My Events"
+                          ? "My Events"
+                          : contentView === "All"
+                            ? "All Events"
+                            : `${contentView} Events`}
+                    </strong>
+                    <span>
+                      {listVisibleEvents.length}{" "}
+                      {listVisibleEvents.length === 1 ? "Event" : "Events"}
+                    </span>
+                  </div>
+                </div>
+
+                {showPublishAudienceFilters && (
+                  <section className="calendarFilters listCalendarFilters allUsersCompactFilters">
+                    <AllUsersFilterDropdown
+                      touched={allUsersFilterTouched}
+                      value={
+                        audienceFilter === "Tenant Only" ||
+                        audienceFilter === "Actor Only" ||
+                        audienceFilter === "Specific Tenant"
+                          ? audienceFilter
+                          : "All Audiences"
+                      }
+                      tenant={tenant}
+                      organization={organization}
+                      tenantOptions={tenants}
+                      organizationOptions={availableOrganizationOptions}
+                      open={openFilter === "audience"}
+                      level={allUsersFilterLevel}
+                      onToggle={() => {
+                        if (openFilter === "audience") {
+                          setOpenFilter(null);
+                          return;
+                        }
+
+                        setAllUsersFilterLevel("modes");
+                        setOpenFilter("audience");
+                      }}
+                      onLevelChange={setAllUsersFilterLevel}
+                      onModeSelect={(value) => {
+                        setAllUsersFilterTouched(true);
+                        setAudienceFilter(value);
+                        setTenant("All Tenants");
+                        setRole("All Roles");
+                        setOrganization("All Organizations");
+
+                        if (value !== "Specific Tenant") {
+                          setOpenFilter(null);
+                          setAllUsersFilterLevel("modes");
+                        }
+                      }}
+                      onTenantSelect={(value) => {
+                        setAllUsersFilterTouched(true);
+                        setAudienceFilter("Specific Tenant");
+                        setTenant(value);
+                        setRole("All Roles");
+                        setOrganization("All Organizations");
+                        setStatus("All Status");
+                        setDepartment("All Departments");
+                        setSelectedDepartmentDivision("");
+                      }}
+                      onOrganizationSelect={(value) => {
+                        setAllUsersFilterTouched(true);
+                        setOrganization(value);
+                        setOpenFilter(null);
+                        setAllUsersFilterLevel("modes");
+                      }}
+                    />
+
+                    <FilterDropdown
+                      className="monthFilterDropdown"
+                      label="Month"
+                      value={listMonthFilterTouched ? listMonthFilter : "Month"}
+                      options={calendarMonthFilterOptions}
+                      open={openFilter === "listMonth"}
+                      onToggle={() =>
+                        setOpenFilter(
+                          openFilter === "listMonth" ? null : "listMonth"
+                        )
+                      }
+                      onSelect={(value) => {
+                        setListMonthFilter(value);
+                        setListMonthFilterTouched(true);
+                        setOpenFilter(null);
+                      }}
+                    />
+
+                    <FilterDropdown
+                      className="yearFilterDropdown"
+                      label="Year"
+                      value={listYearFilterTouched ? listYearFilter : "Year"}
+                      options={listYearOptions}
+                      open={openFilter === "listYear"}
+                      onToggle={() =>
+                        setOpenFilter(
+                          openFilter === "listYear" ? null : "listYear"
+                        )
+                      }
+                      onSelect={(value) => {
+                        setListYearFilter(value);
+                        setListYearFilterTouched(true);
+                        setOpenFilter(null);
+                      }}
+                    />
+
+                    <FilterDropdown
+                      className="statusFilterDropdown"
+                      label="Status"
+                      value={status}
+                      options={availableStatusOptions}
+                      open={openFilter === "status"}
+                      onToggle={() =>
+                        setOpenFilter(
+                          openFilter === "status" ? null : "status"
+                        )
+                      }
+                      onSelect={(value) => {
+                        setStatus(value);
+                        setOpenFilter(null);
+                      }}
+                    />
+
+                    <button
+                      className="neoButton clearButton"
+                      onClick={() => {
+                        clearFilters();
+                        setListMonthFilter("All Months");
+                        setListMonthFilterTouched(false);
+                        setListYearFilter("All Years");
+                        setListYearFilterTouched(false);
+                        setAllUsersFilterTouched(false);
+                        setAllUsersFilterLevel("modes");
+                        setMobileFiltersOpen(false);
+                      }}
+                    >
+                      Clear
+                    </button>
+                  </section>
+                )}
+
+                {showPublishAudienceFilters &&
+                  allUsersFilterTouched &&
+                  audienceFilter === "Tenant Only" && (
+                    <section
+                      className="tenantKpiSection"
+                      aria-label="Tenant summary"
+                    >
+                      <div className="tenantKpiCard tenantKpiCardTotal">
+                        <span className="tenantKpiLabel">Total Events</span>
+                        <strong className="tenantKpiValue">
+                          {tenantKpiData.total}
+                        </strong>
+                      </div>
+
+                      {tenantKpiData.items.map((item) => (
+                        <div className="tenantKpiCard" key={item.name}>
+                          <span className="tenantKpiLabel">{item.name}</span>
+                          <strong className="tenantKpiValue">
+                            {item.count}
+                          </strong>
+                        </div>
+                      ))}
+                    </section>
+                  )}
+
+                <div className="eventListSearchWrap">
+                  <input
+                    type="search"
+                    className="eventListSearchInput"
+                    value={eventSearchQuery}
+                    onChange={(event) => {
+                      setEventSearchQuery(event.target.value);
+                      setMobileEventIndex(0);
+                      setOpenMenu(null);
+                    }}
+                    placeholder={
+                      contentView === "My Schedules"
+                        ? "Search my schedules..."
+                        : contentView === "My Events"
+                          ? "Search my events..."
+                          : contentView === "Published"
+                            ? "Search published events..."
+                            : contentView === "Saved"
+                              ? "Search saved events..."
+                              : "Search all events..."
+                    }
+                    aria-label="Search events"
+                  />
+
+                  {eventSearchQuery && (
                     <button
                       type="button"
-                      className="active"
-                      onClick={() => setScheduleTab("All")}
+                      className="eventListSearchClear"
+                      aria-label="Clear event search"
+                      onClick={() => {
+                        setEventSearchQuery("");
+                        setMobileEventIndex(0);
+                      }}
                     >
-                      My Schedules
+                      ×
                     </button>
-                  ) : (
-                    (canReceiveAssignedSchedules
-                      ? (["All", "Published", "Saved", "My Events"] as const)
-                      : (["All", "Published", "Saved"] as const)
-                    ).map(tab => (
-                      <button
-                        key={tab}
-                        className={scheduleTab === tab ? "active" : ""}
-                        onClick={() => setScheduleTab(tab)}
-                      >
-                        {tab}
-                      </button>
-                    ))
                   )}
-                </div>
-                <div className="scheduleDateRow">
-                  <button
-                    type="button"
-                    aria-label="Previous day"
-                    onClick={() => moveScheduleDate(-1)}
-                  >
-                    <Icon src={icons.chevronLeft} size={20} />
-                  </button>
-                  <span>
-                    {visibleEvents.length} {visibleEvents.length === 1 ? "Event" : "Events"}
-                    &nbsp; | &nbsp;
-                    {scheduleDate.toLocaleDateString("en-US", {
-                      weekday: "long",
-                      month: "short",
-                      day: "2-digit",
-                    })}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label="Next day"
-                    onClick={() => moveScheduleDate(1)}
-                  >
-                    <Icon src={icons.chevronRight} size={20} />
-                  </button>
                 </div>
 
                 <div
@@ -4927,21 +8187,32 @@ export default function CalendarManagementPage() {
                     setOpenMenu(null);
                     setMobileEventIndex((currentIndex) =>
                       distance < 0
-                        ? Math.min(currentIndex + 1, visibleEvents.length - 1)
+                        ? Math.min(currentIndex + 1, listVisibleEvents.length - 1)
                         : Math.max(currentIndex - 1, 0)
                     );
                   }}
                 >
-                  {visibleEvents.length ? visibleEvents.map((event, index) => (
+                  {listVisibleEvents.length ? listVisibleEvents.map((event, index) => (
                     <article
-                      className={`eventCard ${index === mobileEventIndex ? "mobileActiveEventCard" : ""} ${
-                        !isStudentView && scheduleTab === "My Events"
-                          ? "receivedScheduleCard"
+                      className={`eventCard ${
+                        index === mobileEventIndex
+                          ? "mobileActiveEventCard"
                           : ""
                       }`}
                       key={event.id}
                     >
-                      {!isStudentView && scheduleTab !== "My Events" && <span className={`statusBadge ${event.status.toLowerCase()}`}>{event.status}</span>}
+                      {!isStudentView && (() => {
+                        const cardStatus =
+                          getReceivedEventDisplayStatus(event);
+
+                        return (
+                          <span
+                            className={`statusBadge ${cardStatus.toLowerCase()}`}
+                          >
+                            {cardStatus}
+                          </span>
+                        );
+                      })()}
 
                       {(() => {
                         // Schedule card uses the exact values saved by Add / Edit / Reuse.
@@ -4954,20 +8225,48 @@ export default function CalendarManagementPage() {
                         const cardEndTime = (event.endTime || event.end || "").trim();
                         const cardPriority = (event.priority || "").trim();
                         const cardDescription = (event.description || "").trim();
+                        const cardAudienceDetails = (
+                          event.audienceDetails ||
+                          event.audience ||
+                          ""
+                        ).trim();
+                        const showAudienceDetails =
+                          event.status !== "Saved" &&
+                          Boolean(cardAudienceDetails);
                         const cardAttachment = (event.attachment || "").trim();
                         const parsedCardAttachment = parseStoredAttachment(cardAttachment);
                         const cardAttachmentName = parsedCardAttachment.originalName;
-                        const isReceivedSchedule =
-                          isStudentView || scheduleTab === "My Events";
+                        const isReceivedSchedule = isStudentView;
 
                         const sameDate =
                           cardStartDate &&
                           cardEndDate &&
                           cardStartDate.toLowerCase() === cardEndDate.toLowerCase();
 
+                        const formatCardDate = (value: string) => {
+                          const raw = (value || "").trim();
+
+                          const yyyyMmDd = raw.match(
+                            /^(\d{4})-(\d{2})-(\d{2})$/
+                          );
+
+                          if (yyyyMmDd) {
+                            return `${yyyyMmDd[3]}-${yyyyMmDd[2]}-${yyyyMmDd[1]}`;
+                          }
+
+                          return raw;
+                        };
+
+                        const formattedStartDate =
+                          formatCardDate(cardStartDate);
+                        const formattedEndDate =
+                          formatCardDate(cardEndDate);
+
                         const dateText = sameDate
-                          ? cardStartDate
-                          : [cardStartDate, cardEndDate].filter(Boolean).join(" - ");
+                          ? formattedStartDate
+                          : [formattedStartDate, formattedEndDate]
+                              .filter(Boolean)
+                              .join(" - ");
 
                         const isPlaceholderTime = (value: string) =>
                           ["", "00:00", "00:00 am", "00:00 pm"].includes(value.toLowerCase());
@@ -4992,18 +8291,28 @@ export default function CalendarManagementPage() {
                                 <span className="scheduleTitleLine">
                                   <strong>{cardTitle}</strong>
 
-                                  {(isStudentView || scheduleTab === "My Events") && event.createdBy && (
+                                  {isStudentView && event.createdBy && (
                                     <span className="studentEventCreator">
                                       {" - "}{eventCreatorLabel(event.createdBy)}
                                     </span>
                                   )}
 
+                                  {!isStudentView &&
+                                    (contentView === "All" ||
+                                      contentView === "My Events") &&
+                                    isReceivedPublishedCard(event) &&
+                                    event.createdBy && (
+                                      <span className="studentEventCreator">
+                                        {" - Published by "}
+                                        {eventCreatorLabel(event.createdBy)}
+                                      </span>
+                                    )}
+
                                   {event.reminderSentAt && (
                                     <span
                                       className="scheduleReminderFlag"
-                                      title={`Reminder sent ${new Date(
-                                        event.reminderSentAt
-                                      ).toLocaleString("en-US")}`}
+                                      tabIndex={0}
+                                      aria-label="Reminder sent details"
                                     >
                                       <span
                                         className="scheduleReminderFlagIcon"
@@ -5012,6 +8321,53 @@ export default function CalendarManagementPage() {
                                         ⚑
                                       </span>
                                       <span>Reminder Sent</span>
+
+                                      <span
+                                        className="reminderHoverCard"
+                                        role="tooltip"
+                                      >
+                                        <span className="reminderHoverRow">
+                                          <span className="reminderHoverLabel">
+                                            Title
+                                          </span>
+                                          <span className="reminderHoverValue">
+                                            {cardTitle}
+                                          </span>
+                                        </span>
+
+                                        {dateText && (
+                                          <span className="reminderHoverRow">
+                                            <span className="reminderHoverLabel">
+                                              Date
+                                            </span>
+                                            <span className="reminderHoverValue">
+                                              {dateText}
+                                            </span>
+                                          </span>
+                                        )}
+
+                                        {timeText && (
+                                          <span className="reminderHoverRow">
+                                            <span className="reminderHoverLabel">
+                                              Time
+                                            </span>
+                                            <span className="reminderHoverValue">
+                                              {timeText}
+                                            </span>
+                                          </span>
+                                        )}
+
+                                        {showAudienceDetails && (
+                                          <span className="reminderHoverRow">
+                                            <span className="reminderHoverLabel">
+                                              Audience
+                                            </span>
+                                            <span className="reminderHoverValue">
+                                              {cardAudienceDetails}
+                                            </span>
+                                          </span>
+                                        )}
+                                      </span>
                                     </span>
                                   )}
                                 </span>
@@ -5043,6 +8399,19 @@ export default function CalendarManagementPage() {
                               </div>
                             )}
 
+                            {showAudienceDetails && (
+                              <div className="scheduleCardAudience">
+                                <span className="scheduleCardFieldLabel">
+                                  {event.status === "Scheduled"
+                                    ? "Scheduled For"
+                                    : "Published To"}
+                                </span>
+                                <span className="scheduleCardAudienceValue">
+                                  {cardAudienceDetails}
+                                </span>
+                              </div>
+                            )}
+
                             {cardDescription && (
                               <div className="scheduleCardDescription">{cardDescription}</div>
                             )}
@@ -5070,102 +8439,100 @@ export default function CalendarManagementPage() {
                         );
                       })()}
 
-                      {!isStudentView && scheduleTab !== "My Events" && (
-                        <div className="eventMenuWrap">
+                      {!isStudentView &&
+                        contentView !== "My Events" &&
+                        !isReceivedPublishedCard(event) && (
+                        <div className="eventCardActions">
                           <button
                             type="button"
-                            className="moreButton"
-                            aria-label="Event actions"
-                            onClick={() => {
-                              if (openMenu === event.id && openMenuSource === "schedule") {
-                                setOpenMenu(null);
-                                setOpenMenuSource(null);
-                              } else {
-                                setOpenMenu(event.id);
-                                setOpenMenuSource("schedule");
-                              }
-                            }}
+                            className="eventCardActionButton"
+                            onClick={() => openEventForm(event, "edit")}
                           >
-                            <Icon src={icons.more} size={18} />
+                            Edit
                           </button>
 
-                          {openMenu === event.id && openMenuSource === "schedule" && (
-                            <div className="eventMenu">
-                              <button type="button" className="eventMenuAction eventMenuActionActive" onClick={() => openEventForm(event, "edit")}><span className="eventMenuCheck" aria-hidden="true"><span>✓</span></span><span>Edit</span></button>
-                              <button type="button" className="eventMenuAction" onClick={() => openEventForm(event, "reuse")}><span className="eventMenuCheck" aria-hidden="true" /><span>Reuse</span></button>
+                          <button
+                            type="button"
+                            className="eventCardActionButton"
+                            onClick={() => openEventForm(event, "reuse")}
+                          >
+                            Reuse
+                          </button>
 
-                              {event.status === "Published" && (
-                                <>
-                                  <button type="button" className="eventMenuAction" onClick={() => openReminderModal(event)}>
-                                    <span className="eventMenuCheck" aria-hidden="true" />
-                                    <span>Send Reminder</span>
-                                  </button>
+                          {event.status === "Published" && (
+                            <>
+                              <button
+                                type="button"
+                                className="eventCardActionButton"
+                                onClick={() => openReminderModal(event)}
+                              >
+                                Send Reminder
+                              </button>
 
-                                  <button type="button" className="eventMenuAction" onClick={() => toggleEventPause(event)}>
-                                    <span className="eventMenuCheck" aria-hidden="true" />
-                                    <span>Pause</span>
-                                  </button>
-                                </>
-                              )}
+                              <button
+                                type="button"
+                                className="eventCardActionButton"
+                                onClick={() => toggleEventPause(event)}
+                              >
+                                Pause
+                              </button>
 
-                              {event.status === "Paused" && (
-                                <button type="button" className="eventMenuAction" onClick={() => toggleEventPause(event)}>
-                                  <span className="eventMenuCheck" aria-hidden="true" />
-                                  <span>Resume</span>
-                                </button>
-                              )}
+                              <button
+                                type="button"
+                                className="eventCardActionButton eventCardActionDanger"
+                                onClick={() => openCancelEventModal(event)}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          )}
 
-                              {(event.status === "Saved" || event.status === "Scheduled" || event.status === "Published") && (
-                                <button type="button" className="eventMenuAction" onClick={() => openPublishModal(event)}>
-                                  <span className="eventMenuCheck" aria-hidden="true" />
-                                  <span>Publish</span>
-                                </button>
-                              )}
+                          {event.status === "Paused" && (
+                            <button
+                              type="button"
+                              className="eventCardActionButton"
+                              onClick={() => toggleEventPause(event)}
+                            >
+                              Resume
+                            </button>
+                          )}
 
-                              {(event.status === "Saved" || event.status === "Closed") && (
-                                <button
-                                  type="button"
-                                  className="eventMenuAction"
-                                  onClick={async () => {
-                                    const deleted = await deleteBackendEvent(event);
-                                    if (!deleted) return;
+                          {(event.status === "Saved" ||
+                            event.status === "Closed" ||
+                            event.status === "Cancelled") && (
+                            <button
+                              type="button"
+                              className="eventCardActionButton eventCardActionDanger"
+                              onClick={async () => {
+                                const deleted = await deleteBackendEvent(event);
+                                if (!deleted) return;
 
-                                    setEvents((prev) => {
-                                      const nextEvents = prev.filter(
-                                        (e) => e.id !== event.id
-                                      );
-                                      return saveEvents(nextEvents);
-                                    });
+                                setEvents((prev) => {
+                                  const nextEvents = prev.filter(
+                                    (e) => e.id !== event.id
+                                  );
+                                  return saveEvents(nextEvents);
+                                });
 
-                                    setOpenMenu(null);
-                                  }}
-                                >
-                                  <span className="eventMenuCheck" aria-hidden="true" />
-                                  <span>Delete</span>
-                                </button>
-                              )}
-
-                              {event.status === "Published" && (
-                                <button
-                                  type="button"
-                                  className="eventMenuAction"
-                                  onClick={() => openCancelEventModal(event)}
-                                >
-                                  <span className="eventMenuCheck" aria-hidden="true" />
-                                  <span>Cancel</span>
-                                </button>
-                              )}
-                            </div>
+                                setOpenMenu(null);
+                              }}
+                            >
+                              Delete
+                            </button>
                           )}
                         </div>
                       )}
                     </article>
                   )) : (
-                    <div className="emptySchedule">No events found.</div>
+                    <div className="emptySchedule">
+                      {eventSearchQuery.trim()
+                        ? "No events match your search."
+                        : "No events found."}
+                    </div>
                   )}
                 </div>
 
-                {visibleEvents.length > 0 && (
+                {listVisibleEvents.length > 0 && (
                   <div className="mobileScheduleCardNav" aria-label="Schedule event navigation">
                     <button
                       type="button"
@@ -5182,11 +8549,11 @@ export default function CalendarManagementPage() {
                     <button
                       type="button"
                       aria-label="Next event"
-                      disabled={mobileEventIndex >= visibleEvents.length - 1}
+                      disabled={mobileEventIndex >= listVisibleEvents.length - 1}
                       onClick={() => {
                         setOpenMenu(null);
                         setMobileEventIndex((currentIndex) =>
-                          Math.min(currentIndex + 1, visibleEvents.length - 1)
+                          Math.min(currentIndex + 1, listVisibleEvents.length - 1)
                         );
                       }}
                     >
@@ -5208,6 +8575,43 @@ export default function CalendarManagementPage() {
             </button>
             )}
           </main>
+
+          {addMenuOpen && (
+            <BodyPortal>
+              <div
+                className="calendarAddChooser"
+                role="menu"
+                style={{
+                  top: `${addMenuPosition.top}px`,
+                  left: `${addMenuPosition.left}px`,
+                }}
+              >
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setAddMenuOpen(null);
+                    handleAddEvent();
+                  }}
+                >
+                  <Icon src={icons.calendar} />
+                  <span>Event</span>
+                </button>
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setAddMenuOpen(null);
+                    router.push("/discussion_form");
+                  }}
+                >
+                  <Icon src={icons.more} />
+                  <span>Discussion Forum</span>
+                </button>
+              </div>
+            </BodyPortal>
+          )}
 
           {cancelEvent && (
             <BodyPortal>
@@ -5422,7 +8826,7 @@ export default function CalendarManagementPage() {
             </BodyPortal>
           )}
 
-          {publishEvent && (
+          {false && publishEvent && (
             <BodyPortal>
               <div
                 className="publishModalOverlay"
@@ -5519,7 +8923,7 @@ export default function CalendarManagementPage() {
                         <div
                           className="publishDropdownMenu"
                           role="listbox"
-                          aria-label="Audience"
+                          aria-label="All Users"
                         >
                           {(
                             isTenantScopedPublisher
@@ -5671,7 +9075,7 @@ export default function CalendarManagementPage() {
             </BodyPortal>
           )}
 
-          {autoPublishEvent && (
+          {false && autoPublishEvent && (
             <BodyPortal>
               <div
                 className="autoPublishOverlay"

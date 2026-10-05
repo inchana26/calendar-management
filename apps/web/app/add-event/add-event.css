@@ -628,15 +628,15 @@
     z-index: 300;
 
     width: 100%;
-    max-height: 190px;
-    padding: 8px;
+    min-width: 220px;
+    height: 248px;
+    padding: 12px 10px 10px;
 
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
+    grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+    gap: 10px;
 
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
 
     border-radius: 12px;
     background: #DFE6E9;
@@ -645,59 +645,104 @@
         -6px -6px 10px #FFFFFF,
         6px 6px 12px #BFC6C9;
 
+    box-sizing: border-box;
+}
+
+.neoTimeColumn {
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.neoTimeHeader {
+    flex: 0 0 auto;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #30384B;
+    font-family: "Segoe UI", Inter, sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.neoTimeDivider {
+    width: 1px;
+    height: 100%;
+    background: rgba(76, 86, 106, 0.16);
+}
+
+.neoTimeScroll {
+    min-height: 0;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: #9F9E9E transparent;
 }
 
-.neoTimePopup::-webkit-scrollbar {
+.neoTimeScroll::-webkit-scrollbar {
     width: 6px;
 }
 
-.neoTimePopup::-webkit-scrollbar-track {
+.neoTimeScroll::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.neoTimePopup::-webkit-scrollbar-thumb {
+.neoTimeScroll::-webkit-scrollbar-thumb {
     border-radius: 20px;
     background: #9F9E9E;
 }
 
-.neoTimePopup button {
-    height: 34px;
+.neoTimeScroll button {
+    flex: 0 0 46px;
+    width: 100%;
+    min-width: 0;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
     border: 0;
-    border-radius: 7px;
+    border-radius: 0;
 
-    background: #DFE6E9;
-    color: #374151;
+    background: transparent;
+    color: #30384B;
 
     font-family: "Segoe UI", Inter, sans-serif;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 400;
 
-    box-shadow:
-        -2px -2px 4px #FFFFFF,
-        2px 2px 4px #C4C4C4;
-
+    box-shadow: none;
     cursor: pointer;
 }
 
-.neoTimePopup button:hover {
+.neoTimeScroll button:hover {
     color: #2D55D7;
-
-    box-shadow:
-        inset 2px 2px 3px #C4C4C4,
-        inset -2px -2px 3px #FFFFFF;
+    background: rgba(255, 255, 255, 0.24);
+    box-shadow: none;
 }
 
-.neoTimePopup button.selected {
-    color: #FFFFFF;
-    background: #2D55D7;
-
-    box-shadow:
-        inset 2px 2px 4px rgba(0, 0, 0, 0.16),
-        -2px -2px 4px #FFFFFF;
+.neoTimeScroll button.selected {
+    color: #0B73E0;
+    background: transparent;
+    font-weight: 600;
+    box-shadow: none;
 }
+
 
 @media (max-width: 520px) {
     .neoCalendarPopup {
@@ -2767,3 +2812,2269 @@
     height: 13px !important;
   }
 }
+
+/* =========================================================
+   FINAL HR / MIN TIME PICKER — REFERENCE MATCH
+   Compact spacing, visible scrollbar, and bottom border.
+   ========================================================= */
+
+.addEventPage .neoTimePopup {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    height: 190px !important;
+    max-height: 190px !important;
+
+    padding: 8px 7px 8px !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr) !important;
+    column-gap: 7px !important;
+
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+
+    border: 1px solid rgba(160, 168, 172, 0.20) !important;
+    border-radius: 12px !important;
+    background: #DFE6E9 !important;
+
+    box-shadow:
+        -6px -6px 10px #FFFFFF,
+        6px 6px 12px #BFC6C9 !important;
+}
+
+.addEventPage .neoTimeColumn {
+    min-width: 0 !important;
+    height: 100% !important;
+
+    display: grid !important;
+    grid-template-rows: 30px minmax(0, 1fr) !important;
+    row-gap: 4px !important;
+}
+
+.addEventPage .neoTimeHeader {
+    height: 30px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #30384B !important;
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    font-weight: 700 !important;
+}
+
+.addEventPage .neoTimeDivider {
+    width: 1px !important;
+    height: 100% !important;
+    background: rgba(66, 76, 96, 0.20) !important;
+}
+
+/* Inner HR / MIN box with visible bottom edge like the reference. */
+.addEventPage .neoTimeScroll {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+
+    padding: 2px 2px 2px 2px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+
+    border: 1px solid rgba(150, 158, 162, 0.18) !important;
+    border-radius: 8px !important;
+    background: rgba(223, 230, 233, 0.74) !important;
+
+    box-shadow:
+        inset 2px 2px 4px rgba(196, 196, 196, 0.58),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.92) !important;
+
+    scroll-behavior: smooth;
+
+    /* Firefox */
+    scrollbar-width: thin !important;
+    scrollbar-color: #8F969A #D7DEE1 !important;
+}
+
+/* Chrome / Edge / Safari scrollbar — always clearly visible. */
+.addEventPage .neoTimeScroll::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+.addEventPage .neoTimeScroll::-webkit-scrollbar-track {
+    margin: 3px 0 !important;
+    background: #D7DEE1 !important;
+    border-radius: 8px !important;
+    box-shadow:
+        inset 1px 1px 2px rgba(180, 188, 192, 0.55),
+        inset -1px -1px 2px rgba(255, 255, 255, 0.85) !important;
+}
+
+.addEventPage .neoTimeScroll::-webkit-scrollbar-thumb {
+    min-height: 32px !important;
+    background: #8F969A !important;
+    border: 1px solid #D7DEE1 !important;
+    border-radius: 8px !important;
+}
+
+.addEventPage .neoTimeScroll::-webkit-scrollbar-button:single-button {
+    display: block !important;
+    height: 7px !important;
+    background: #D7DEE1 !important;
+}
+
+.addEventPage .neoTimeScroll button {
+    flex: 0 0 36px !important;
+    min-height: 36px !important;
+    width: 100% !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 0 8px 0 2px !important;
+
+    border: 0 !important;
+    border-radius: 6px !important;
+
+    background: transparent !important;
+    color: #30384B !important;
+
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 17px !important;
+    line-height: 1 !important;
+    font-weight: 400 !important;
+
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+
+.addEventPage .neoTimeScroll button:hover {
+    color: #30384B !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    box-shadow: none !important;
+}
+
+/* Selected number appears blue inside a small inset box, like the reference. */
+.addEventPage .neoTimeScroll button.selected {
+    color: #0B73E0 !important;
+    background: #DFE6E9 !important;
+    font-weight: 600 !important;
+
+    box-shadow:
+        inset 2px 2px 3px rgba(196, 196, 196, 0.58),
+        inset -2px -2px 3px rgba(255, 255, 255, 0.94) !important;
+}
+
+/* Keep spacing compact — at most one line between heading and list. */
+@media (max-width: 520px) {
+    /* .addEventPage .neoTimePopup,
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoTimePopup {
+        left: 0 !important;
+        right: auto !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+
+        height: 190px !important;
+        max-height: 190px !important;
+    
+        padding: 7px 6px !important;
+        grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr) !important;
+        column-gap: 6px !important;
+    } */
+
+    .addEventPage .neoTimeColumn {
+        grid-template-rows: 29px minmax(0, 1fr) !important;
+        row-gap: 3px !important;
+    }
+
+    .addEventPage .neoTimeHeader {
+        height: 29px !important;
+        font-size: 17px !important;
+    }
+
+    .addEventPage .neoTimeScroll button {
+        flex-basis: 34px !important;
+        min-height: 34px !important;
+        font-size: 16px !important;
+    }
+
+    .addEventPage .neoTimeScroll::-webkit-scrollbar {
+        width: 7px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    /* .addEventPage .neoTimePopup {
+        height: 180px !important;
+        max-height: 180px !important;
+        padding: 6px 5px !important;
+        column-gap: 5px !important;
+    } */
+
+    .addEventPage .neoTimeColumn {
+        grid-template-rows: 27px minmax(0, 1fr) !important;
+        row-gap: 3px !important;
+    }
+
+    .addEventPage .neoTimeHeader {
+        height: 27px !important;
+        font-size: 16px !important;
+    }
+
+    .addEventPage .neoTimeScroll button {
+        flex-basis: 31px !important;
+        min-height: 31px !important;
+        font-size: 15px !important;
+    }
+}
+
+/* =========================================================
+   TIME PICKER — SCROLL + BOTTOM EDGE / ARROW MATCH
+   Only affects HR / MIN popup.
+   ========================================================= */
+
+/* Each column owns its scrollbar area. */
+.addEventPage .neoTimeColumn {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Keep the list genuinely scrollable and reserve scrollbar space. */
+.addEventPage .neoTimeScroll {
+    position: relative !important;
+
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+
+    scrollbar-gutter: stable !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+
+    /* Make the lower edge clearly visible like the reference image. */
+    border-bottom: 1px solid rgba(128, 138, 144, 0.34) !important;
+
+    box-shadow:
+        inset 2px 2px 4px rgba(196, 196, 196, 0.58),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.92),
+        inset 0 -3px 3px rgba(176, 184, 188, 0.14) !important;
+}
+
+/* Chrome / Edge / Safari: visible narrow rail from top to bottom. */
+.addEventPage .neoTimeScroll::-webkit-scrollbar {
+    width: 8px !important;
+    background: #D7DEE1 !important;
+}
+
+.addEventPage .neoTimeScroll::-webkit-scrollbar-track {
+    margin: 0 !important;
+    background: #D7DEE1 !important;
+    border-radius: 6px !important;
+
+    box-shadow:
+        inset 1px 1px 2px rgba(164, 173, 178, 0.42),
+        inset -1px -1px 2px rgba(255, 255, 255, 0.84) !important;
+}
+
+.addEventPage .neoTimeScroll::-webkit-scrollbar-thumb {
+    min-height: 30px !important;
+
+    border: 1px solid #D7DEE1 !important;
+    border-radius: 6px !important;
+
+    background: #8B9499 !important;
+
+    box-shadow:
+        inset 1px 1px 1px rgba(255, 255, 255, 0.35),
+        inset -1px -1px 1px rgba(83, 92, 97, 0.20) !important;
+}
+
+/*
+ * Browser scrollbar arrow buttons are not drawn consistently on Windows/macOS.
+ * These small visual arrows reproduce the reference's top/bottom indicators
+ * while the real scrollbar underneath remains draggable and wheel-scrollable.
+ */
+.addEventPage .neoTimeColumn::before,
+.addEventPage .neoTimeColumn::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 3px !important;
+    z-index: 20 !important;
+
+    width: 0 !important;
+    height: 0 !important;
+
+    border-left: 4px solid transparent !important;
+    border-right: 4px solid transparent !important;
+
+    pointer-events: none !important;
+}
+
+/* Top scrollbar arrow. */
+.addEventPage .neoTimeColumn::before {
+    top: 39px !important;
+    border-bottom: 5px solid #7F888D !important;
+}
+
+/* Bottom scrollbar arrow. */
+.addEventPage .neoTimeColumn::after {
+    bottom: 5px !important;
+    border-top: 5px solid #7F888D !important;
+}
+
+/* Leave breathing room so the last number is not hidden behind the bottom arrow. */
+.addEventPage .neoTimeScroll button:last-child {
+    margin-bottom: 10px !important;
+}
+
+/* Keep the bottom edge and arrow placement proportional on mobile. */
+@media (max-width: 520px) {
+    .addEventPage .neoTimeColumn::before {
+        top: 36px !important;
+    }
+
+    .addEventPage .neoTimeColumn::after {
+        bottom: 5px !important;
+    }
+
+    .addEventPage .neoTimeScroll::-webkit-scrollbar {
+        width: 7px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .addEventPage .neoTimeColumn::before {
+        top: 34px !important;
+    }
+
+    .addEventPage .neoTimeColumn::after {
+        bottom: 4px !important;
+    }
+}
+
+/* =========================================================
+   FINAL TIME PICKER — HH / MM / SS
+   Three equal scroll columns inside the SAME popup width.
+   No middle divider lines.
+   ========================================================= */
+
+.addEventPage .neoTimePopup.neoTimePopupThree {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    height: 190px !important;
+    max-height: 190px !important;
+
+    padding: 8px 6px !important;
+
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+
+    border: 1px solid rgba(150, 158, 162, 0.18) !important;
+    border-radius: 12px !important;
+    background: #DFE6E9 !important;
+    box-shadow:
+        -6px -6px 10px #FFFFFF,
+        6px 6px 12px #BFC6C9 !important;
+}
+
+/* Remove old separator line completely. */
+.addEventPage .neoTimePopupThree .neoTimeDivider {
+    display: none !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeColumn {
+    position: relative !important;
+    min-width: 0 !important;
+    height: 100% !important;
+
+    display: grid !important;
+    grid-template-rows: 29px minmax(0, 1fr) !important;
+    row-gap: 3px !important;
+
+    overflow: hidden !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeHeader {
+    height: 29px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    color: #30384B !important;
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1 !important;
+    font-weight: 700 !important;
+}
+
+/* Narrow each list so HH + MM + SS fit in the original popup width. */
+.addEventPage .neoTimePopupThree .neoTimeScroll {
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+
+    padding: 2px 1px 2px 2px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+
+    scrollbar-gutter: stable !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+
+    border: 1px solid rgba(150, 158, 162, 0.18) !important;
+    border-radius: 7px !important;
+    background: rgba(223, 230, 233, 0.74) !important;
+
+    box-shadow:
+        inset 2px 2px 4px rgba(196, 196, 196, 0.58),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.92),
+        inset 0 -3px 3px rgba(176, 184, 188, 0.14) !important;
+
+    scroll-behavior: smooth;
+    scrollbar-width: thin !important;
+    scrollbar-color: #8F969A #D7DEE1 !important;
+}
+
+/* Visible scrollbar for all 3 columns. */
+.addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar {
+    width: 6px !important;
+    background: #D7DEE1 !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-track {
+    margin: 0 !important;
+    border-radius: 6px !important;
+    background: #D7DEE1 !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-thumb {
+    min-height: 28px !important;
+    border: 1px solid #D7DEE1 !important;
+    border-radius: 6px !important;
+    background: #8F969A !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeScroll button {
+    flex: 0 0 34px !important;
+    min-height: 34px !important;
+    width: 100% !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 0 5px 0 0 !important;
+
+    border: 0 !important;
+    border-radius: 5px !important;
+
+    background: transparent !important;
+    color: #30384B !important;
+
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1 !important;
+    font-weight: 400 !important;
+
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeScroll button:hover {
+    color: #30384B !important;
+    background: rgba(255, 255, 255, 0.16) !important;
+    box-shadow: none !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeScroll button.selected {
+    color: #0B73E0 !important;
+    background: #DFE6E9 !important;
+    font-weight: 600 !important;
+
+    box-shadow:
+        inset 2px 2px 3px rgba(196, 196, 196, 0.58),
+        inset -2px -2px 3px rgba(255, 255, 255, 0.94) !important;
+}
+
+/* Keep the existing scrollbar arrow indicators for every column. */
+.addEventPage .neoTimePopupThree .neoTimeColumn::before,
+.addEventPage .neoTimePopupThree .neoTimeColumn::after {
+    right: 2px !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeColumn::before {
+    top: 35px !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeColumn::after {
+    bottom: 4px !important;
+}
+
+/* Same popup width on mobile; only reduce inner text slightly. */
+@media (max-width: 520px) {
+    /* .addEventPage .neoTimePopup.neoTimePopupThree,
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoTimePopup.neoTimePopupThree {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+
+        height: 190px !important;
+        max-height: 190px !important;
+
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 4px !important;
+        padding: 7px 5px !important;
+    } */
+
+    .addEventPage .neoTimePopupThree .neoTimeHeader {
+        font-size: 14px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button {
+        flex-basis: 32px !important;
+        min-height: 32px !important;
+        font-size: 14px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar {
+        width: 5px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    /* .addEventPage .neoTimePopup.neoTimePopupThree {
+        height: 180px !important;
+        max-height: 180px !important;
+        gap: 3px !important;
+        padding: 6px 4px !important;
+    } */
+
+    .addEventPage .neoTimePopupThree .neoTimeHeader {
+        font-size: 13px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button {
+        flex-basis: 30px !important;
+        min-height: 30px !important;
+        font-size: 13px !important;
+    }
+}
+
+/* =========================================================
+   FINAL HH / MM / SS POLISH
+   - Slightly narrower inner scroll boxes
+   - Strong neumorphic selected box
+   - Clock field/button remains fully clickable
+   ========================================================= */
+
+/* Keep the complete time field clickable, including the clock icon. */
+.addEventPage .neoPickerField {
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.addEventPage .neoPickerField .neoPickerIcon,
+.addEventPage .neoPickerField .neoPickerIcon img {
+    pointer-events: none !important;
+}
+
+/* Give a little more gap between the 3 scroll boxes. */
+.addEventPage .neoTimePopup.neoTimePopupThree {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+}
+
+/* Slightly reduce each HH / MM / SS inner box width. */
+.addEventPage .neoTimePopupThree .neoTimeColumn {
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeScroll {
+    width: calc(100% - 2px) !important;
+    justify-self: center !important;
+    border-radius: 7px !important;
+}
+
+/* Slightly thinner scrollbar so the numbers have more breathing room. */
+.addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar {
+    width: 5px !important;
+}
+
+/*
+ * Selected number: raised neumorphic tile like the reference.
+ * This is intentionally stronger than the previous inset-only state.
+ */
+.addEventPage .neoTimePopupThree .neoTimeScroll button.selected {
+    width: calc(100% - 8px) !important;
+    align-self: center !important;
+
+    margin: 2px 4px !important;
+    padding: 0 !important;
+
+    border-radius: 7px !important;
+    background: #DFE6E9 !important;
+    color: #0B73E0 !important;
+    font-weight: 600 !important;
+
+    box-shadow:
+        -3px -3px 5px rgba(255, 255, 255, 0.96),
+         3px  3px 5px rgba(190, 197, 200, 0.92),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.45),
+        inset -1px -1px 1px rgba(188, 195, 198, 0.22) !important;
+}
+
+/* Keep hover from replacing the selected neumorphic tile. */
+.addEventPage .neoTimePopupThree .neoTimeScroll button.selected:hover {
+    background: #DFE6E9 !important;
+    color: #0B73E0 !important;
+
+    box-shadow:
+        -3px -3px 5px rgba(255, 255, 255, 0.96),
+         3px  3px 5px rgba(190, 197, 200, 0.92),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.45),
+        inset -1px -1px 1px rgba(188, 195, 198, 0.22) !important;
+}
+
+/* Keep the scrollbar arrow indicators aligned after reducing width. */
+.addEventPage .neoTimePopupThree .neoTimeColumn::before,
+.addEventPage .neoTimePopupThree .neoTimeColumn::after {
+    right: 2px !important;
+}
+
+@media (max-width: 520px) {
+    /* .addEventPage .neoTimePopup.neoTimePopupThree {
+        gap: 6px !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    } */
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar {
+        width: 4px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button.selected {
+        width: calc(100% - 6px) !important;
+        margin-left: 3px !important;
+        margin-right: 3px !important;
+    }
+}
+
+/* =========================================================
+   FINAL RESPONSIVE FIX — HH / MM / SS
+   Smaller selected tile + safe popup positioning on small screens.
+   Only affects the custom time picker.
+   ========================================================= */
+
+/* Selected tile a little shorter than the normal number row. */
+.addEventPage .neoTimePopupThree .neoTimeScroll button.selected {
+    flex: 0 0 28px !important;
+    min-height: 28px !important;
+    height: 28px !important;
+
+    width: calc(100% - 10px) !important;
+    margin: 3px 5px !important;
+
+    border-radius: 7px !important;
+
+    box-shadow:
+        -3px -3px 5px rgba(255, 255, 255, 0.96),
+         3px  3px 5px rgba(190, 197, 200, 0.92),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.45),
+        inset -1px -1px 1px rgba(188, 195, 198, 0.22) !important;
+}
+
+/* Keep heading area fully visible and prevent clipping. */
+.addEventPage .customPickerWrap:has(.neoTimePopupThree) {
+    position: relative !important;
+    z-index: 6000 !important;
+    overflow: visible !important;
+}
+
+.addEventPage .neoTimePopup.neoTimePopupThree {
+    top: calc(100% + 8px) !important;
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+
+    overflow: hidden !important;
+    z-index: 6000 !important;
+}
+
+/* Start and End time popups both stay inside their own column. */
+/* .addEventPage .twoColumns > .fieldGroup:first-child .neoTimePopupThree {
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+} */
+
+.addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoTimePopupThree {
+    left: auto !important;
+    right: 0 !important;
+    transform: none !important;
+}
+
+/* Tablet / small desktop */
+@media (max-width: 760px) {
+    /* .addEventPage .neoTimePopup.neoTimePopupThree {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+
+        height: 184px !important;
+        max-height: 184px !important;
+
+        padding: 6px 5px !important;
+        gap: 4px !important;
+    } */
+
+    .addEventPage .neoTimePopupThree .neoTimeColumn {
+        grid-template-rows: 27px minmax(0, 1fr) !important;
+        row-gap: 3px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeHeader {
+        height: 27px !important;
+        font-size: 14px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button {
+        flex-basis: 31px !important;
+        min-height: 31px !important;
+        font-size: 14px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button.selected {
+        flex-basis: 26px !important;
+        min-height: 26px !important;
+        height: 26px !important;
+        width: calc(100% - 8px) !important;
+        margin: 3px 4px !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+    .addEventPage .neoTimePopup.neoTimePopupThree,
+    .addEventPage .twoColumns > .fieldGroup:first-child .neoTimePopupThree,
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoTimePopupThree {
+        top: calc(100% + 6px) !important;
+
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+
+        height: 176px !important;
+        max-height: 176px !important;
+
+        padding: 6px 4px !important;
+        gap: 3px !important;
+
+        transform: none !important;
+    }
+
+    .addEventPage .twoColumns > .fieldGroup:first-child .neoTimePopupThree {
+        left: 0 !important;
+        right: auto !important;
+    }
+
+    .addEventPage .twoColumns > .fieldGroup:nth-child(2) .neoTimePopupThree {
+        left: auto !important;
+        right: 0 !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeColumn {
+        grid-template-rows: 26px minmax(0, 1fr) !important;
+        row-gap: 2px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeHeader {
+        height: 26px !important;
+        font-size: 13px !important;
+        line-height: 26px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll {
+        border-radius: 6px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button {
+        flex-basis: 29px !important;
+        min-height: 29px !important;
+        font-size: 13px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button.selected {
+        flex-basis: 24px !important;
+        min-height: 24px !important;
+        height: 24px !important;
+        width: calc(100% - 6px) !important;
+        margin: 2px 3px !important;
+        border-radius: 6px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar {
+        width: 4px !important;
+    }
+}
+
+/* Very small mobile */
+@media (max-width: 380px) {
+    /* .addEventPage .neoTimePopup.neoTimePopupThree {
+        height: 168px !important;
+        max-height: 168px !important;
+        padding: 5px 3px !important;
+        gap: 3px !important;
+    } */
+
+    .addEventPage .neoTimePopupThree .neoTimeColumn {
+        grid-template-rows: 25px minmax(0, 1fr) !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeHeader {
+        height: 25px !important;
+        font-size: 12px !important;
+        line-height: 25px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button {
+        flex-basis: 27px !important;
+        min-height: 27px !important;
+        font-size: 12px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll button.selected {
+        flex-basis: 23px !important;
+        min-height: 23px !important;
+        height: 23px !important;
+    }
+}
+
+/* =========================================================
+   FINAL MOBILE SCROLLER CONTAINMENT FIX
+   Keeps the scrollbar fully inside each HH / MM / SS box.
+   It must never cross the header or bottom rounded edge.
+   ========================================================= */
+
+/* Remove the old external arrow indicators that could overlap the header/bottom. */
+.addEventPage .neoTimePopupThree .neoTimeColumn::before,
+.addEventPage .neoTimePopupThree .neoTimeColumn::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* The scroll area itself owns and clips the complete scrollbar. */
+.addEventPage .neoTimePopupThree .neoTimeScroll {
+    position: relative !important;
+
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+
+    /* Keep scrollbar/contents inside the rounded inner box. */
+    border-radius: 7px !important;
+    clip-path: inset(0 round 7px) !important;
+    contain: paint !important;
+
+    /* Reserve the scrollbar without letting it touch outside edges. */
+    scrollbar-gutter: stable !important;
+    overscroll-behavior: contain !important;
+
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+}
+
+/* Chrome / Edge / Safari scrollbar stays between top and bottom edges. */
+.addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar {
+    width: 5px !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-track {
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+
+    border-radius: 6px !important;
+    background: #D7DEE1 !important;
+
+    box-shadow:
+        inset 1px 1px 2px rgba(164, 173, 178, 0.38),
+        inset -1px -1px 2px rgba(255, 255, 255, 0.82) !important;
+}
+
+.addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-thumb {
+    min-height: 24px !important;
+
+    border: 1px solid #D7DEE1 !important;
+    border-radius: 6px !important;
+
+    background: #8F969A !important;
+}
+
+/*
+ * Keep native scrollbar end buttons inside the track.
+ * No external arrows are drawn, so nothing can cross the rounded box.
+ */
+.addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-button {
+    width: 5px !important;
+    height: 6px !important;
+    background: #D7DEE1 !important;
+}
+
+/* Mobile: keep extra breathing room above and below the scrollbar. */
+@media (max-width: 520px) {
+    .addEventPage .neoTimePopupThree .neoTimeScroll {
+        border-radius: 6px !important;
+        clip-path: inset(0 round 6px) !important;
+
+        padding-top: 3px !important;
+        padding-bottom: 3px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar {
+        width: 4px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-track {
+        margin-top: 7px !important;
+        margin-bottom: 7px !important;
+        border-radius: 5px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-thumb {
+        min-height: 22px !important;
+        border-radius: 5px !important;
+    }
+
+    .addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-button {
+        width: 4px !important;
+        height: 6px !important;
+    }
+}
+
+/* Very small phones: keep the scrollbar even farther from rounded edges. */
+@media (max-width: 380px) {
+    .addEventPage .neoTimePopupThree .neoTimeScroll::-webkit-scrollbar-track {
+        margin-top: 8px !important;
+        margin-bottom: 8px !important;
+    }
+}
+
+
+
+/* =========================================================
+   FINAL DATE PICKER — NEUMORPHIC MONTH + YEAR DROPDOWNS
+   Applies to BOTH Start Date and End Date.
+   Keeps the existing calendar popup width.
+   ========================================================= */
+
+.addEventPage .neoCalendarPopup {
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+
+    padding: 10px !important;
+
+    border-radius: 12px !important;
+    background: #DFE6E9 !important;
+
+    box-shadow:
+        -6px -6px 10px #FFFFFF,
+        6px 6px 12px #BFC6C9 !important;
+
+    box-sizing: border-box !important;
+}
+
+/* Top: arrow | month dropdown | year dropdown | arrow */
+.addEventPage .neoCalendarPickerHeader {
+    width: 100% !important;
+
+    display: grid !important;
+    grid-template-columns:
+        34px
+        minmax(0, 1.35fr)
+        minmax(0, 1fr)
+        34px !important;
+
+    align-items: center !important;
+    gap: 6px !important;
+
+    margin-bottom: 9px !important;
+}
+
+.addEventPage .neoCalendarNavButton {
+    width: 34px !important;
+    height: 34px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 9px !important;
+
+    background: #DFE6E9 !important;
+
+    box-shadow:
+        -3px -3px 5px #FFFFFF,
+        3px 3px 5px #C4C4C4 !important;
+
+    cursor: pointer !important;
+}
+
+.addEventPage .neoCalendarNavButton img {
+    width: 16px !important;
+    height: 16px !important;
+    object-fit: contain !important;
+}
+
+.addEventPage .neoCalendarSelectButton {
+    min-width: 0 !important;
+    height: 34px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 5px !important;
+
+    padding: 0 8px !important;
+
+    border: 0 !important;
+    border-radius: 8px !important;
+
+    background: #DFE6E9 !important;
+    color: #30384B !important;
+
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+
+    box-shadow:
+        -3px -3px 5px #FFFFFF,
+        3px 3px 5px #C4C4C4 !important;
+
+    cursor: pointer !important;
+    overflow: hidden !important;
+}
+
+.addEventPage .neoCalendarSelectButton span {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.addEventPage .neoCalendarSelectButton img {
+    width: 12px !important;
+    height: 12px !important;
+    flex: 0 0 12px !important;
+    object-fit: contain !important;
+}
+
+.addEventPage .neoCalendarSelectButton.active {
+    color: #2D55D7 !important;
+
+    box-shadow:
+        inset 2px 2px 4px #C4C4C4,
+        inset -2px -2px 4px #FFFFFF !important;
+}
+
+/* 12-month dropdown grid */
+.addEventPage .neoCalendarMonthGrid {
+    width: 100% !important;
+
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+}
+
+.addEventPage .neoCalendarMonthGrid button {
+    min-width: 0 !important;
+    height: 34px !important;
+
+    padding: 0 5px !important;
+
+    border: 0 !important;
+    border-radius: 8px !important;
+
+    background: #DFE6E9 !important;
+    color: #30384B !important;
+
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+
+    box-shadow:
+        -3px -3px 5px #FFFFFF,
+        3px 3px 5px #C4C4C4 !important;
+
+    cursor: pointer !important;
+}
+
+.addEventPage .neoCalendarMonthGrid button.selected {
+    color: #2D55D7 !important;
+
+    box-shadow:
+        inset 2px 2px 4px #C4C4C4,
+        inset -2px -2px 4px #FFFFFF !important;
+}
+
+.addEventPage .neoCalendarMonthGrid button:disabled {
+    color: #9CA3AF !important;
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+}
+
+/* Year range row exactly like reference */
+.addEventPage .neoCalendarYearRange {
+    width: 100% !important;
+
+    display: grid !important;
+    grid-template-columns: 34px 1fr 34px !important;
+    align-items: center !important;
+    gap: 8px !important;
+
+    margin: 2px 0 10px !important;
+}
+
+.addEventPage .neoCalendarYearRange button {
+    width: 34px !important;
+    height: 34px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+
+    background: #DFE6E9 !important;
+
+    box-shadow:
+        -3px -3px 5px #FFFFFF,
+        3px 3px 5px #C4C4C4 !important;
+
+    cursor: pointer !important;
+}
+
+.addEventPage .neoCalendarYearRange button img {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.addEventPage .neoCalendarYearRange strong {
+    color: #30384B !important;
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+}
+
+/* 12-year grid */
+.addEventPage .neoCalendarYearGrid {
+    width: 100% !important;
+
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+}
+
+.addEventPage .neoCalendarYearGrid button {
+    min-width: 0 !important;
+    height: 34px !important;
+
+    padding: 0 4px !important;
+
+    border: 0 !important;
+    border-radius: 8px !important;
+
+    background: #DFE6E9 !important;
+    color: #30384B !important;
+
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+
+    box-shadow:
+        -3px -3px 5px #FFFFFF,
+        3px 3px 5px #C4C4C4 !important;
+
+    cursor: pointer !important;
+}
+
+.addEventPage .neoCalendarYearGrid button.selected {
+    color: #2D55D7 !important;
+
+    box-shadow:
+        inset 2px 2px 4px #C4C4C4,
+        inset -2px -2px 4px #FFFFFF !important;
+}
+
+.addEventPage .neoCalendarYearGrid button:disabled {
+    color: #9CA3AF !important;
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+}
+
+/* Mobile: same calendar width behavior already used by your form. */
+@media (max-width: 520px) {
+    .addEventPage .neoCalendarPopup {
+        width: min(260px, calc(100vw - 48px)) !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 48px) !important;
+    }
+
+    .addEventPage .neoCalendarPickerHeader {
+        grid-template-columns:
+            31px
+            minmax(0, 1.35fr)
+            minmax(0, 1fr)
+            31px !important;
+        gap: 5px !important;
+    }
+
+    .addEventPage .neoCalendarNavButton,
+    .addEventPage .neoCalendarYearRange button {
+        width: 31px !important;
+        height: 31px !important;
+    }
+
+    .addEventPage .neoCalendarSelectButton {
+        height: 31px !important;
+        padding: 0 6px !important;
+        font-size: 11px !important;
+    }
+
+    .addEventPage .neoCalendarMonthGrid,
+    .addEventPage .neoCalendarYearGrid {
+        gap: 6px !important;
+    }
+
+    .addEventPage .neoCalendarMonthGrid button,
+    .addEventPage .neoCalendarYearGrid button {
+        height: 32px !important;
+        font-size: 10px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .addEventPage .neoCalendarPickerHeader {
+        grid-template-columns:
+            29px
+            minmax(0, 1.35fr)
+            minmax(0, 0.9fr)
+            29px !important;
+        gap: 4px !important;
+    }
+
+    .addEventPage .neoCalendarNavButton,
+    .addEventPage .neoCalendarYearRange button {
+        width: 29px !important;
+        height: 29px !important;
+    }
+
+    .addEventPage .neoCalendarSelectButton {
+        height: 29px !important;
+        font-size: 10px !important;
+        padding: 0 5px !important;
+    }
+
+    .addEventPage .neoCalendarMonthGrid button,
+    .addEventPage .neoCalendarYearGrid button {
+        height: 30px !important;
+        font-size: 9px !important;
+    }
+}
+
+
+
+/* =========================================================
+   ADD EVENT — INLINE PUBLISH / SCHEDULE PUBLISH
+   Moved from Calendar Management into Add Event.
+   ========================================================= */
+
+.publishInlineSection {
+    margin: 4px 0 18px;
+}
+
+.publishInlineLabel {
+    display: block;
+    margin-bottom: 7px;
+    color: #2f3547;
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 600;
+    letter-spacing: .03em;
+}
+
+.publishModeSwitch {
+    width: 100%;
+    min-height: 42px;
+    padding: 4px;
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+
+    border-radius: 9px;
+    background: #DFE6E9;
+
+    box-shadow:
+        inset -3px -3px 5px #FFFFFF,
+        inset 3px 3px 5px #C4C4C4;
+}
+
+.publishModeSwitch button {
+    min-width: 0;
+    min-height: 34px;
+    padding: 0 7px;
+
+    border: 0;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #374151;
+
+    font-family: "Segoe UI", Inter, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.publishModeSwitch button.active {
+    color: #2D55D7;
+    background: #DFE6E9;
+
+    box-shadow:
+        -2px -2px 4px #FFFFFF,
+        2px 2px 4px #C4C4C4;
+}
+
+.publishInlineFields {
+    margin-top: 15px;
+    padding: 13px;
+
+    border-radius: 12px;
+    background: #DFE6E9;
+
+    box-shadow:
+        inset 2px 2px 4px rgba(196,196,196,.48),
+        inset -2px -2px 4px #FFFFFF;
+}
+
+.publishInlineField {
+    margin-bottom: 13px !important;
+}
+
+.publishInlineField:last-child {
+    margin-bottom: 0 !important;
+}
+
+.publishOrganizerInput,
+.publishReadOnlyField {
+    width: 100%;
+    height: 42px;
+    padding: 0 13px;
+
+    display: flex;
+    align-items: center;
+
+    border: 0;
+    outline: 0;
+    border-radius: 7px;
+
+    background: #DFE6E9;
+    color: #374151;
+
+    font-family: "Segoe UI", Inter, sans-serif;
+    font-size: 14px;
+
+    box-shadow:
+        inset 3px 3px 5px #C4C4C4,
+        inset -3px -3px 5px #FFFFFF;
+}
+
+.publishReadOnlyField {
+    color: #596174;
+}
+
+.publishTargetList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 2px 0 13px;
+}
+
+.publishTargetChip {
+    min-height: 30px;
+    padding: 5px 7px 5px 10px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    border-radius: 15px;
+    background: #DFE6E9;
+    color: #374151;
+
+    font-size: 11px;
+    line-height: 16px;
+
+    box-shadow:
+        -2px -2px 4px #FFFFFF,
+        2px 2px 4px #C4C4C4;
+}
+
+.publishTargetChip button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #DFE6E9;
+    color: #596174;
+
+    box-shadow:
+        -1px -1px 2px #FFFFFF,
+        1px 1px 2px #C4C4C4;
+
+    cursor: pointer;
+}
+
+.publishScheduleGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.publishScheduleGrid .fieldGroup {
+    margin-bottom: 0 !important;
+}
+
+@media (max-width: 520px) {
+    .publishModeSwitch {
+        gap: 4px;
+        padding: 3px;
+    }
+
+    .publishModeSwitch button {
+        min-height: 32px;
+        padding: 0 5px;
+        font-size: 10px;
+    }
+
+    .publishInlineFields {
+        padding: 11px 9px;
+    }
+
+    .publishScheduleGrid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 380px) {
+    .publishModeSwitch button {
+        font-size: 12px;
+    }
+
+    .publishScheduleGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+/* =========================================================
+   FINAL PUBLISH BUTTON / AUDIENCE ALIGNMENT
+   ========================================================= */
+
+/* Publish now has only two actions, so both use the full available width. */
+.publishModeSwitch {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+}
+
+.publishModeSwitch button {
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+/* Audience selected value + Cancel button. */
+.publishAudienceControlRow {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.publishAudienceControl {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.publishAudienceControl .formDropdown {
+    width: 100%;
+}
+
+.publishAudienceCancel {
+    flex: 0 0 auto;
+
+    min-width: 82px;
+    height: 42px;
+    padding: 0 15px;
+
+    border: 0;
+    border-radius: 22px;
+
+    background: #DFE6E9;
+    color: #30384B;
+
+    font-family: "Segoe UI", Inter, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        -3px -3px 5px rgba(255,255,255,.92),
+         3px  3px 5px rgba(174,181,184,.50);
+}
+
+.publishAudienceCancel:active {
+    box-shadow:
+        inset 2px 2px 4px rgba(174,181,184,.45),
+        inset -2px -2px 4px rgba(255,255,255,.88);
+}
+
+@media (max-width: 520px) {
+    .publishModeSwitch {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 5px !important;
+    }
+
+    .publishAudienceControlRow {
+        gap: 7px;
+    }
+
+    .publishAudienceCancel {
+        min-width: 70px;
+        height: 38px;
+        padding: 0 10px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 380px) {
+    .publishAudienceControlRow {
+        align-items: stretch;
+    }
+
+    .publishAudienceCancel {
+        min-width: 64px;
+        padding: 0 8px;
+        font-size: 10px;
+    }
+}
+
+
+
+/* =========================================================
+   FINAL AUDIENCE CHIP MATCH
+   Selected tenant + actor appears as a neumorphic chip with
+   a compact circular X button, matching the reference.
+   ========================================================= */
+
+.publishAudienceControlRow,
+.publishAudienceControl,
+.publishAudienceCancel {
+    display: initial;
+}
+
+.publishAudienceCancel {
+    display: none !important;
+}
+
+.publishTargetList {
+    width: 100%;
+    margin: 10px 0 0;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.publishTargetChip {
+    max-width: 100%;
+    min-height: 38px;
+
+    padding: 6px 7px 6px 14px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    border-radius: 22px;
+    background: #DFE6E9;
+    color: #374151;
+
+    font-family: "Segoe UI", Inter, sans-serif;
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 400;
+
+    box-shadow:
+        -3px -3px 6px rgba(255,255,255,.94),
+         3px  3px 6px rgba(174,181,184,.48);
+
+    box-sizing: border-box;
+}
+
+.publishTargetChipText {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.publishTargetRemove {
+    flex: 0 0 24px;
+
+    width: 24px;
+    height: 24px;
+    padding: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #DFE6E9;
+    color: #667085;
+
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 400;
+
+    cursor: pointer;
+
+    box-shadow:
+        -2px -2px 4px rgba(255,255,255,.92),
+         2px  2px 4px rgba(174,181,184,.42);
+}
+
+.publishTargetRemove:active {
+    box-shadow:
+        inset 1px 1px 3px rgba(174,181,184,.42),
+        inset -1px -1px 3px rgba(255,255,255,.88);
+}
+
+@media (max-width: 520px) {
+    .publishTargetList {
+        gap: 7px;
+        margin-top: 8px;
+    }
+
+    .publishTargetChip {
+        min-height: 34px;
+        padding: 5px 6px 5px 11px;
+        gap: 7px;
+        border-radius: 19px;
+        font-size: 11px;
+        line-height: 16px;
+    }
+
+    .publishTargetRemove {
+        flex-basis: 21px;
+        width: 21px;
+        height: 21px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 380px) {
+    .publishTargetChip {
+        max-width: 100%;
+        min-height: 32px;
+        padding-left: 10px;
+        font-size: 10px;
+    }
+
+    .publishTargetRemove {
+        flex-basis: 20px;
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+}
+
+
+
+/* =========================================================
+   FINAL MULTI-AUDIENCE APPEND FIX
+   Existing chips stay visible; each new tenant + actor is added.
+   ========================================================= */
+
+.addEventPage .publishTargetList {
+    width: 100% !important;
+    margin-top: 8px !important;
+
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 7px !important;
+}
+
+.addEventPage .publishTargetChip {
+    max-width: 100% !important;
+    min-height: 34px !important;
+
+    padding: 5px 6px 5px 11px !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+
+    border-radius: 18px !important;
+    background: #DFE6E9 !important;
+    color: #374151 !important;
+
+    box-shadow:
+        -3px -3px 6px rgba(255,255,255,.94),
+         3px  3px 6px rgba(174,181,184,.48) !important;
+}
+
+.addEventPage .publishTargetChipText {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.addEventPage .publishTargetRemove {
+    flex: 0 0 20px !important;
+
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+
+    padding: 0 !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    border: 0 !important;
+    border-radius: 50% !important;
+
+    background: #DFE6E9 !important;
+    color: #667085 !important;
+
+    font-size: 10px !important;
+    line-height: 1 !important;
+
+    box-shadow:
+        -2px -2px 4px rgba(255,255,255,.92),
+         2px  2px 4px rgba(174,181,184,.42) !important;
+}
+
+@media (max-width: 520px) {
+    .addEventPage .publishTargetList {
+        gap: 6px !important;
+    }
+
+    .addEventPage .publishTargetChip {
+        min-height: 32px !important;
+        padding: 4px 5px 4px 9px !important;
+        gap: 6px !important;
+        border-radius: 17px !important;
+        font-size: 10px !important;
+    }
+
+    .addEventPage .publishTargetRemove {
+        flex-basis: 19px !important;
+        width: 19px !important;
+        height: 19px !important;
+        min-width: 19px !important;
+        min-height: 19px !important;
+        font-size: 9px !important;
+    }
+
+    .addEventPage .publishScheduleGrid .customPickerWrap .neoCalendarPopup {
+        width: 228px !important;
+        min-width: 228px !important;
+        max-width: min(228px, calc(100vw - 64px)) !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .addEventPage .publishScheduleGrid .customPickerWrap .neoCalendarPopup {
+        width: 212px !important;
+        min-width: 212px !important;
+        max-width: calc(100vw - 54px) !important;
+    }
+}
+
+
+
+/* =========================================================
+   FINAL AUDIENCE FIELD ORDER
+   Audience -> Tenant -> Actor -> selected audience chips.
+   ========================================================= */
+
+.addEventPage .publishTargetList {
+    margin-top: 2px !important;
+    margin-bottom: 10px !important;
+}
+
+
+
+/* =========================================================
+   SPECIFIC INSTITUTE / ORGANIZATION PUBLISH
+   ========================================================= */
+
+.addEventPage .publishInlineField .formDropdown,
+.addEventPage .publishInlineField .formControl {
+    width: 100%;
+    min-width: 0;
+}
+
+.addEventPage .publishTargetList {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.addEventPage .publishTargetChip {
+    max-width: 100%;
+}
+
+@media (max-width: 520px) {
+    .addEventPage .publishInlineFields {
+        width: 100%;
+    }
+
+    .addEventPage .publishInlineField {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .addEventPage .publishTargetChip {
+        max-width: 100%;
+    }
+
+    .addEventPage .publishTargetChipText {
+        max-width: calc(100vw - 115px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 380px) {
+    .addEventPage .publishTargetChipText {
+        max-width: calc(100vw - 95px);
+    }
+}
+
+
+
+/* =========================================================
+   FINAL PUBLISH AUDIENCE MODES — RESPONSIVE
+   ========================================================= */
+
+.addEventPage .publishInlineFields,
+.addEventPage .publishInlineField {
+    width: 100%;
+    min-width: 0;
+}
+
+.addEventPage .publishTargetList {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+}
+
+.addEventPage .publishTargetChip {
+    max-width: 100%;
+}
+
+@media (max-width: 520px) {
+    .addEventPage .publishTargetList {
+        gap: 6px;
+    }
+
+    .addEventPage .publishTargetChipText {
+        max-width: calc(100vw - 110px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 380px) {
+    .addEventPage .publishTargetChipText {
+        max-width: calc(100vw - 92px);
+    }
+}
+
+
+
+/* =========================================================
+   PUBLISH DROPDOWNS — BOTTOM BORDER GAP ONLY
+   Keep field + dropdown connected at the top.
+   The opened dropdown now participates in normal layout,
+   so the Publish section grows and leaves space before
+   the bottom/main border.
+   No other Add Event styles are changed.
+   ========================================================= */
+
+/* Keep publish dropdown full width and connected to its field. */
+.addEventPage .publishInlineFields .publishInlineField .formDropdown {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* IMPORTANT:
+   Make ONLY Publish-section dropdown menus part of normal flow.
+   This prevents the dropdown bottom from touching/crossing
+   the outer Publish section border. */
+.addEventPage .publishInlineFields .publishInlineField .formDropdown .dropdownMenu {
+    position: relative !important;
+
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 0 !important;
+    margin-top: 0 !important;
+
+    box-sizing: border-box !important;
+    border-radius: 0 0 10px 10px !important;
+}
+
+/* Keep top select and opened dropdown attached exactly as before. */
+.addEventPage .publishInlineFields .publishInlineField .formDropdown.open .formControl {
+    margin-bottom: 0 !important;
+    border-radius: 7px 7px 0 0 !important;
+}
+
+/* Give clear space AFTER the opened dropdown before the main border. */
+.addEventPage .publishInlineFields:has(.publishInlineField .formDropdown.open) {
+    padding-bottom: 20px !important;
+}
+
+/* If the opened dropdown is the last visible publish field,
+   preserve a little extra space under it. */
+.addEventPage .publishInlineFields .publishInlineField:has(.formDropdown.open) {
+    margin-bottom: 12px !important;
+}
+
+/* Mobile: same behavior with slightly smaller bottom space. */
+@media (max-width: 520px) {
+    .addEventPage .publishInlineFields:has(.publishInlineField .formDropdown.open) {
+        padding-bottom: 16px !important;
+    }
+
+    .addEventPage .publishInlineFields .publishInlineField:has(.formDropdown.open) {
+        margin-bottom: 10px !important;
+    }
+}
+
+
+
+/* =========================================================
+   ADD / REUSE / EDIT — FOOTER ACTION BUTTONS
+   UI-only change:
+   Cancel / Save(or Update) / Publish / Schedule Publish
+   Existing Publish + Schedule Publish option layout is unchanged.
+   ========================================================= */
+
+.addEventPage .publishInlineSection {
+    margin-top: 10px !important;
+}
+
+/* No top Publish/Schedule switch anymore; existing option panel remains. */
+.addEventPage .publishInlineSection .publishInlineFields {
+    margin-top: 0 !important;
+}
+
+/* Footer can contain 4 buttons for Add/Reuse and 5 for Edit. */
+.addEventPage .footerActionButtons {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    padding: 16px 0 2px !important;
+}
+
+/* Keep all existing neumorphic button styling; only size for the new row. */
+.addEventPage .footerActionButtons > button {
+    min-width: 0 !important;
+    height: 42px !important;
+    padding: 0 16px !important;
+    border: 0 !important;
+    border-radius: 24px !important;
+    background: #DFE6E9 !important;
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 13px !important;
+    line-height: 42px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+
+    box-shadow:
+        -4px -4px 8px rgba(255,255,255,.92),
+         4px  4px 8px rgba(174,181,184,.52) !important;
+}
+
+.addEventPage .footerActionButtons .cancelButton {
+    color: #30394D !important;
+}
+
+.addEventPage .footerActionButtons .saveButton {
+    color: #287A0B !important;
+}
+
+.addEventPage .footerActionButtons .updateButton {
+    color: #3158E7 !important;
+}
+
+.addEventPage .footerActionButtons .deleteButton {
+    color: #D71920 !important;
+}
+
+.addEventPage .footerActionButtons .publishFooterButton {
+    color: #3158E7 !important;
+}
+
+.addEventPage .footerActionButtons .schedulePublishFooterButton {
+    color: #7543C7 !important;
+}
+
+.addEventPage .footerActionButtons .publishFooterButton.active,
+.addEventPage .footerActionButtons .schedulePublishFooterButton.active {
+    box-shadow:
+        inset 3px 3px 5px rgba(174,181,184,.48),
+        inset -3px -3px 5px rgba(255,255,255,.90) !important;
+}
+
+/* Add / Reuse: four actions fit cleanly and wrap only when needed. */
+.addEventPage .footerActionButtons:not(.editEventActions) > button {
+    flex: 1 1 88px !important;
+}
+
+/* Edit has five actions, so allow compact wrapping without overflow. */
+.addEventPage .footerActionButtons.editEventActions {
+    justify-content: flex-start !important;
+}
+
+.addEventPage .footerActionButtons.editEventActions > button {
+    flex: 1 1 96px !important;
+}
+
+/* Preserve the existing edit footer wrapper behavior without its old nested row. */
+.addEventPage .editEventActions.footerActionButtons {
+    gap: 10px !important;
+}
+
+@media (max-width: 520px) {
+    .addEventPage .footerActionButtons {
+        gap: 8px !important;
+        padding-top: 14px !important;
+    }
+
+    .addEventPage .footerActionButtons > button {
+        height: 40px !important;
+        padding: 0 11px !important;
+        font-size: 11px !important;
+        line-height: 40px !important;
+    }
+
+    .addEventPage .footerActionButtons:not(.editEventActions) > button {
+        flex: 1 1 calc(50% - 8px) !important;
+    }
+
+    .addEventPage .footerActionButtons.editEventActions > button {
+        flex: 1 1 calc(50% - 8px) !important;
+    }
+
+    .addEventPage .footerActionButtons.editEventActions .schedulePublishFooterButton {
+        flex-basis: 100% !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .addEventPage .footerActionButtons > button {
+        font-size: 10px !important;
+        padding-left: 9px !important;
+        padding-right: 9px !important;
+    }
+}
+
+
+
+/* =========================================================
+   FINAL FOOTER ACTION ROW FIX
+   - keep existing font sizes unchanged
+   - Add / Reuse / Edit buttons stay in ONE line
+   - Edit has no Delete button
+   - no wrapping / no clipping
+   - Publish option heading restored above opened fields
+   ========================================================= */
+
+.addEventPage .footerActionButtons,
+.addEventPage .footerActionButtons.editEventActions {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns:
+        minmax(66px, .82fr)
+        minmax(82px, 1fr)
+        minmax(72px, .86fr)
+        minmax(112px, 1.28fr) !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    gap: 7px !important;
+    flex-wrap: nowrap !important;
+    padding: 16px 0 2px !important;
+}
+
+.addEventPage .footerActionButtons > button,
+.addEventPage .footerActionButtons.editEventActions > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 42px !important;
+    padding: 0 7px !important;
+    margin: 0 !important;
+    flex: none !important;
+
+    /* Keep the exact font sizing from the previous code. */
+    font-size: 14px !important;
+    line-height: 42px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+}
+
+/* Reuse has "Save as New"; give the second button enough room
+   without changing any font size. */
+.addEventPage .footerActionButtons:not(.editEventActions) > button:nth-child(2) {
+    min-width: 0 !important;
+}
+
+/* Heading shown only after Publish / Schedule Publish is clicked. */
+.addEventPage .publishInlineSection > .publishInlineLabel {
+    display: block !important;
+    margin: 0 0 7px !important;
+}
+
+/* Keep existing Publish/Schedule fields exactly as they are. */
+.addEventPage .publishInlineSection .publishInlineFields {
+    margin-top: 0 !important;
+}
+
+@media (max-width: 520px) {
+    .addEventPage .footerActionButtons,
+    .addEventPage .footerActionButtons.editEventActions {
+        grid-template-columns:
+            minmax(56px, .78fr)
+            minmax(72px, .98fr)
+            minmax(62px, .84fr)
+            minmax(98px, 1.30fr) !important;
+        gap: 5px !important;
+        padding-top: 14px !important;
+    }
+
+    .addEventPage .footerActionButtons > button,
+    .addEventPage .footerActionButtons.editEventActions > button {
+        height: 40px !important;
+        padding: 0 5px !important;
+
+        /* Same mobile font-size as previous code. */
+        font-size: 11px !important;
+        line-height: 40px !important;
+    }
+
+    /* Cancel previous mobile rule that made Schedule Publish full-width. */
+    .addEventPage .footerActionButtons.editEventActions .schedulePublishFooterButton {
+        grid-column: auto !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .addEventPage .footerActionButtons,
+    .addEventPage .footerActionButtons.editEventActions {
+        gap: 4px !important;
+        transform: translateX(-17);
+        grid-template-columns:
+            minmax(52px, .76fr)
+            minmax(68px, .96fr)
+            minmax(58px, .82fr)
+            minmax(92px, 1.30fr) !important;
+
+    }
+
+    .addEventPage .footerActionButtons > button,
+    .addEventPage .footerActionButtons.editEventActions > button {
+        /* Keep previous narrow-phone font-size unchanged. */
+        font-size: 10px !important;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+}
+

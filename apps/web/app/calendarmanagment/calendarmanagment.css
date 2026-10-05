@@ -109,7 +109,7 @@
   padding: 8px;
   background: var(--bg);
   border-radius: 10px;
-  box-shadow: -5px -5px 10px #fff, 5px 5px 12px #aeb5b8;
+  box-shadow: -5px -5px 10px #ffffff, 5px 5px 12px #aeb5b8;
 }
 
 .bulkMenu { right: 0; top: calc(100% + 10px); width: 190px; }
@@ -429,7 +429,7 @@
   line-height: 16px;
 }
 
-.statusBadge.published { color: #2a7308; background: #cdddc5; }
+
 .statusBadge.saved { color: #7b5c00; background: #e9dfb8; }
 
 .eventTitle {
@@ -3933,1150 +3933,6 @@ body {
   }
 }
 
-.publishModalOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2147483647;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(31, 41, 55, 0.16);
-}
-
-.publishModal {
-  position: relative;
-  width: 454px;
-  height: 330px;
-  max-width: calc(100vw - 28px);
-  padding: 24px;
-  box-sizing: border-box;
-  overflow: visible;
-  border-radius: 16px;
-  background: #DFE6E9;
-  color: #30394D;
-  font-family: "Segoe UI", Inter, sans-serif;
-  box-shadow:
-    -4px -4px 8px rgba(255,255,255,.82),
-     4px 4px 8px rgba(174,181,184,.42);
-     transform: translateY(-45);
-}
-
-.publishModal.publishModalSpecific {
-  height: auto;
-  min-height: 440px;
-}
-
-.publishModalHeader {
-  height: 38px;
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.publishModalHeader h2 {
-  margin: 0;
-  font-size: 21px;
-  line-height: 28px;
-  font-weight: 700;
-  background: linear-gradient(90deg,#2D55D7 0%,#7543C7 54%,#F3155C 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.publishModalClose {
-  width: 31px;
-  height: 31px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #DFE6E9;
-  color: #1F2937;
-  font-size: 25px;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.84),
-     2px 2px 4px rgba(174,181,184,.40);
-}
-
-.publishField {
-  position: relative;
-  margin-bottom: 16px;
-}
-
-.publishField > label {
-  display: block;
-  margin: 0 0 7px;
-  font-size: 15px;
-  line-height: 20px;
-  font-weight: 600;
-  letter-spacing: .03em;
-}
-
-.publishField > input,
-.publishDropdownControl {
-  width: 100%;
-  height: 46px;
-  box-sizing: border-box;
-  border: 0;
-  outline: 0;
-  border-radius: 5px;
-  background: #DFE6E9;
-  color: #30394D;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 16px;
-  box-shadow:
-    inset 2px 2px 3px rgba(174,181,184,.43),
-    inset -2px -2px 3px rgba(255,255,255,.92);
-}
-
-.publishField > input {
-  padding: 0 14px;
-}
-
-.publishField > input::placeholder {
-  color: #30394D;
-  opacity: 1;
-}
-
-.publishDropdown {
-  position: relative;
-  z-index: 2;
-}
-
-.publishDropdown.open {
-  z-index: 1000;
-}
-
-.publishDropdownControl {
-  padding: 0 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  text-align: left;
-  cursor: pointer;
-}
-
-.publishChevron {
-  width: 10px;
-  height: 10px;
-  margin: -4px 5px 0 0;
-  border-right: 1.8px solid #263246;
-  border-bottom: 1.8px solid #263246;
-  transform: rotate(45deg);
-}
-
-.publishDropdown.open .publishChevron {
-  margin-top: 4px;
-  transform: rotate(225deg);
-}
-
-.publishDropdownMenu {
-  position: absolute;
-  z-index: 2000;
-  top: calc(100% + 5px);
-  left: 0;
-  width: 100%;
-  max-height: 205px;
-  padding: 7px 8px;
-  overflow-y: auto;
-  border-radius: 8px;
-  background: #DFE6E9;
-  box-shadow:
-    -3px -3px 6px rgba(255,255,255,.90),
-     3px 4px 7px rgba(174,181,184,.48);
-}
-
-.publishDropdownOption {
-  width: 100%;
-  min-height: 36px;
-  padding: 3px 6px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 0;
-  border-radius: 7px;
-  background: transparent;
-  color: #30394D;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.publishDropdownOption.selected {
-  color: #2D55D7;
-}
-
-.publishRadio {
-  position: relative;
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
-  border-radius: 50%;
-  background: #DFE6E9;
-  box-shadow:
-    inset -2px -2px 2px #fff,
-    inset 2px 2px 2px #c4c4c4;
-}
-
-.publishRadioInner {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  left: 6px;
-  top: 6px;
-  border: 1.5px solid #C6C6C9;
-  border-radius: 50%;
-}
-
-.publishRadioCheck {
-  position: absolute;
-  z-index: 2;
-  width: 16px;
-  height: 16px;
-  left: 6px;
-  top: 6px;
-  border-radius: 50%;
-  background: #2D55D7;
-}
-
-.publishTick {
-  position: absolute;
-  width: 6px;
-  height: 4px;
-  left: 5px;
-  top: 5px;
-  border-left: 1.5px solid #fff;
-  border-bottom: 1.5px solid #fff;
-  transform: rotate(-45deg);
-}
-
-.publishSpecificArea {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.publishModalActions {
-  position: absolute;
-  right: 24px;
-  bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 18px;
-}
-
-.publishModalSpecific .publishModalActions {
-  position: static;
-  margin-top: 8px;
-}
-
-.autoPublishButton,
-.publishConfirmButton {
-  height: 44px;
-  padding: 0 25px;
-  border: 0;
-  border-radius: 25px;
-  background: #DFE6E9;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow:
-    -3px -3px 6px rgba(255,255,255,.82),
-     3px 3px 6px rgba(174,181,184,.42);
-}
-
-.autoPublishButton {
-  min-width: 156px;
-  color: #30394D;
-}
-
-.publishConfirmButton {
-  min-width: 109px;
-  color: #287B0A;
-  font-weight: 700;
-}
-
-@media (max-width: 520px) {
-  .publishModal {
-    width: 100%;
-    max-width: 454px;
-    padding: 20px;
-  }
-
-  .publishModal.publishModalSpecific {
-    min-height: 530px;
-  }
-
-  .publishSpecificArea {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .publishModalActions {
-    right: 20px;
-    bottom: 20px;
-    gap: 10px;
-  }
-
-  .autoPublishButton,
-  .publishConfirmButton {
-    min-width: 0;
-    padding: 0 18px;
-  }
-}
-
-.publishDropdownMenu {
-  top: calc(100% + 8px) !important;
-  padding: 8px 10px !important;
-  border: 0 !important;
-  border-radius: 12px !important;
-  background: #DFE6E9 !important;
-  box-shadow:
-    -5px -5px 10px rgba(255,255,255,.82),
-     5px 5px 10px rgba(174,181,184,.42) !important;
-}
-
-.publishDropdownOption {
-  min-height: 42px !important;
-  padding: 5px 7px !important;
-  gap: 11px !important;
-  border: 0 !important;
-  border-radius: 9px !important;
-  background: #DFE6E9 !important;
-  color: #30394D !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-}
-
-.publishDropdownOption:hover {
-  box-shadow:
-    inset 2px 2px 4px rgba(174,181,184,.32),
-    inset -2px -2px 4px rgba(255,255,255,.76) !important;
-}
-
-.publishDropdownOption.selected {
-  color: #2D55D7 !important;
-  font-weight: 600 !important;
-}
-
-.publishRadio {
-  width: 30px !important;
-  height: 30px !important;
-  flex: 0 0 30px !important;
-  border-radius: 50% !important;
-  background: #DFE6E9 !important;
-  box-shadow:
-    inset -2px -2px 2px #FFFFFF,
-    inset 2px 2px 2px #C4C4C4 !important;
-}
-
-.publishRadioInner {
-  width: 16px !important;
-  height: 16px !important;
-  left: 7px !important;
-  top: 7px !important;
-  border: 1.5px solid #C6C6C9 !important;
-  border-radius: 50% !important;
-  box-sizing: border-box !important;
-}
-
-.publishRadioCheck {
-  width: 16px !important;
-  height: 16px !important;
-  left: 7px !important;
-  top: 7px !important;
-  border-radius: 50% !important;
-  background: #2D55D7 !important;
-}
-
-.publishTick {
-  width: 6px !important;
-  height: 4px !important;
-  left: 5px !important;
-  top: 5px !important;
-  border-left: 1.5px solid #FFFFFF !important;
-  border-bottom: 1.5px solid #FFFFFF !important;
-  transform: rotate(-45deg) !important;
-}
-
-.publishSpecificArea .publishDropdownMenu {
-  width: 100% !important;
-  left: 0 !important;
-}
-
-.publishModal.publishModalSpecific {
-  min-height: 445px !important;
-}
-
-@media (max-width: 520px) {
-  .publishDropdownMenu {
-    max-height: 190px !important;
-  }
-
-  .publishModal.publishModalSpecific {
-    min-height: 535px !important;
-  }
-}
-
-.publishModal.publishModalSpecific {
-  height: 330px !important;
-  min-height: 330px !important;
-}
-
-.publishSpecificArea {
-  display: none !important;
-}
-
-.publishDropdownMenu {
-  overflow: visible !important;
-  max-height: none !important;
-}
-
-.publishDropdownOption {
-  position: relative !important;
-}
-
-.publishSubmenuArrow {
-  margin-left: auto;
-  padding-right: 4px;
-  color: #7A8494;
-  font-size: 24px;
-  line-height: 1;
-  font-weight: 400;
-}
-
-.publishNestedFlyout {
-  position: absolute;
-  z-index: 2147483647;
-  top: 131px;
-  left: calc(100% + 12px);
-  width: 260px;
-  padding: 10px 0;
-  box-sizing: border-box;
-  border-radius: 14px;
-  background: #DFE6E9;
-  box-shadow:
-    -5px -5px 10px rgba(255,255,255,.84),
-     5px 5px 10px rgba(174,181,184,.44);
-}
-
-.publishNestedTitle {
-  padding: 10px 20px 9px;
-  color: #687080;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 700;
-}
-
-.publishNestedOption {
-  width: 100%;
-  min-height: 42px;
-  padding: 8px 20px;
-  border: 0;
-  background: transparent;
-  color: #202838;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 15px;
-  line-height: 22px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.publishNestedOption:hover,
-.publishNestedOption.selected {
-  color: #2D55D7;
-  background: #DFE6E9;
-  box-shadow:
-    inset 2px 2px 4px rgba(174,181,184,.28),
-    inset -2px -2px 4px rgba(255,255,255,.72);
-}
-
-.publishActorFlyout {
-  top: 131px;
-}
-
-@media (max-width: 900px) {
-  .publishNestedFlyout {
-    left: auto;
-    right: 0;
-    top: calc(100% + 8px);
-    width: min(260px, calc(100vw - 56px));
-  }
-}
-
-.publishNestedFlyout {
-  left: calc(100% + 6px) !important;
-  width: 238px !important;
-  padding: 7px 0 !important;
-  border-radius: 12px !important;
-}
-
-.publishTenantFlyout,
-.publishActorFlyout {
-  top: 148px !important;
-}
-
-.publishNestedTitle {
-  padding: 8px 16px 6px !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
-}
-
-.publishNestedOption {
-  min-height: 38px !important;
-  padding: 7px 16px !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
-}
-
-.publishSelectionSummary {
-  margin-top: 8px;
-  padding: 9px 12px;
-  border: 1px solid rgba(198, 206, 214, 0.72);
-  border-radius: 9px;
-  background: #DFE6E9;
-  color: #4F5B6B;
-  font-size: 13px;
-  line-height: 20px;
-  box-shadow:
-    inset 1px 1px 2px rgba(174,181,184,.18),
-    inset -1px -1px 2px rgba(255,255,255,.52);
-}
-
-.publishModal:has(.publishSelectionSummary) {
-  height: 380px !important;
-  min-height: 380px !important;
-}
-
-@media (max-width: 760px) {
-  .publishNestedFlyout {
-    left: 0 !important;
-    right: auto !important;
-    top: 100% !important;
-    width: 100% !important;
-  }
-}
-
-.publishSelectionSummary {
-  display: none !important;
-}
-
-.publishModal:has(.publishSelectionSummary) {
-  height: 330px !important;
-  min-height: 330px !important;
-}
-
-.publishAudienceValue {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.publishAudienceValue span {
-  display: inline;
-  min-width: 0;
-}
-
-.publishAudienceValue span + span::before {
-  content: " • ";
-  color: #7A8494;
-  margin-right: 6px;
-}
-
-.publishNestedFlyout {
-  left: calc(100% + 3px) !important;
-  width: 220px !important;
-  padding: 6px 0 !important;
-}
-
-.publishTenantFlyout,
-.publishActorFlyout {
-  top: 150px !important;
-}
-
-.publishNestedTitle {
-  padding: 7px 14px 5px !important;
-}
-
-.publishNestedOption {
-  min-height: 36px !important;
-  padding: 6px 14px !important;
-}
-
-@media (min-width: 761px) {
-  .publishNestedFlyout {
-    right: auto !important;
-    left: calc(100% + 3px) !important;
-  }
-}
-
-.autoPublishOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2147483647;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  background: rgba(31, 41, 55, 0.18);
-}
-
-.autoPublishModal {
-  position: relative;
-  width: 454px;
-  height: 240px;
-  max-width: calc(100vw - 28px);
-  padding: 24px;
-  border-radius: 18px;
-  background: #DFE6E9;
-  color: #30394D;
-  font-family: "Segoe UI", Inter, sans-serif;
-  box-shadow:
-    -4px -4px 8px rgba(255,255,255,.84),
-     4px 4px 8px rgba(174,181,184,.48);
-}
-
-.autoPublishHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.autoPublishHeader h2 {
-  margin: 0;
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: 700;
-  background: linear-gradient(90deg, #2D55D7 0%, #8136B5 52%, #E42E72 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 2px 2px 3px rgba(174,181,184,.35);
-}
-
-.autoPublishClose {
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #DFE6E9;
-  color: #172033;
-  font-size: 25px;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.88),
-     2px 2px 4px rgba(174,181,184,.52);
-}
-
-.autoPublishFields {
-  margin-top: 24px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.autoPublishFieldGroup label {
-  display: block;
-  margin: 0 0 7px;
-  color: #30394D;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 700;
-}
-
-.autoPublishInputWrap {
-  position: relative;
-  height: 38px;
-  border-radius: 5px;
-  background: #DFE6E9;
-  box-shadow:
-    inset 2px 2px 4px rgba(174,181,184,.52),
-    inset -2px -2px 4px rgba(255,255,255,.82);
-}
-
-.autoPublishInputWrap > input:not(.autoPublishNativePicker) {
-  width: 100%;
-  height: 100%;
-  padding: 0 48px 0 12px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #30394D;
-  font: inherit;
-  font-size: 15px;
-}
-
-.autoPublishInputWrap > input::placeholder {
-  color: #30394D;
-  opacity: 1;
-}
-
-.autoPublishIconButton {
-  position: absolute;
-  top: 50%;
-  right: 7px;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  transform: translateY(-50%);
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 50%;
-  background: #DFE6E9;
-  cursor: pointer;
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.88),
-     2px 2px 4px rgba(174,181,184,.48);
-}
-
-.autoPublishIconButton img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
-.autoPublishNativePicker {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  right: 20px;
-  bottom: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.autoPublishActions {
-  position: absolute;
-  right: 24px;
-  bottom: 23px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.autoPublishCancel,
-.autoPublishSave {
-  height: 44px;
-  padding: 0 25px;
-  border: 0;
-  border-radius: 25px;
-  background: #DFE6E9;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow:
-    -3px -3px 6px rgba(255,255,255,.84),
-     3px 3px 6px rgba(174,181,184,.44);
-}
-
-.autoPublishCancel {
-  min-width: 108px;
-  color: #30394D;
-}
-
-.autoPublishSave {
-  min-width: 169px;
-  color: #287B0A;
-  font-weight: 700;
-}
-
-@media (max-width: 520px) {
-  .autoPublishModal {
-    width: 100%;
-    height: auto;
-    min-height: 300px;
-    padding: 20px;
-  }
-
-  .autoPublishFields {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin-top: 18px;
-  }
-
-  .autoPublishActions {
-    position: static;
-    margin-top: 22px;
-    gap: 10px;
-  }
-
-  .autoPublishCancel,
-  .autoPublishSave {
-    flex: 1;
-    min-width: 0;
-    padding: 0 14px;
-  }
-}
-
-.autoPublishInputWrap {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.autoPublishPickerInput {
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 4;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  border: 0 !important;
-  outline: 0 !important;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.autoPublishPickerInput::-webkit-calendar-picker-indicator {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-}
-
-.autoPublishPickerPlaceholder {
-  position: absolute;
-  z-index: 1;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #30394D;
-  font-size: 15px;
-  line-height: 20px;
-  pointer-events: none;
-}
-
-.autoPublishIconButton {
-  z-index: 2;
-  pointer-events: none;
-}
-
-.autoPublishIconButton {
-  display: grid;
-  place-items: center;
-  background: #DFE6E9;
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.90),
-     2px 2px 4px rgba(174,181,184,.48);
-}
-
-.autoPublishIconButton img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
-.autoPublishModal {
-  overflow: visible !important;
-}
-
-.autoPublishFieldGroup {
-  position: relative;
-}
-
-.autoPublishSelectControl {
-  width: 100%;
-  padding: 0 8px 0 12px;
-  border: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #30394D;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 15px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.autoPublishCalendarPopup,
-.autoPublishTimePopup {
-  position: absolute;
-  z-index: 2147483647;
-  top: calc(100% + 8px);
-  left: 0;
-  background: #DFE6E9;
-  border-radius: 14px;
-  box-shadow:
-    -5px -5px 10px rgba(255,255,255,.88),
-     5px 5px 10px rgba(174,181,184,.48);
-}
-
-.autoPublishCalendarPopup {
-  width: 200px;
-  padding: 10px;
-}
-
-.autoPublishCalendarHeader {
-  display: grid;
-  grid-template-columns: 34px 1fr 34px;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.autoPublishCalendarHeader strong {
-  text-align: center;
-  font-size: 13px;
-  line-height: 18px;
-}
-
-.autoPublishCalendarHeader button {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: #DFE6E9;
-  color: #263246;
-  font-size: 22px;
-  cursor: pointer;
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.86),
-     2px 2px 4px rgba(174,181,184,.44);
-}
-
-.autoPublishWeekdays,
-.autoPublishCalendarGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-}
-
-.autoPublishWeekdays {
-  margin-bottom: 5px;
-}
-
-.autoPublishWeekdays span {
-  text-align: center;
-  color: #647087;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.autoPublishCalendarGrid button {
-  aspect-ratio: 1;
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 7px;
-  background: #DFE6E9;
-  color: #30394D;
-  font-size: 10px;
-  cursor: pointer;
-  box-shadow:
-    -1.5px -1.5px 3px rgba(255,255,255,.88),
-     1.5px 1.5px 3px rgba(174,181,184,.45);
-}
-
-.autoPublishCalendarGrid button.outside {
-  color: #AEB6C2;
-}
-
-.autoPublishCalendarGrid button.selected {
-  background: #3158E7;
-  color: #FFFFFF;
-  box-shadow:
-    inset 1px 1px 3px rgba(25,47,150,.35),
-    inset -1px -1px 3px rgba(111,139,255,.48);
-}
-
-.autoPublishTimePopup {
-  width: 142px;
-  padding: 7px;
-}
-
-.autoPublishTimeList {
-  height: 220px;
-  padding-right: 5px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 7px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #9CA3AF transparent;
-}
-
-.autoPublishTimeList::-webkit-scrollbar {
-  width: 6px;
-}
-
-.autoPublishTimeList::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.autoPublishTimeList::-webkit-scrollbar-thumb {
-  background: #9CA3AF;
-  border-radius: 8px;
-}
-
-.autoPublishTimeList button {
-  min-height: 35px;
-  padding: 6px 4px;
-  border: 0;
-  border-radius: 8px;
-  background: #DFE6E9;
-  color: #30394D;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 11px;
-  cursor: pointer;
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.86),
-     2px 2px 4px rgba(174,181,184,.44);
-}
-
-.autoPublishTimeList button.selected {
-  color: #2D55D7;
-  font-weight: 700;
-  box-shadow:
-    inset 2px 2px 4px rgba(174,181,184,.38),
-    inset -2px -2px 4px rgba(255,255,255,.76);
-}
-
-@media (max-width: 520px) {
-  .autoPublishCalendarPopup,
-  .autoPublishTimePopup {
-    position: relative;
-    top: 7px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .autoPublishTimeList {
-    height: 180px;
-  }
-}
-
-.autoPublishTimePopup {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  padding: 8px !important;
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr) !important;
-  gap: 8px !important;
-  border-radius: 12px !important;
-  background: #DFE6E9 !important;
-  box-shadow:
-    -4px -4px 8px rgba(255,255,255,.88),
-     4px 4px 8px rgba(174,181,184,.48) !important;
-}
-
-.autoPublishTimeColumn {
-  min-width: 0;
-}
-
-.autoPublishTimeColumnTitle {
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #30394D;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 700;
-}
-
-.autoPublishTimeDivider {
-  width: 1px;
-  height: 100%;
-  background: rgba(120, 130, 145, .18);
-}
-
-.autoPublishTimeScroll {
-  height: 210px;
-  padding: 2px 5px 2px 2px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #9199A6 transparent;
-}
-
-.autoPublishTimeScroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.autoPublishTimeScroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.autoPublishTimeScroll::-webkit-scrollbar-thumb {
-  background: #9199A6;
-  border-radius: 8px;
-}
-
-.autoPublishTimeScroll button {
-  width: 100%;
-  height: 36px;
-  margin: 0 0 7px;
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  background: #DFE6E9;
-  color: #30394D !important;
-  opacity: 1 !important;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 13px !important;
-  line-height: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.88),
-     2px 2px 4px rgba(174,181,184,.44);
-}
-
-.autoPublishTimeScroll button:last-child {
-  margin-bottom: 0;
-}
-
-.autoPublishTimeScroll button:hover {
-  color: #2D55D7 !important;
-}
-
-.autoPublishTimeScroll button.selected {
-  color: #2D55D7 !important;
-  font-weight: 700 !important;
-  box-shadow:
-    inset 2px 2px 4px rgba(174,181,184,.38),
-    inset -2px -2px 4px rgba(255,255,255,.78);
-}
-
-.autoPublishSelectControl,
-.autoPublishSelectControl > span:first-child {
-  color: #30394D !important;
-  opacity: 1 !important;
-}
-
-@media (max-width: 520px) {
-  .autoPublishTimePopup {
-    width: 100% !important;
-  }
-
-  .autoPublishTimeScroll {
-    height: 190px;
-  }
-}
 
 .statusBadge.scheduled,
 .eventStatus.scheduled,
@@ -5846,1299 +4702,12 @@ body {
   }
 }
 
-.publishDropdown {
-  position: relative !important;
-}
-
-.publishDropdownMenu {
-  position: absolute !important;
-  top: calc(100% + 10px) !important;
-  left: 0 !important;
-  right: auto !important;
-  width: 305px !important;
-  max-height: 215px !important;
-  margin: 0 !important;
-  z-index: 3000 !important;
-}
-
-.publishNestedFlyout,
-.publishTenantFlyout,
-.publishActorFlyout {
-  position: absolute !important;
-  top: calc(100% + 10px) !important;
-  left: 308px !important;
-  right: auto !important;
-  bottom: auto !important;
-
-  width: 230px !important;
-  height: auto !important;
-  max-height: 260px !important;
-
-  margin: 0 !important;
-  padding: 14px 12px !important;
-
-  transform: none !important;
-
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-
-  z-index: 3001 !important;
-}
-
-.publishTenantFlyout,
-.publishActorFlyout {
-  top: calc(100% + 10px) !important;
-  left: 308px !important;
-  transform: none !important;
-}
-
-.publishNestedTitle {
-  margin: 0 0 8px !important;
-  padding: 0 8px !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
-}
-
-.publishNestedOption {
-  min-height: 40px !important;
-  padding: 7px 8px !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
-}
-
-@media (min-width: 768px) and (max-width: 1100px) {
-  .publishDropdownMenu {
-    width: 280px !important;
-  }
-
-  .publishNestedFlyout,
-  .publishTenantFlyout,
-  .publishActorFlyout {
-    left: 283px !important;
-    width: 210px !important;
-    max-height: 240px !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .publishModalOverlay {
-    padding: 12px !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-  }
-
-  .publishModal {
-    width: calc(100vw - 24px) !important;
-    max-width: 454px !important;
-    height: auto !important;
-    min-height: 330px !important;
-  }
-
-  .publishDropdownMenu {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .publishNestedFlyout,
-  .publishTenantFlyout,
-  .publishActorFlyout {
-    top: calc(100% + 10px) !important;
-    left: 0 !important;
-    right: auto !important;
-
-    width: 100% !important;
-    max-width: 100% !important;
-    max-height: 220px !important;
-
-    padding: 12px !important;
-    transform: none !important;
-
-    z-index: 3002 !important;
-  }
-}
-
-@media (max-width: 420px) {
-  .publishModalOverlay {
-    padding: 8px !important;
-  }
-
-  .publishModal {
-    width: calc(100vw - 16px) !important;
-  }
-
-  .publishNestedFlyout,
-  .publishTenantFlyout,
-  .publishActorFlyout {
-    max-height: 200px !important;
-  }
-}
-
-@media (min-width: 768px) {
-  .publishNestedFlyout,
-  .publishTenantFlyout,
-  .publishActorFlyout {
-    transform: translateY(-12px) !important;
-  }
-}
 
 .statusBadge.scheduled {
   color: #d71920 !important;
   background: #f2d2d2 !important;
 }
 
-.autoPublishOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 5000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(47, 53, 71, 0.14);
-}
-
-.autoPublishModal {
-  width: 454px;
-  height: 240px;
-  padding: 24px;
-  position: relative;
-  border-radius: 18px;
-  background: #dfe6e9;
-  box-shadow:
-    -7px -7px 14px rgba(255,255,255,.92),
-     7px  7px 14px rgba(174,181,184,.62);
-  font-family: "Segoe UI", Inter, sans-serif;
-  color: #30394d;
-}
-
-.autoPublishHeader {
-  height: 42px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.autoPublishHeader h2 {
-  margin: 0;
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: 700;
-  background: linear-gradient(90deg, #3158e7 0%, #8c2eb9 55%, #e52b73 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 2px 3px 4px rgba(120,126,132,.28);
-}
-
-.autoPublishClose {
-  width: 31px;
-  height: 31px;
-  margin-top: -3px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #dfe6e9;
-  color: #1f2a40;
-  font-size: 28px;
-  line-height: 1;
-  font-weight: 300;
-  cursor: pointer;
-  box-shadow:
-    -3px -3px 6px rgba(255,255,255,.9),
-     3px  3px 6px rgba(174,181,184,.6);
-}
-
-.autoPublishFields {
-  margin-top: 13px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.autoPublishField label {
-  display: block;
-  margin: 0 0 8px;
-  font-size: 16px;
-  line-height: 22px;
-  font-weight: 700;
-  letter-spacing: .02em;
-}
-
-.autoPublishDateControl,
-.autoPublishTimeControl {
-  height: 42px;
-  display: flex;
-  align-items: center;
-  border-radius: 6px;
-  background: #dfe6e9;
-  box-shadow:
-    inset 3px 3px 5px rgba(174,181,184,.52),
-    inset -3px -3px 5px rgba(255,255,255,.88);
-}
-
-.autoPublishDateControl {
-  position: relative;
-  padding: 0 45px 0 12px;
-}
-
-.autoPublishDateControl input {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #30394d;
-  font: inherit;
-  font-size: 15px;
-}
-
-.autoPublishDateControl input::-webkit-calendar-picker-indicator {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.autoPublishCalendarIcon,
-.autoPublishClockIcon {
-  position: absolute;
-  right: 8px;
-  width: 29px;
-  height: 29px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  color: #3158e7;
-  background: #dfe6e9;
-  pointer-events: none;
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.9),
-     2px  2px 4px rgba(174,181,184,.55);
-}
-
-.autoPublishTimeControl {
-  position: relative;
-  padding: 0 43px 0 10px;
-  gap: 4px;
-}
-
-.autoPublishTimeControl select {
-  width: 62px;
-  height: 34px;
-  padding: 0 4px;
-  border: 0;
-  outline: 0;
-  appearance: none;
-  background: transparent;
-  color: #30394d;
-  font: inherit;
-  font-size: 15px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.autoPublishTimeSeparator {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.autoPublishClockIcon {
-  font-size: 24px;
-  line-height: 1;
-}
-
-.autoPublishError {
-  position: absolute;
-  left: 24px;
-  bottom: 61px;
-  margin: 0;
-  color: #d71920;
-  font-size: 11px;
-  line-height: 14px;
-}
-
-.autoPublishActions {
-  position: absolute;
-  right: 24px;
-  bottom: 23px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.autoPublishCancel,
-.autoPublishSave {
-  height: 44px;
-  padding: 0 25px;
-  border: 0;
-  border-radius: 28px;
-  background: #dfe6e9;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 16px;
-  line-height: 44px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow:
-    -4px -4px 8px rgba(255,255,255,.92),
-     4px  4px 8px rgba(174,181,184,.55);
-}
-
-.autoPublishCancel {
-  min-width: 108px;
-  color: #30394d;
-}
-
-.autoPublishSave {
-  min-width: 168px;
-  color: #247b12;
-  font-weight: 700;
-}
-
-.autoPublishCancel:active,
-.autoPublishSave:active,
-.autoPublishClose:active {
-  box-shadow:
-    inset -3px -3px 5px rgba(255,255,255,.85),
-    inset 3px 3px 5px rgba(174,181,184,.55);
-}
-
-@media (max-width: 767px) {
-  .autoPublishOverlay {
-    padding: 12px;
-  }
-
-  .autoPublishModal {
-    width: min(454px, calc(100vw - 24px));
-    height: auto;
-    min-height: 300px;
-    padding: 20px 16px;
-  }
-
-  .autoPublishFields {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin-top: 10px;
-  }
-
-  .autoPublishActions {
-    position: static;
-    margin-top: 24px;
-    justify-content: flex-end;
-    gap: 12px;
-  }
-
-  .autoPublishCancel,
-  .autoPublishSave {
-    height: 42px;
-    padding: 0 18px;
-    font-size: 14px;
-    line-height: 42px;
-  }
-
-  .autoPublishSave {
-    min-width: 145px;
-  }
-
-  .autoPublishError {
-    position: static;
-    margin-top: 8px;
-  }
-}
-
-@media (max-width: 420px) {
-  .autoPublishModal {
-    width: calc(100vw - 16px);
-    padding: 18px 12px;
-  }
-
-  .autoPublishActions {
-    display: grid;
-    grid-template-columns: 1fr 1.25fr;
-  }
-
-  .autoPublishCancel,
-  .autoPublishSave {
-    width: 100%;
-    min-width: 0;
-    padding: 0 10px;
-    font-size: 13px;
-  }
-}
-
-.autoPublishDateControl {
-  height: 42px !important;
-  border-radius: 8px !important;
-  background: #dfe6e9 !important;
-  box-shadow:
-    inset 4px 4px 7px rgba(174, 181, 184, 0.58),
-    inset -4px -4px 7px rgba(255, 255, 255, 0.92) !important;
-}
-
-.autoPublishDateControl input {
-  color-scheme: light;
-  cursor: pointer;
-}
-
-.autoPublishCalendarIcon {
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 50% !important;
-  background: #dfe6e9 !important;
-  box-shadow:
-    -3px -3px 6px rgba(255, 255, 255, 0.95),
-     3px 3px 6px rgba(174, 181, 184, 0.58) !important;
-}
-
-.autoPublishTimePicker {
-  position: relative;
-  width: 100%;
-}
-
-.autoPublishTimeControl {
-  width: 100%;
-  height: 42px;
-  padding: 0 43px 0 14px !important;
-  border: 0;
-  border-radius: 8px !important;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  background: #dfe6e9 !important;
-  color: #30394d;
-  cursor: pointer;
-  box-shadow:
-    inset 4px 4px 7px rgba(174, 181, 184, 0.58),
-    inset -4px -4px 7px rgba(255, 255, 255, 0.92) !important;
-}
-
-.autoPublishTimeControl.open {
-  box-shadow:
-    inset 5px 5px 8px rgba(174, 181, 184, 0.62),
-    inset -5px -5px 8px rgba(255, 255, 255, 0.94) !important;
-}
-
-.autoPublishTimeValue {
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 15px;
-  line-height: 20px;
-  color: #30394d;
-}
-
-.autoPublishTimeDropdown {
-  position: absolute;
-  top: calc(100% + 7px);
-  right: 0;
-  z-index: 5200;
-
-  width: 190px;
-  height: 190px;
-  padding: 10px;
-
-  display: grid;
-  grid-template-columns: 1fr 1px 1fr;
-  gap: 8px;
-
-  border-radius: 14px;
-  background: #dfe6e9;
-  box-shadow:
-    -6px -6px 12px rgba(255, 255, 255, 0.96),
-     6px 6px 12px rgba(174, 181, 184, 0.68);
-}
-
-.autoPublishTimeColumn {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.autoPublishTimeColumnTitle {
-  height: 25px;
-  flex: 0 0 25px;
-  display: grid;
-  place-items: center;
-  color: #606a7b;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 700;
-}
-
-.autoPublishTimeDivider {
-  width: 1px;
-  height: 100%;
-  background: rgba(111, 122, 139, 0.22);
-}
-
-.autoPublishTimeScroller {
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 4px 6px;
-  border-radius: 10px;
-  background: #dfe6e9;
-  box-shadow:
-    inset 3px 3px 6px rgba(174, 181, 184, 0.52),
-    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
-  scrollbar-width: thin;
-  scrollbar-color: #aab4bb transparent;
-}
-
-.autoPublishTimeScroller::-webkit-scrollbar {
-  width: 5px;
-}
-
-.autoPublishTimeScroller::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.autoPublishTimeScroller::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background: #aab4bb;
-}
-
-.autoPublishTimeScroller button {
-  width: 100%;
-  height: 31px;
-  margin: 2px 0;
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: #30394d;
-  font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 14px;
-  line-height: 31px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.autoPublishTimeScroller button:hover {
-  color: #3158e7;
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.autoPublishTimeScroller button.selected {
-  color: #3158e7;
-  font-weight: 700;
-  background: #dfe6e9;
-  box-shadow:
-    -2px -2px 4px rgba(255, 255, 255, 0.9),
-     2px 2px 4px rgba(174, 181, 184, 0.55);
-}
-
-.autoPublishModal {
-  overflow: visible !important;
-}
-
-@media (max-width: 767px) {
-  .autoPublishTimeDropdown {
-    right: 0;
-    width: min(190px, 100%);
-    height: 180px;
-  }
-}
-
-@media (max-width: 420px) {
-  .autoPublishTimeDropdown {
-    left: 0;
-    right: auto;
-    width: 100%;
-    height: 175px;
-  }
-}
-
-.autoPublishCalendarImage,
-.autoPublishClockImage {
-  display: block;
-  width: 21px;
-  height: 21px;
-  object-fit: contain;
-  pointer-events: none;
-  user-select: none;
-}
-
-.autoPublishCalendarIcon,
-.autoPublishClockIcon {
-  display: grid !important;
-  place-items: center !important;
-}
-
-.autoPublishDateControl input::-webkit-calendar-picker-indicator {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.autoPublishModal {
-  width: 454px !important;
-  height: 240px !important;
-  overflow: visible !important;
-}
-
-.autoPublishDateControl {
-  position: relative !important;
-  height: 42px !important;
-  overflow: visible !important;
-  border: 0 !important;
-  border-radius: 8px !important;
-  background: #dfe6e9 !important;
-  box-shadow:
-    inset 4px 4px 7px rgba(174, 181, 184, 0.60),
-    inset -4px -4px 7px rgba(255, 255, 255, 0.95) !important;
-}
-
-.autoPublishDateControl input {
-  position: relative !important;
-  z-index: 2 !important;
-  width: 100% !important;
-  height: 42px !important;
-  padding: 0 48px 0 12px !important;
-  border: 0 !important;
-  outline: 0 !important;
-  border-radius: 8px !important;
-  background: transparent !important;
-  color: #30394d !important;
-  font-family: "Segoe UI", Inter, sans-serif !important;
-  font-size: 15px !important;
-  cursor: pointer !important;
-}
-
-.autoPublishDateControl input::-webkit-calendar-picker-indicator {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  opacity: 0 !important;
-  cursor: pointer !important;
-}
-
-.autoPublishCalendarIcon {
-  position: absolute !important;
-  z-index: 3 !important;
-  top: 50% !important;
-  right: 8px !important;
-  transform: translateY(-50%) !important;
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 50% !important;
-  display: grid !important;
-  place-items: center !important;
-  background: #dfe6e9 !important;
-  pointer-events: none !important;
-  box-shadow:
-    -3px -3px 6px rgba(255, 255, 255, 0.96),
-     3px 3px 6px rgba(174, 181, 184, 0.62) !important;
-}
-
-.autoPublishCalendarImage {
-  width: 20px !important;
-  height: 20px !important;
-  display: block !important;
-  object-fit: contain !important;
-}
-
-.autoPublishTimePicker {
-  position: relative !important;
-  width: 100% !important;
-}
-
-.autoPublishTimeControl {
-  width: 100% !important;
-  height: 42px !important;
-  position: relative !important;
-  padding: 0 48px 0 14px !important;
-  border: 0 !important;
-  border-radius: 8px !important;
-  display: flex !important;
-  align-items: center !important;
-  background: #dfe6e9 !important;
-  color: #30394d !important;
-  cursor: pointer !important;
-  box-shadow:
-    inset 4px 4px 7px rgba(174, 181, 184, 0.60),
-    inset -4px -4px 7px rgba(255, 255, 255, 0.95) !important;
-}
-
-.autoPublishClockIcon {
-  position: absolute !important;
-  top: 50% !important;
-  right: 8px !important;
-  transform: translateY(-50%) !important;
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 50% !important;
-  display: grid !important;
-  place-items: center !important;
-  background: #dfe6e9 !important;
-  pointer-events: none !important;
-  box-shadow:
-    -3px -3px 6px rgba(255, 255, 255, 0.96),
-     3px 3px 6px rgba(174, 181, 184, 0.62) !important;
-}
-
-.autoPublishClockImage {
-  width: 20px !important;
-  height: 20px !important;
-  display: block !important;
-  object-fit: contain !important;
-}
-
-.autoPublishTimeDropdown {
-  position: absolute !important;
-  top: calc(100% + 8px) !important;
-  right: 0 !important;
-  left: auto !important;
-  z-index: 9999 !important;
-
-  width: 190px !important;
-  height: 176px !important;
-  min-height: 176px !important;
-  max-height: 176px !important;
-
-  padding: 9px !important;
-  overflow: hidden !important;
-
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr) !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  gap: 8px !important;
-
-  border-radius: 14px !important;
-  background: #dfe6e9 !important;
-  box-shadow:
-    -6px -6px 12px rgba(255, 255, 255, 0.96),
-     6px 6px 12px rgba(174, 181, 184, 0.68) !important;
-}
-
-.autoPublishTimeColumn {
-  height: 158px !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  display: grid !important;
-  grid-template-rows: 25px minmax(0, 1fr) !important;
-}
-
-.autoPublishTimeColumnTitle {
-  height: 25px !important;
-  min-height: 25px !important;
-  display: grid !important;
-  place-items: center !important;
-  color: #606a7b !important;
-  font-size: 12px !important;
-  line-height: 16px !important;
-  font-weight: 700 !important;
-}
-
-.autoPublishTimeDivider {
-  width: 1px !important;
-  height: 158px !important;
-  background: rgba(111, 122, 139, 0.24) !important;
-}
-
-.autoPublishTimeScroller {
-  height: 133px !important;
-  min-height: 0 !important;
-  max-height: 133px !important;
-
-  overflow-y: scroll !important;
-  overflow-x: hidden !important;
-  overscroll-behavior: contain !important;
-  -webkit-overflow-scrolling: touch !important;
-
-  padding: 4px 5px !important;
-  border-radius: 10px !important;
-  background: #dfe6e9 !important;
-  box-shadow:
-    inset 3px 3px 6px rgba(174, 181, 184, 0.55),
-    inset -3px -3px 6px rgba(255, 255, 255, 0.92) !important;
-
-  scrollbar-width: thin !important;
-  scrollbar-color: #9faab2 transparent !important;
-}
-
-.autoPublishTimeScroller::-webkit-scrollbar {
-  width: 5px !important;
-}
-
-.autoPublishTimeScroller::-webkit-scrollbar-track {
-  background: transparent !important;
-}
-
-.autoPublishTimeScroller::-webkit-scrollbar-thumb {
-  min-height: 30px !important;
-  border-radius: 10px !important;
-  background: #9faab2 !important;
-}
-
-.autoPublishTimeScroller button {
-  display: block !important;
-  width: 100% !important;
-  height: 31px !important;
-  min-height: 31px !important;
-  margin: 2px 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 8px !important;
-  background: transparent !important;
-  color: #30394d !important;
-  font-family: "Segoe UI", Inter, sans-serif !important;
-  font-size: 14px !important;
-  line-height: 31px !important;
-  text-align: center !important;
-  cursor: pointer !important;
-}
-
-.autoPublishTimeScroller button:hover,
-.autoPublishTimeScroller button.selected {
-  color: #3158e7 !important;
-  font-weight: 700 !important;
-  background: #dfe6e9 !important;
-  box-shadow:
-    -2px -2px 4px rgba(255, 255, 255, 0.90),
-     2px 2px 4px rgba(174, 181, 184, 0.55) !important;
-}
-
-@media (max-width: 767px) {
-  .autoPublishModal {
-    width: min(454px, calc(100vw - 24px)) !important;
-    height: auto !important;
-    min-height: 300px !important;
-  }
-
-  .autoPublishTimeDropdown {
-    right: 0 !important;
-    width: 190px !important;
-    height: 176px !important;
-  }
-}
-
-@media (max-width: 420px) {
-  .autoPublishTimeDropdown {
-    left: 0 !important;
-    right: auto !important;
-    width: 100% !important;
-  }
-}
-
-.autoPublishDatePicker {
-  position: relative !important;
-  width: 100% !important;
-}
-
-button.autoPublishDateControl {
-  width: 100% !important;
-  height: 42px !important;
-  padding: 0 48px 0 14px !important;
-  border: 0 !important;
-  border-radius: 8px !important;
-  position: relative !important;
-  display: flex !important;
-  align-items: center !important;
-  text-align: left !important;
-  background: #dfe6e9 !important;
-  color: #30394d !important;
-  cursor: pointer !important;
-  box-shadow:
-    inset 4px 4px 7px rgba(174, 181, 184, 0.60),
-    inset -4px -4px 7px rgba(255, 255, 255, 0.95) !important;
-}
-
-.autoPublishDateValue {
-  font-family: "Segoe UI", Inter, sans-serif !important;
-  font-size: 15px !important;
-  line-height: 20px !important;
-  color: #30394d !important;
-}
-
-.autoPublishCalendarDropdown {
-  position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
-  right: auto !important;
-  z-index: 10000 !important;
-
-  width: 100% !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
-
-  margin: 0 !important;
-  padding: 10px !important;
-
-  border: 0 !important;
-  border-radius: 0 0 14px 14px !important;
-  background: #dfe6e9 !important;
-
-  box-shadow:
-    -5px 7px 12px rgba(255, 255, 255, 0.68),
-     6px 7px 12px rgba(174, 181, 184, 0.66) !important;
-}
-
-.autoPublishDateControl.open {
-  border-radius: 8px 8px 0 0 !important;
-}
-
-.autoPublishCalendarHeader {
-  height: 38px !important;
-  display: grid !important;
-  grid-template-columns: 34px 1fr 34px !important;
-  align-items: center !important;
-  gap: 6px !important;
-  margin-bottom: 7px !important;
-}
-
-.autoPublishCalendarHeader strong {
-  color: #30394d !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
-  font-weight: 600 !important;
-  text-align: center !important;
-}
-
-.autoPublishCalendarNav {
-  width: 32px !important;
-  height: 32px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 50% !important;
-  display: grid !important;
-  place-items: center !important;
-  background: #dfe6e9 !important;
-  color: #30394d !important;
-  font-size: 23px !important;
-  line-height: 1 !important;
-  cursor: pointer !important;
-  box-shadow:
-    -3px -3px 6px rgba(255, 255, 255, 0.96),
-     3px 3px 6px rgba(174, 181, 184, 0.62) !important;
-}
-
-.autoPublishCalendarWeekdays {
-  display: grid !important;
-  grid-template-columns: repeat(7, 1fr) !important;
-  gap: 3px !important;
-  margin-bottom: 4px !important;
-}
-
-.autoPublishCalendarWeekdays span {
-  display: grid !important;
-  place-items: center !important;
-  height: 20px !important;
-  color: #657188 !important;
-  font-size: 10px !important;
-  line-height: 14px !important;
-  font-weight: 600 !important;
-}
-
-.autoPublishCalendarGrid {
-  display: grid !important;
-  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-}
-
-.autoPublishCalendarGrid button {
-  width: 100% !important;
-  aspect-ratio: 1 / 1 !important;
-  min-width: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 7px !important;
-  display: grid !important;
-  place-items: center !important;
-  background: #dfe6e9 !important;
-  color: #30394d !important;
-  font-family: "Segoe UI", Inter, sans-serif !important;
-  font-size: 10px !important;
-  line-height: 1 !important;
-  cursor: pointer !important;
-  box-shadow:
-    -2px -2px 4px rgba(255, 255, 255, 0.92),
-     2px 2px 4px rgba(174, 181, 184, 0.58) !important;
-}
-
-.autoPublishCalendarGrid button.outside {
-  color: #aeb8c1 !important;
-}
-
-.autoPublishCalendarGrid button.selected {
-  color: #ffffff !important;
-  background: #3158e7 !important;
-  box-shadow:
-    inset 2px 2px 4px rgba(32, 58, 160, 0.42),
-    inset -2px -2px 4px rgba(93, 124, 245, 0.55) !important;
-}
-
-.autoPublishTimeDropdown {
-  top: 100% !important;
-  left: 0 !important;
-  right: auto !important;
-
-  width: 100% !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
-
-  margin: 0 !important;
-
-  border-radius: 0 0 14px 14px !important;
-}
-
-.autoPublishTimeControl.open {
-  border-radius: 8px 8px 0 0 !important;
-}
-
-@media (max-width: 767px) {
-  .autoPublishCalendarDropdown,
-  .autoPublishTimeDropdown {
-    width: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
-    left: 0 !important;
-    right: auto !important;
-  }
-}
-
-.autoPublishModal .autoPublishDatePicker {
-  position: relative !important;
-  width: 100% !important;
-  z-index: 40 !important;
-}
-
-.autoPublishModal button.autoPublishDateControl {
-  position: relative !important;
-  z-index: 42 !important;
-  width: 100% !important;
-  height: 42px !important;
-  margin: 0 !important;
-  padding: 0 48px 0 14px !important;
-  border: 0 !important;
-  border-radius: 8px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  background: #dfe6e9 !important;
-  color: #30394d !important;
-  box-shadow:
-    inset 4px 4px 7px rgba(174,181,184,.60),
-    inset -4px -4px 7px rgba(255,255,255,.95) !important;
-}
-
-.autoPublishModal button.autoPublishDateControl.open {
-  border-radius: 8px 8px 0 0 !important;
-  box-shadow:
-    inset 4px 4px 7px rgba(174,181,184,.60),
-    inset -4px -4px 7px rgba(255,255,255,.95) !important;
-}
-
-.autoPublishModal .autoPublishCalendarDropdown {
-  position: absolute !important;
-  z-index: 10050 !important;
-
-  top: 42px !important;
-  left: 0 !important;
-  right: auto !important;
-
-  width: 100% !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-
-  margin: 0 !important;
-  padding: 10px 9px 28px !important;
-
-  border: 0 !important;
-  border-radius: 0 0 14px 14px !important;
-  background: #dfe6e9 !important;
-
-  transform: none !important;
-  overflow: hidden !important;
-
-  box-shadow:
-    -5px 7px 11px rgba(255,255,255,.70),
-     6px 7px 12px rgba(174,181,184,.68) !important;
-}
-
-.autoPublishModal .autoPublishCalendarHeader {
-  width: 100% !important;
-  height: 38px !important;
-  margin: 0 0 7px !important;
-  padding: 0 !important;
-
-  display: grid !important;
-  grid-template-columns: 34px minmax(0, 1fr) 34px !important;
-  align-items: center !important;
-  column-gap: 5px !important;
-}
-
-.autoPublishModal .autoPublishCalendarHeader strong {
-  margin: 0 !important;
-  padding: 0 !important;
-  text-align: center !important;
-  color: #30394d !important;
-  font-family: "Segoe UI", Inter, sans-serif !important;
-  font-size: 13px !important;
-  line-height: 18px !important;
-  font-weight: 600 !important;
-  white-space: nowrap !important;
-}
-
-.autoPublishModal .autoPublishCalendarNav {
-  width: 32px !important;
-  height: 32px !important;
-  min-width: 32px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-
-  border: 0 !important;
-  border-radius: 50% !important;
-
-  display: grid !important;
-  place-items: center !important;
-
-  background: #dfe6e9 !important;
-  color: #253249 !important;
-
-  font-family: Arial, sans-serif !important;
-  font-size: 23px !important;
-  line-height: 1 !important;
-  font-weight: 400 !important;
-
-  cursor: pointer !important;
-
-  box-shadow:
-    -3px -3px 6px rgba(255,255,255,.96),
-     3px 3px 6px rgba(174,181,184,.62) !important;
-}
-
-.autoPublishModal .autoPublishCalendarWeekdays {
-  width: 100% !important;
-  margin: 0 0 4px !important;
-  padding: 0 !important;
-
-  display: grid !important;
-  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-}
-
-.autoPublishModal .autoPublishCalendarWeekdays span {
-  height: 18px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-
-  display: grid !important;
-  place-items: center !important;
-
-  color: #667188 !important;
-  font-family: "Segoe UI", Inter, sans-serif !important;
-  font-size: 10px !important;
-  line-height: 14px !important;
-  font-weight: 600 !important;
-}
-
-.autoPublishModal .autoPublishCalendarGrid {
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-
-  display: grid !important;
-  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
-  grid-auto-rows: 28px !important;
-  gap: 4px !important;
-}
-
-.autoPublishModal .autoPublishCalendarGrid button {
-  width: 100% !important;
-  height: 28px !important;
-  min-width: 0 !important;
-  min-height: 28px !important;
-  aspect-ratio: auto !important;
-
-  margin: 0 !important;
-  padding: 0 !important;
-
-  border: 0 !important;
-  border-radius: 7px !important;
-
-  display: grid !important;
-  place-items: center !important;
-
-  background: #dfe6e9 !important;
-  color: #30394d !important;
-
-  font-family: "Segoe UI", Inter, sans-serif !important;
-  font-size: 10px !important;
-  line-height: 1 !important;
-  font-weight: 400 !important;
-
-  cursor: pointer !important;
-
-  box-shadow:
-    -2px -2px 4px rgba(255,255,255,.92),
-     2px 2px 4px rgba(174,181,184,.58) !important;
-}
-
-.autoPublishModal .autoPublishCalendarGrid button.outside {
-  color: #aeb8c1 !important;
-  opacity: .78 !important;
-}
-
-.autoPublishModal .autoPublishCalendarGrid button.selected {
-  background: #3158e7 !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  box-shadow:
-    inset 2px 2px 4px rgba(32,58,160,.42),
-    inset -2px -2px 4px rgba(93,124,245,.55) !important;
-}
-
-.autoPublishModal .autoPublishTimePicker {
-  position: relative !important;
-  width: 100% !important;
-  z-index: 39 !important;
-}
-
-.autoPublishModal .autoPublishTimeDropdown {
-  top: 42px !important;
-  left: 0 !important;
-  right: auto !important;
-
-  width: 100% !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
-
-  margin: 0 !important;
-  box-sizing: border-box !important;
-  transform: none !important;
-  border-radius: 0 0 14px 14px !important;
-}
-
-@media (max-width: 767px) {
-  .autoPublishModal .autoPublishCalendarDropdown,
-  .autoPublishModal .autoPublishTimeDropdown {
-    top: 42px !important;
-    left: 0 !important;
-    right: auto !important;
-    width: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    transform: none !important;
-  }
-
-  .autoPublishModal .autoPublishCalendarGrid {
-    grid-auto-rows: 30px !important;
-  }
-
-  .autoPublishModal .autoPublishCalendarGrid button {
-    height: 30px !important;
-    min-height: 30px !important;
-  }
-}
 
 .calendarPage .calendarWorkspace.weekImageLayout {
   grid-template-columns: minmax(0, 1fr);
@@ -16082,8 +13651,8 @@ button.autoPublishDateControl {
   color: #2d4cc8;
 
   font-family: "Segoe UI", Inter, sans-serif;
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 14px;
+  line-height: 18px;
   font-weight: 600;
   white-space: nowrap;
 
@@ -17752,226 +15321,14 @@ button.autoPublishDateControl {
 }
 
 
-
 /* ===== Publish Audience: completed Tenant + Actor pairs one-by-one ===== */
-.publishDropdownButton:has(.publishAudienceValue) {
-  height: auto !important;
-  min-height: 58px !important;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
-  align-items: center !important;
-}
-
-.publishAudienceValue {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  justify-content: center !important;
-  gap: 5px !important;
-  overflow: visible !important;
-  white-space: normal !important;
-  text-overflow: clip !important;
-}
-
-.publishAudienceValue .publishAudiencePair {
-  display: block !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  line-height: 20px !important;
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
-}
-
-.publishAudienceValue .publishAudiencePair + .publishAudiencePair::before {
-  content: none !important;
-}
-
-@media (max-width: 760px) {
-  .publishDropdownButton:has(.publishAudienceValue) {
-    min-height: 58px !important;
-    height: auto !important;
-  }
-
-  .publishAudienceValue .publishAudiencePair {
-    line-height: 19px !important;
-  }
-}
 
 
 /* ===== FINAL FIX: Audience field grows automatically with every selected pair ===== */
-.publishField .publishDropdownControl {
-  height: auto !important;
-  min-height: 46px !important;
-}
 
-.publishField .publishDropdownControl:has(.publishAudienceValue) {
-  height: auto !important;
-  min-height: 58px !important;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
-  align-items: center !important;
-}
-
-.publishField .publishDropdownControl .publishAudienceValue {
-  min-height: 0 !important;
-  height: auto !important;
-  flex: 1 1 auto !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  overflow: visible !important;
-  white-space: normal !important;
-}
-
-.publishField .publishDropdownControl .publishAudiencePair {
-  position: static !important;
-  display: block !important;
-  width: 100% !important;
-  height: auto !important;
-  min-height: 20px !important;
-  margin: 0 !important;
-  line-height: 20px !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-}
-
-.publishField .publishDropdownControl .publishAudiencePair::before {
-  content: none !important;
-}
-
-.publishModal,
-.publishModalSpecific {
-  height: auto !important;
-  max-height: calc(100vh - 32px) !important;
-}
-
-.publishModalSpecific .publishModalActions {
-  position: static !important;
-  margin-top: 18px !important;
-}
-
-@media (max-width: 760px) {
-  .publishField .publishDropdownControl:has(.publishAudienceValue) {
-    height: auto !important;
-    min-height: 58px !important;
-  }
-
-  .publishModal,
-  .publishModalSpecific {
-    height: auto !important;
-    max-height: calc(100dvh - 20px) !important;
-    overflow-y: auto !important;
-  }
-}
-
-
-/* ===== FINAL PUBLISH MODAL LAYOUT: content + buttons never overlap ===== */
-.publishModal,
-.publishModal.publishModalSpecific {
-  height: auto !important;
-  min-height: 330px !important;
-  max-height: calc(100vh - 32px) !important;
-  padding: 24px !important;
-  overflow-y: auto !important;
-  overflow-x: visible !important;
-}
-
-.publishModal .publishField {
-  height: auto !important;
-}
-
-.publishModal .publishDropdown,
-.publishModal .publishDropdownControl {
-  height: auto !important;
-}
-
-.publishModal .publishDropdownControl:has(.publishAudienceValue) {
-  min-height: 46px !important;
-  height: auto !important;
-  padding: 10px 15px !important;
-}
-
-.publishModal .publishAudienceValue {
-  height: auto !important;
-  min-height: 26px !important;
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 6px !important;
-}
-
-.publishModal .publishAudiencePair {
-  display: block !important;
-  min-height: 22px !important;
-  line-height: 22px !important;
-}
-
-.publishModal .publishModalActions,
-.publishModal.publishModalSpecific .publishModalActions {
-  position: static !important;
-  width: 100% !important;
-  margin: 26px 0 0 !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-end !important;
-  gap: 18px !important;
-  clear: both !important;
-}
-
-@media (max-width: 520px) {
-  .publishModal,
-  .publishModal.publishModalSpecific {
-    width: calc(100vw - 20px) !important;
-    min-height: 0 !important;
-    max-height: calc(100dvh - 20px) !important;
-    padding: 20px !important;
-  }
-
-  .publishModal .publishModalActions,
-  .publishModal.publishModalSpecific .publishModalActions {
-    margin-top: 22px !important;
-    gap: 10px !important;
-  }
-
-  .publishModal .autoPublishButton,
-  .publishModal .publishConfirmButton {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    padding: 0 12px !important;
-  }
-}
-
-
-/* ===== FINAL: Publish modal expands naturally - NO modal scrollbars ===== */
-.publishModal,
-.publishModal.publishModalSpecific {
-  height: auto !important;
-  min-height: 330px !important;
-  max-height: none !important;
-  overflow: visible !important;
-}
-
-.publishModal .publishModalActions,
-.publishModal.publishModalSpecific .publishModalActions {
-  position: static !important;
-  margin-top: 26px !important;
-  margin-bottom: 0 !important;
-}
 
 /* Keep dropdown/flyouts visible without creating horizontal/vertical scrollbars */
-.publishModal .publishDropdown,
-.publishModal .publishDropdownMenu,
-.publishModal .publishNestedFlyout,
-.publishModal .publishTenantFlyout,
-.publishModal .publishActorFlyout {
-  overflow: visible !important;
-}
+
 
 /* ===== Schedule tabs: bring edge items inward and reduce gaps slightly ===== */
 .calendarPage .scheduleTabs {
@@ -17989,13 +15346,7 @@ button.autoPublishDateControl {
 }
 
 @media (max-width: 767px) {
-  .publishModal,
-  .publishModal.publishModalSpecific {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
+  
 
   .calendarPage .scheduleTabs {
     width: calc(100% - 24px) !important;
@@ -18456,3 +15807,4848 @@ button.autoPublishDateControl {
     padding-top: 16px !important;
   }
 }
+
+
+
+/* =========================================================
+   CALENDAR MANAGEMENT — MAIN VIEW SWITCH
+   Calendar / All / Published / Saved / My Events
+   Student: Calendar / My Schedules
+   ========================================================= */
+
+.calendarPage .calendarContentViewSwitch {
+  width: 100%;
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.calendarPage .calendarContentViewSwitch button {
+  min-width: 118px;
+  height: 42px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--bg);
+  color: #30394d;
+  font-family: "Segoe UI", Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow:
+    -3px -3px 6px rgba(255,255,255,.9),
+     3px  3px 6px rgba(174,181,184,.56);
+}
+
+.calendarPage .calendarContentViewSwitch button.active {
+  color: var(--blue);
+  box-shadow:
+    inset -3px -3px 5px rgba(255,255,255,.88),
+    inset  3px  3px 5px rgba(174,181,184,.55);
+}
+
+.calendarPage .studentContentViewSwitch button {
+  min-width: 150px;
+}
+
+/* Only the selected main content is visible. */
+.calendarPage .contentPanelHidden {
+  display: none !important;
+}
+
+/* Calendar view uses the full available content width. */
+.calendarPage .calendarWorkspace.calendarContentModeCalendar {
+  display: block !important;
+  width: 100%;
+}
+
+.calendarPage .calendarContentModeCalendar .calendarPanel {
+  width: 100%;
+  max-width: none;
+}
+
+/* Event-list views use the full former calendar + schedule width. */
+.calendarPage .calendarWorkspace.calendarContentModeList {
+  display: block !important;
+  width: 100%;
+}
+
+.calendarPage .calendarContentModeList .schedulePanel {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  height: auto;
+  min-height: 560px;
+  padding: 22px 22px 24px;
+}
+
+/* The old right-side tab strip is no longer used. */
+.calendarPage .calendarContentModeList .scheduleTabs {
+  display: none !important;
+}
+
+.calendarPage .scheduleListHeader {
+  min-height: 58px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(120,130,140,.16);
+}
+
+.calendarPage .scheduleListHeader > div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.calendarPage .scheduleListHeader strong {
+  color: #30394d;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+}
+
+.calendarPage .scheduleListHeader span {
+  color: #667085;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+/* Large cards in All / Published / Saved / My Events / My Schedules. */
+.calendarPage .calendarContentModeList .eventScroll {
+  width: 100%;
+  max-height: none;
+  overflow: visible;
+  padding: 5px 6px 8px;
+}
+
+.calendarPage .calendarContentModeList .eventCard {
+  width: 100%;
+  min-height: 142px;
+  margin-bottom: 16px;
+  padding: 28px 170px 18px 22px;
+  border-radius: 14px;
+}
+
+.calendarPage .calendarContentModeList .scheduleCardContent {
+  width: 100%;
+}
+
+.calendarPage .calendarContentModeList .eventTitle {
+  max-width: 70%;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.calendarPage .calendarContentModeList .scheduleCardSubtitle {
+  margin-bottom: 8px;
+}
+
+.calendarPage .calendarContentModeList .eventMenuWrap {
+  right: 18px;
+  bottom: 18px;
+}
+
+.calendarPage .calendarContentModeList .moreButton {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+
+/* Make 3-dot menu actions proper neumorphic buttons in list views. */
+.calendarPage .calendarContentModeList .eventMenu {
+  width: 170px;
+  padding: 9px;
+}
+
+.calendarPage .calendarContentModeList .eventMenu button {
+  min-height: 38px;
+  margin-bottom: 7px;
+  padding: 0 11px;
+  border-radius: 9px;
+  background: var(--bg);
+  box-shadow:
+    -2px -2px 4px rgba(255,255,255,.86),
+     2px  2px 4px rgba(174,181,184,.48);
+}
+
+.calendarPage .calendarContentModeList .eventMenu button:last-child {
+  margin-bottom: 0;
+}
+
+.calendarPage .calendarContentModeList .eventMenu button:active {
+  box-shadow:
+    inset -2px -2px 4px rgba(255,255,255,.86),
+    inset  2px  2px 4px rgba(174,181,184,.48);
+}
+
+/* Student My Schedules remains read-only but uses the same full-width cards. */
+.calendarPage .studentCalendarWorkspace.calendarContentModeList .eventCard {
+  padding-right: 22px;
+}
+
+@media (max-width: 1100px) {
+  .calendarPage .calendarContentViewSwitch {
+    gap: 9px;
+  }
+
+  .calendarPage .calendarContentViewSwitch button {
+    min-width: 104px;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .calendarPage .studentContentViewSwitch button {
+    min-width: 135px;
+  }
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarContentViewSwitch {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .calendarPage .calendarContentViewSwitch button,
+  .calendarPage .studentContentViewSwitch button {
+    width: 100%;
+    min-width: 0;
+    height: 38px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch)
+    button:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .calendarPage .calendarWorkspace.calendarContentModeList {
+    margin-top: 14px;
+  }
+
+  .calendarPage .calendarContentModeList .schedulePanel {
+    min-height: 420px;
+    padding: 14px 10px 16px;
+    border-radius: 14px;
+  }
+
+  .calendarPage .scheduleListHeader {
+    min-height: 48px;
+    margin-bottom: 10px;
+  }
+
+  .calendarPage .scheduleListHeader strong {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .calendarPage .scheduleListHeader span {
+    font-size: 10px;
+  }
+
+  .calendarPage .calendarContentModeList .eventScroll {
+    padding: 3px 2px 6px;
+    overflow-y: auto;
+  }
+
+  .calendarPage .calendarContentModeList .eventCard {
+    min-height: 150px;
+    padding: 28px 48px 14px 12px;
+  }
+
+  .calendarPage .calendarContentModeList .eventTitle {
+    max-width: 100%;
+    font-size: 12px;
+  }
+
+  .calendarPage .calendarContentModeList .eventMenuWrap {
+    right: 10px;
+    bottom: 12px;
+  }
+
+  .calendarPage .calendarContentModeList .moreButton {
+    width: 28px;
+    height: 28px;
+  }
+
+  .calendarPage .calendarContentModeList .eventMenu {
+    width: 145px;
+  }
+
+  .calendarPage .studentCalendarWorkspace.calendarContentModeList .eventCard {
+    padding-right: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarContentViewSwitch {
+    gap: 6px;
+  }
+
+  .calendarPage .calendarContentViewSwitch button {
+    height: 36px;
+    font-size: 10px;
+  }
+
+  .calendarPage .calendarContentModeList .schedulePanel {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .calendarPage .calendarContentModeList .eventCard {
+    padding-left: 10px;
+    padding-right: 42px;
+  }
+}
+
+
+
+/* =========================================================
+   FINAL EVENT LIST CARD VIEW
+   Better card spacing, border/shadow, typography and actions.
+   ========================================================= */
+
+/* Remove the top separator line from All / Published / Saved / My Events. */
+.calendarPage .scheduleListHeader {
+  border-bottom: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+/* Keep cards away from the outer panel border. */
+.calendarPage .calendarContentModeList .schedulePanel {
+  padding: 22px 24px 24px !important;
+}
+
+.calendarPage .calendarContentModeList .eventScroll {
+  width: 100% !important;
+  max-height: 590px !important;
+  padding: 12px 14px 18px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  border-radius: 14px !important;
+  scrollbar-width: auto !important;
+  scrollbar-color: #DFE6E9 transparent !important;
+}
+
+/* Neuomorphic list scroller when multiple cards are present. */
+.calendarPage .calendarContentModeList .eventScroll::-webkit-scrollbar {
+  width: 16px !important;
+}
+
+.calendarPage .calendarContentModeList .eventScroll::-webkit-scrollbar-track {
+  margin: 4px 0 !important;
+  border-radius: 20px !important;
+  background:
+    linear-gradient(
+      to right,
+      transparent 5px,
+      #9F9E9E 5px,
+      #9F9E9E 10px,
+      transparent 10px
+    ) !important;
+}
+
+.calendarPage .calendarContentModeList .eventScroll::-webkit-scrollbar-thumb {
+  min-height: 34px !important;
+  border: 2px solid transparent !important;
+  border-radius: 999px !important;
+  background: #DFE6E9 !important;
+  background-clip: padding-box !important;
+  box-shadow:
+    4px 4px 8px #FFFFFF,
+    -4px -4px 8px #C4C4C4 !important;
+}
+
+/* Card no longer touches the panel border. */
+.calendarPage .calendarContentModeList .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+  width: 100% !important;
+  min-height: 150px !important;
+  margin: 0 0 18px !important;
+  padding: 26px 22px 70px !important;
+
+  border: 1px solid rgba(255,255,255,.72) !important;
+  border-radius: 14px !important;
+  background: var(--bg) !important;
+
+  box-shadow:
+    4px 4px 8px #FFFFFF,
+    -4px -4px 8px #C4C4C4 !important;
+}
+
+/* Requested typography: title 14px, remaining details minimum 12px. */
+.calendarPage .calendarContentModeList .eventTitle,
+.calendarPage .calendarContentModeList .eventTitle strong,
+.calendarPage .calendarContentModeList .scheduleCardContent .eventTitle,
+.calendarPage .calendarContentModeList .scheduleCardContent .eventTitle strong {
+  font-size: 18px !important;
+  line-height: 20px !important;
+  font-weight: 600 !important;
+}
+
+.calendarPage .calendarContentModeList .scheduleCardSubtitle,
+.calendarPage .calendarContentModeList .eventMeta,
+.calendarPage .calendarContentModeList .scheduleCardField,
+.calendarPage .calendarContentModeList .scheduleCardDescription,
+.calendarPage .calendarContentModeList .scheduleCardAttachment,
+.calendarPage .calendarContentModeList .studentEventCreator,
+.calendarPage .calendarContentModeList .statusBadge {
+  font-size: 14px !important;
+  line-height: 18px !important;
+}
+
+.calendarPage .calendarContentModeList .statusBadge {
+  top: 16px !important;
+  right: 18px !important;
+  padding: 3px 14px !important;
+  min-width: 90px !important;
+  text-align: center !important;
+}
+
+/* 3-dot button/menu removed in list views; actions are direct buttons. */
+.calendarPage .calendarContentModeList .eventMenuWrap,
+.calendarPage .calendarContentModeList .moreButton,
+.calendarPage .calendarContentModeList .eventMenu {
+  display: none !important;
+}
+
+.calendarPage .eventCardActions {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 16px;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+}
+
+.calendarPage .eventCardActionButton {
+  min-width: 82px;
+  height: 34px;
+  padding: 0 15px;
+
+  border: 0;
+  border-radius: 17px;
+  background: var(--bg);
+  color: var(--blue);
+
+  font-family: "Segoe UI", Inter, sans-serif;
+  font-size: 14px;
+  line-height: 34px;
+  font-weight: 600;
+  text-align: center;
+
+  cursor: pointer;
+
+  box-shadow:
+    -3px -3px 6px rgba(255,255,255,.92),
+     3px  3px 6px rgba(174,181,184,.55);
+}
+
+.calendarPage .eventCardActionButton:active {
+  box-shadow:
+    inset -3px -3px 5px rgba(255,255,255,.9),
+    inset  3px  3px 5px rgba(174,181,184,.55);
+}
+
+.calendarPage .eventCardActionDanger {
+  color: #D71920 !important;
+}
+
+/* =========================================================
+   MONTH / YEAR DROPDOWNS
+   ========================================================= */
+
+.calendarPage .calendarMonthYearSelectors {
+  margin: 0 auto 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.calendarPage .calendarMonthYearSelect {
+  position: relative;
+  min-width: 150px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  border-radius: 20px;
+  background: var(--bg);
+
+  box-shadow:
+    inset -3px -3px 5px rgba(255,255,255,.86),
+    inset  3px  3px 5px rgba(174,181,184,.52);
+}
+
+.calendarPage .calendarMonthYearSelect.calendarYearSelect {
+  min-width: 105px;
+}
+
+.calendarPage .calendarMonthYearSelect select {
+  width: 100%;
+  height: 100%;
+  padding: 0 36px 0 16px;
+
+  border: 0;
+  outline: 0;
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: transparent;
+  color: #30394d;
+
+  font-family: "Segoe UI", Inter, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.calendarPage .calendarMonthYearSelect > img {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarContentModeList .schedulePanel {
+    padding: 12px 10px 14px !important;
+  }
+
+  .calendarPage .calendarContentModeList .eventScroll {
+    max-height: 500px !important;
+    padding: 9px 8px 14px !important;
+  }
+
+  .calendarPage .calendarContentModeList .eventCard,
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard,
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+    min-height: 150px !important;
+    margin-bottom: 14px !important;
+    padding: 24px 12px 72px !important;
+    border-radius: 12px !important;
+  }
+
+  .calendarPage .eventCardActions {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    gap: 6px;
+  }
+
+  .calendarPage .eventCardActionButton {
+    min-width: 68px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 15px;
+    font-size: 10px;
+    line-height: 30px;
+  }
+
+  .calendarPage .calendarMonthYearSelectors {
+    width: 100%;
+    margin-bottom: 14px;
+    gap: 7px;
+  }
+
+  .calendarPage .calendarMonthYearSelect {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 34px;
+  }
+
+  .calendarPage .calendarMonthYearSelect.calendarYearSelect {
+    flex: 0 0 95px;
+    min-width: 95px;
+  }
+
+  .calendarPage .calendarMonthYearSelect select {
+    padding-left: 11px;
+    padding-right: 30px;
+    font-size: 11px;
+  }
+
+  .calendarPage .calendarMonthYearSelect > img {
+    right: 9px;
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarContentModeList .eventScroll {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .calendarPage .eventCardActions {
+    gap: 5px;
+  }
+
+  .calendarPage .eventCardActionButton {
+    min-width: 62px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .calendarPage .calendarMonthYearSelect.calendarYearSelect {
+    flex-basis: 88px;
+    min-width: 88px;
+  }
+}
+
+
+
+/* =========================================================
+   ACTION BUTTON POSITION FIX ONLY
+   Source: user's uploaded CSS file.
+   No font-size changes.
+   Desktop: actions stay in one row at the bottom-right.
+   Mobile: actions remain at the bottom and wrap only if needed.
+   ========================================================= */
+
+.calendarPage .calendarContentModeList .eventCard {
+    position: relative !important;
+    height: auto !important;
+    min-height: 170px !important;
+
+    /* Keep enough room below the card content for the action row. */
+    padding-bottom: 72px !important;
+}
+
+.calendarPage .calendarContentModeList .eventCardActions {
+    position: absolute !important;
+
+    left: auto !important;
+    right: 22px !important;
+    top: auto !important;
+    bottom: 16px !important;
+
+    width: auto !important;
+    max-width: calc(100% - 44px) !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+
+    gap: 10px !important;
+
+    margin: 0 !important;
+    transform: translateY(15);
+}
+
+.calendarPage .calendarContentModeList .eventCardActionButton {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 120px !important;
+    margin: 0 !important;
+}
+
+/* Tablet / mobile:
+   keep buttons at the bottom after the content.
+   They wrap only when screen width is not enough. */
+@media (max-width: 900px) {
+    .calendarPage .calendarContentModeList .eventCard {
+        display: flex !important;
+        flex-direction: column !important;
+
+        height: auto !important;
+        min-height: 0 !important;
+
+        padding-bottom: 14px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCardActions {
+        position: static !important;
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin-top: 14px !important;
+
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+
+        transform: none !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCardActionButton {
+        flex: 0 0 auto !important;
+        min-width: 92px !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .calendarPage .calendarContentModeList .eventCardActions {
+        justify-content: flex-end !important;
+        gap: 7px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCardActionButton {
+        min-width: 82px !important;
+    }
+}
+
+
+
+/* =========================================================
+   FINAL RIGHT + BOTTOM SPACING FIX
+   Based on the exact CSS file uploaded in the latest turn.
+   No font-size changes.
+   ========================================================= */
+
+/* Give the list panel balanced inner spacing. */
+.calendarPage .calendarContentModeList .schedulePanel {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-bottom: 14px !important;
+}
+
+/* Keep the scroll area away from both left and right edges equally. */
+.calendarPage .calendarContentModeList .eventScroll {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+
+    width: 100% !important;
+    margin: 0 !important;
+
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-bottom: 10px !important;
+
+    box-sizing: border-box !important;
+}
+
+/* Reduce card width slightly so right-side shadow has breathing room too. */
+.calendarPage .calendarContentModeList .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+    width: calc(100% - 4px) !important;
+    max-width: calc(100% - 4px) !important;
+
+    margin-left: 2px !important;
+    margin-right: 2px !important;
+    margin-bottom: 12px !important;
+
+    box-sizing: border-box !important;
+}
+
+/* Last card also keeps space below instead of touching the list bottom. */
+.calendarPage .calendarContentModeList .eventScroll > .eventCard:last-child {
+    margin-bottom: 10px !important;
+}
+
+/* Desktop action buttons: stay inside the card with right/bottom breathing room. */
+.calendarPage .calendarContentModeList .eventCardActions {
+    right: 20px !important;
+    bottom: 16px !important;
+    max-width: calc(100% - 40px) !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .calendarPage .calendarContentModeList .schedulePanel {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        padding-bottom: 10px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventScroll {
+        padding-left: 7px !important;
+        padding-right: 7px !important;
+        padding-bottom: 9px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCard,
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard,
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+        width: calc(100% - 4px) !important;
+        max-width: calc(100% - 4px) !important;
+
+        margin-left: 2px !important;
+        margin-right: 2px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCardActions {
+        margin-top: 10px !important;
+        margin-bottom: 2px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard:last-child {
+        margin-bottom: 8px !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .calendarPage .calendarContentModeList .schedulePanel {
+        padding-left: 7px !important;
+        padding-right: 7px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventScroll {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCard,
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard,
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+        width: calc(100% - 4px) !important;
+        max-width: calc(100% - 4px) !important;
+
+        margin-left: 2px !important;
+        margin-right: 2px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCardActions {
+        margin-top: 9px !important;
+        margin-bottom: 2px !important;
+    }
+}
+
+
+
+/* =========================================================
+   BOTTOM GAP REDUCTION ONLY
+   Uses the exact latest uploaded CSS.
+   Rest of the styles stay unchanged.
+   ========================================================= */
+
+/* Desktop: reduce the reserved area below the card content. */
+.calendarPage .calendarContentModeList .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+    padding-bottom: 48px !important;
+}
+
+/* Bring the action row slightly closer to the card bottom. */
+.calendarPage .calendarContentModeList .eventCardActions {
+    bottom: 8px !important;
+ 
+}
+
+/* Reduce extra space after the last card too. */
+.calendarPage .calendarContentModeList .eventScroll > .eventCard:last-child {
+    margin-bottom: 4px !important;
+}
+
+/* Mobile/tablet: keep the existing flow, only reduce the lower gap. */
+@media (max-width: 900px) {
+    .calendarPage .calendarContentModeList .eventCard,
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard,
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+        padding-bottom: 9px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCardActions {
+        margin-top: 8px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard:last-child {
+        margin-bottom: 3px !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .calendarPage .calendarContentModeList .eventCard,
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard,
+    .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+        padding-bottom: 8px !important;
+    }
+
+    .calendarPage .calendarContentModeList .eventCardActions {
+        margin-top: 7px !important;
+    }
+}
+
+
+
+/* =========================================================
+   MONTH / YEAR PICKER — REFERENCE LAYOUT FIX
+   ONLY this section is changed.
+   Calendar grid/cell dimensions are NOT changed.
+   ========================================================= */
+
+.calendarPage .calendarPanel:has(.calendarMonthYearPopover) {
+  overflow: visible !important;
+}
+
+.calendarPage .calendarMonthYearPickerShell {
+  position: relative !important;
+  z-index: 120 !important;
+
+  width: auto !important;
+  margin: 0 auto 23px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton {
+  width: 225px !important;
+  height: 58px !important;
+  min-width: 0 !important;
+  padding: 0 18px 0 24px !important;
+
+  border: 0 !important;
+  border-radius: 30px !important;
+  outline: 0 !important;
+
+  background: #DFE6E9 !important;
+  color: #30394d !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+
+  cursor: pointer !important;
+
+  box-shadow:
+    inset -4px -4px 7px rgba(255, 255, 255, .88),
+    inset 4px 4px 7px rgba(196, 196, 196, .60) !important;
+}
+
+.calendarPage .calendarYearPickerButton {
+  width: 155px !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton.open {
+  color: #2D55D7 !important;
+  box-shadow:
+    -4px -4px 8px #FFFFFF,
+     4px  4px 8px #C4C4C4 !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton > span {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton img {
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton.open img {
+  transform: rotate(180deg) !important;
+}
+
+/* Popover overlays the existing calendar, so nothing gets pushed down. */
+.calendarPage .calendarMonthYearPopover {
+  position: absolute !important;
+  top: calc(100% + 10px) !important;
+  left: 50% !important;
+  z-index: 500 !important;
+
+  width: 390px !important;
+  max-width: calc(100vw - 40px) !important;
+
+  padding: 14px !important;
+
+  border: 0 !important;
+  border-radius: 18px !important;
+  outline: 0 !important;
+
+  background: #DFE6E9 !important;
+
+  transform: translateX(-50%) !important;
+
+  box-shadow:
+    -5px -5px 10px #FFFFFF,
+     5px  5px 10px #C4C4C4 !important;
+}
+
+.calendarPage .calendarPickerHeader {
+  width: 100% !important;
+  margin: 0 0 12px !important;
+
+  display: grid !important;
+  grid-template-columns: 54px minmax(0, 1fr) 54px !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.calendarPage .calendarPickerHeader strong {
+  margin: 0 !important;
+  color: #30394d !important;
+  text-align: center !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+}
+
+.calendarPage .calendarPickerHeaderArrow {
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px !important;
+  min-height: 54px !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 13px !important;
+  outline: 0 !important;
+
+  background: #DFE6E9 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  cursor: pointer !important;
+
+  box-shadow:
+    -4px -4px 8px #FFFFFF,
+     4px  4px 8px #C4C4C4 !important;
+}
+
+.calendarPage .calendarPickerHeaderCircle {
+  border-radius: 50% !important;
+}
+
+.calendarPage .calendarPickerHeaderArrow img {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.calendarPage .calendarPickerHeaderArrow:active {
+  box-shadow:
+    inset -3px -3px 5px #FFFFFF,
+    inset 3px 3px 5px #C4C4C4 !important;
+}
+
+.calendarPage .calendarMonthOptionGrid,
+.calendarPage .calendarYearOptionGrid {
+  width: 100% !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.calendarPage .calendarMonthYearOption {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  padding: 0 8px !important;
+
+  border: 0 !important;
+  border-radius: 12px !important;
+  outline: 0 !important;
+
+  background: #DFE6E9 !important;
+  color: #30394d !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+
+  cursor: pointer !important;
+
+  box-shadow:
+    -3px -3px 6px #FFFFFF,
+     3px  3px 6px #C4C4C4 !important;
+}
+
+/* Every month/year is enabled.
+   Only the selected value uses the blue active state. */
+.calendarPage .calendarMonthYearOption.active {
+  color: #2D55D7 !important;
+  font-weight: 600 !important;
+
+  box-shadow:
+    inset -3px -3px 5px #FFFFFF,
+    inset 3px 3px 5px #C4C4C4 !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    width: 100% !important;
+    margin-bottom: 14px !important;
+    gap: 8px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    width: min(48vw, 175px) !important;
+    height: 44px !important;
+    padding: 0 10px 0 13px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: min(31vw, 112px) !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton img {
+    width: 16px !important;
+    height: 16px !important;
+    flex-basis: 16px !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    top: calc(100% + 7px) !important;
+    width: min(94vw, 360px) !important;
+    padding: 10px !important;
+  }
+
+  .calendarPage .calendarPickerHeader {
+    grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+    gap: 8px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    gap: 7px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 5px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    width: min(50vw, 170px) !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: min(30vw, 105px) !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    width: min(96vw, 350px) !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    gap: 6px !important;
+  }
+}
+
+
+
+/* =========================================================
+   MONTH / YEAR SIZE RESTORE ONLY
+   - restore top Month / Year controls to previous compact size
+   - reduce only the dropdown/popup size
+   - calendar sizing/layout stays unchanged
+   ========================================================= */
+
+/* Restore top Month + Year button sizing like the previous layout. */
+.calendarPage .calendarMonthYearPickerShell {
+  margin: 0 auto 23px !important;
+  gap: 10px !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton {
+  width: 150px !important;
+  height: 40px !important;
+  min-width: 150px !important;
+  padding: 0 34px 0 16px !important;
+
+  border-radius: 20px !important;
+
+  box-shadow:
+    inset -3px -3px 5px rgba(255,255,255,.86),
+    inset  3px  3px 5px rgba(174,181,184,.52) !important;
+}
+
+.calendarPage .calendarYearPickerButton {
+  width: 105px !important;
+  min-width: 105px !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton.open {
+  box-shadow:
+    -3px -3px 6px rgba(255,255,255,.88),
+     3px  3px 6px rgba(174,181,184,.56) !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton img {
+  width: 14px !important;
+  height: 14px !important;
+  flex: 0 0 14px !important;
+}
+
+/* Reduce popup size only. */
+.calendarPage .calendarMonthYearPopover {
+  width: 320px !important;
+  max-width: calc(100vw - 32px) !important;
+  padding: 10px !important;
+  border-radius: 15px !important;
+}
+
+.calendarPage .calendarPickerHeader {
+  grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+  gap: 8px !important;
+  margin-bottom: 9px !important;
+}
+
+.calendarPage .calendarPickerHeaderArrow {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  border-radius: 11px !important;
+}
+
+.calendarPage .calendarPickerHeaderCircle {
+  border-radius: 50% !important;
+}
+
+.calendarPage .calendarPickerHeaderArrow img {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.calendarPage .calendarMonthOptionGrid,
+.calendarPage .calendarYearOptionGrid {
+  gap: 7px !important;
+}
+
+.calendarPage .calendarMonthYearOption {
+  height: 42px !important;
+  min-height: 42px !important;
+  padding: 0 6px !important;
+  border-radius: 10px !important;
+}
+
+/* Mobile: preserve the same compact proportions. */
+@media (max-width: 767px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    width: 100% !important;
+    gap: 7px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 34px !important;
+    padding: 0 30px 0 11px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    flex: 0 0 95px !important;
+    width: 95px !important;
+    min-width: 95px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton img {
+    width: 12px !important;
+    height: 12px !important;
+    flex-basis: 12px !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    width: min(90vw, 300px) !important;
+    padding: 8px !important;
+  }
+
+  .calendarPage .calendarPickerHeader {
+    grid-template-columns: 40px minmax(0, 1fr) 40px !important;
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 4px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarYearPickerButton {
+    flex-basis: 88px !important;
+    width: 88px !important;
+    min-width: 88px !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    width: min(94vw, 290px) !important;
+  }
+}
+
+
+
+/* =========================================================
+   MONTH / YEAR RESPONSIVE FIX ONLY
+   - restore full Month/Year text
+   - prevent option text clipping/breaking
+   - keep popup compact and centered
+   - keep existing calendar sizing unchanged
+   ========================================================= */
+
+/* Restore the original top control proportions so
+   "September" and "2026" are fully visible. */
+.calendarPage .calendarMonthYearPickerButton {
+  width: 225px !important;
+  min-width: 225px !important;
+  height: 58px !important;
+  padding: 0 18px 0 24px !important;
+  border-radius: 30px !important;
+}
+
+.calendarPage .calendarYearPickerButton {
+  width: 155px !important;
+  min-width: 155px !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton > span {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+/* Keep popup large enough for complete month names,
+   but smaller than the first oversized version. */
+.calendarPage .calendarMonthYearPopover {
+  width: 370px !important;
+  max-width: calc(100vw - 28px) !important;
+  padding: 12px !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+}
+
+/* Slightly smaller header than before while keeping icons clear. */
+.calendarPage .calendarPickerHeader {
+  grid-template-columns: 46px minmax(0, 1fr) 46px !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+
+.calendarPage .calendarPickerHeaderArrow {
+  width: 46px !important;
+  height: 46px !important;
+  min-width: 46px !important;
+  min-height: 46px !important;
+}
+
+.calendarPage .calendarPickerHeaderArrow img {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Prevent September / November / December from clipping. */
+.calendarPage .calendarMonthOptionGrid,
+.calendarPage .calendarYearOptionGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.calendarPage .calendarMonthYearOption {
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 7px !important;
+
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+
+  font-size: 13px !important;
+}
+
+/* Tablet/mobile: do not allow the top controls or popup to collapse. */
+@media (max-width: 767px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    width: 100% !important;
+    gap: 8px !important;
+    justify-content: center !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    flex: 0 0 210px !important;
+    width: 210px !important;
+    min-width: 210px !important;
+    height: 44px !important;
+    padding: 0 14px 0 18px !important;
+    border-radius: 22px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    flex: 0 0 125px !important;
+    width: 125px !important;
+    min-width: 125px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton img {
+    width: 14px !important;
+    height: 14px !important;
+    flex: 0 0 14px !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    width: min(390px, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+    padding: 10px !important;
+
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .calendarPage .calendarPickerHeader {
+    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+    gap: 7px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow img {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    gap: 7px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 5px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* Small mobile: keep text visible without breaking the calendar. */
+@media (max-width: 480px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    flex: 0 0 min(52vw, 190px) !important;
+    width: min(52vw, 190px) !important;
+    min-width: 0 !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    flex: 0 0 min(31vw, 112px) !important;
+    width: min(31vw, 112px) !important;
+    min-width: 0 !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    width: calc(100vw - 18px) !important;
+    max-width: 390px !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 3px !important;
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .calendarPage .calendarMonthYearPickerButton {
+    flex-basis: 175px !important;
+    width: 175px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    flex-basis: 100px !important;
+    width: 100px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    font-size: 10px !important;
+  }
+}
+
+
+
+/* =========================================================
+   MONTH / YEAR COMPACT SPACING FIX ONLY
+   - reduce overall control width
+   - reduce gap between Month and Year
+   - reduce text-to-icon spacing
+   - keep full values visible
+   - no calendar/grid changes
+   ========================================================= */
+
+.calendarPage .calendarMonthYearPickerShell {
+  gap: 6px !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton {
+  width: 176px !important;
+  min-width: 176px !important;
+  height: 44px !important;
+  padding: 0 10px 0 14px !important;
+  border-radius: 22px !important;
+}
+
+.calendarPage .calendarYearPickerButton {
+  width: 108px !important;
+  min-width: 108px !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton > span {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.calendarPage .calendarMonthYearPickerButton img {
+  width: 13px !important;
+  height: 13px !important;
+  flex: 0 0 13px !important;
+  margin-left: 4px !important;
+}
+
+/* Responsive compact controls */
+@media (max-width: 767px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    gap: 5px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    flex: 0 0 160px !important;
+    width: 160px !important;
+    min-width: 160px !important;
+    height: 38px !important;
+    padding: 0 9px 0 12px !important;
+    border-radius: 19px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    flex: 0 0 96px !important;
+    width: 96px !important;
+    min-width: 96px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton img {
+    width: 12px !important;
+    height: 12px !important;
+    flex-basis: 12px !important;
+    margin-left: 3px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarMonthYearPickerButton {
+    flex: 0 0 150px !important;
+    width: 150px !important;
+    min-width: 150px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    flex: 0 0 90px !important;
+    width: 90px !important;
+    min-width: 90px !important;
+  }
+}
+
+
+
+/* =========================================================
+   MOBILE MONTH / YEAR POPUP FIX ONLY
+   - keeps popup fully inside mobile screen
+   - no clipping on right side
+   - keeps 4-column year/month grid
+   - reduces popup/control sizes only on mobile
+   - calendar grid remains unchanged
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    gap: 5px !important;
+  }
+
+  /* Make popup position relative to the full Month/Year row,
+     not only to the Year button. */
+  .calendarPage .calendarMonthYearPopover {
+    position: absolute !important;
+    top: calc(100% + 7px) !important;
+
+    left: 50% !important;
+    right: auto !important;
+
+    width: calc(100vw - 24px) !important;
+    max-width: 360px !important;
+
+    padding: 9px !important;
+    margin: 0 !important;
+
+    transform: translateX(-50%) !important;
+
+    border-radius: 16px !important;
+    box-sizing: border-box !important;
+
+    overflow: hidden !important;
+  }
+
+  .calendarPage .calendarMonthPopover,
+  .calendarPage .calendarYearPopover {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .calendarPage .calendarPickerHeader {
+    width: 100% !important;
+    grid-template-columns: 42px minmax(0, 1fr) 42px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .calendarPage .calendarPickerHeader strong {
+    min-width: 0 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    width: 100% !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 40px !important;
+    min-height: 40px !important;
+
+    padding: 0 3px !important;
+
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarMonthYearPopover {
+    width: calc(100vw - 16px) !important;
+    max-width: 340px !important;
+    padding: 8px !important;
+  }
+
+  .calendarPage .calendarPickerHeader {
+    grid-template-columns: 40px minmax(0, 1fr) 40px !important;
+    gap: 5px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    gap: 5px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 2px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .calendarPage .calendarMonthYearPopover {
+    width: calc(100vw - 12px) !important;
+    max-width: 326px !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    gap: 4px !important;
+  }
+}
+
+
+
+/* =========================================================
+   FINAL MOBILE MONTH/YEAR OVERFLOW FIX
+   Only month/year picker mobile layout changed.
+   Keeps + and 3-dots visible on the right.
+   Calendar sizes remain unchanged.
+   ========================================================= */
+
+@media (max-width: 767px) {
+  /* Keep room on the right for + and 3-dots actions. */
+  .calendarPage .mobileMonthHeadingRow {
+    position: relative !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerShell {
+    position: relative !important;
+    z-index: 120 !important;
+
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: calc(100% - 92px) !important;
+
+    margin: 0 !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 88px !important;
+    align-items: center !important;
+    justify-content: start !important;
+    gap: 5px !important;
+
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 38px !important;
+
+    padding: 0 9px 0 12px !important;
+    border-radius: 19px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 88px !important;
+    min-width: 88px !important;
+    max-width: 88px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton > span {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton img {
+    width: 12px !important;
+    height: 12px !important;
+    flex: 0 0 12px !important;
+    margin-left: 3px !important;
+  }
+
+  /* Keep + and 3-dot buttons visible and above popup. */
+  .calendarPage .mobileMonthHeadingActions {
+    position: relative !important;
+    z-index: 140 !important;
+
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingButton {
+    flex: 0 0 auto !important;
+  }
+
+  /* Popup must stay inside the actual calendar panel width. */
+  .calendarPage .calendarMonthYearPopover {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+
+    left: 0 !important;
+    right: auto !important;
+
+    width: min(340px, calc(100vw - 28px)) !important;
+    max-width: calc(100vw - 28px) !important;
+
+    margin: 0 !important;
+    padding: 8px !important;
+
+    transform: none !important;
+
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Both month and year popup open from the left edge of selector row,
+     so they cannot cover/cut off the right-side action icons. */
+  .calendarPage .calendarMonthPopover,
+  .calendarPage .calendarYearPopover {
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+  }
+
+  .calendarPage .calendarPickerHeader {
+    grid-template-columns: 40px minmax(0, 1fr) 40px !important;
+    gap: 5px !important;
+    margin-bottom: 7px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    min-width: 0 !important;
+    width: 100% !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+
+    padding: 0 2px !important;
+
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    max-width: calc(100% - 86px) !important;
+    grid-template-columns: minmax(0, 1fr) 82px !important;
+    gap: 4px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    width: min(326px, calc(100vw - 18px)) !important;
+    max-width: calc(100vw - 18px) !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    gap: 4px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 1px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    max-width: calc(100% - 82px) !important;
+    grid-template-columns: minmax(0, 1fr) 76px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 76px !important;
+    min-width: 76px !important;
+    max-width: 76px !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    width: calc(100vw - 14px) !important;
+    max-width: calc(100vw - 14px) !important;
+  }
+}
+
+
+
+/* =========================================================
+   YEAR LABEL VISIBILITY FIX ONLY
+   - keep full 4-digit year visible on mobile
+   - reduce Month width slightly to give Year more room
+   - keep + and 3-dots visible
+   - no calendar/grid changes
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    grid-template-columns: minmax(0, 1fr) 104px !important;
+    gap: 5px !important;
+    max-width: calc(100% - 92px) !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 104px !important;
+    min-width: 104px !important;
+    max-width: 104px !important;
+    padding-left: 12px !important;
+    padding-right: 9px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton > span {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    grid-template-columns: minmax(0, 1fr) 98px !important;
+    max-width: calc(100% - 86px) !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 98px !important;
+    min-width: 98px !important;
+    max-width: 98px !important;
+    padding-left: 10px !important;
+    padding-right: 8px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .calendarPage .calendarMonthYearPickerShell {
+    grid-template-columns: minmax(0, 1fr) 94px !important;
+    max-width: calc(100% - 82px) !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 94px !important;
+    min-width: 94px !important;
+    max-width: 94px !important;
+  }
+}
+
+
+
+/* =========================================================
+   EVENT CARD AUTO CONTENT HEIGHT FIX ONLY
+   - no unnecessary bottom space when there are no action buttons
+   - if extra content exists, card grows automatically
+   - cards with action buttons keep only the space required for them
+   - rest of the calendar/layout stays unchanged
+   ========================================================= */
+
+.calendarPage .calendarContentModeList .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+  height: fit-content !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  /* normal content-only card */
+  padding-bottom: 18px !important;
+
+  align-self: flex-start !important;
+}
+
+/* When the card actually contains action buttons,
+   reserve only the space needed for that action row. */
+.calendarPage .calendarContentModeList .eventCard:has(.eventCardActions),
+.calendarPage .calendarContentModeList .eventScroll > .eventCard:has(.eventCardActions),
+.calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard:has(.eventCardActions) {
+  padding-bottom: 58px !important;
+}
+
+/* Keep inner content natural so description / attachment / extra text
+   increases the card height automatically. */
+.calendarPage .calendarContentModeList .eventCard .scheduleCardContent {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin-bottom: 0 !important;
+}
+
+/* Cards without buttons should not reserve any invisible action area. */
+.calendarPage .calendarContentModeList .eventCard:not(:has(.eventCardActions)) {
+  padding-bottom: 18px !important;
+}
+
+/* Reduce only the final outside gap after the last card. */
+.calendarPage .calendarContentModeList .eventScroll > .eventCard:last-child {
+  margin-bottom: 4px !important;
+}
+
+@media (max-width: 900px) {
+  .calendarPage .calendarContentModeList .eventCard,
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard,
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+    height: fit-content !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding-bottom: 12px !important;
+  }
+
+  /* Mobile action buttons are already in normal flow,
+     so no large reserved bottom area is needed. */
+  .calendarPage .calendarContentModeList .eventCard:has(.eventCardActions),
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard:has(.eventCardActions),
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard:has(.eventCardActions) {
+    padding-bottom: 12px !important;
+  }
+
+  .calendarPage .calendarContentModeList .eventCardActions {
+    margin-bottom: 0 !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .calendarPage .calendarContentModeList .eventCard,
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard,
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+    padding-bottom: 10px !important;
+  }
+}
+
+
+
+/* =========================================================
+   EVENT CARD — PUBLISHED AUDIENCE DETAILS ONLY
+   - Saved events show no audience row.
+   - Published / Scheduled / Paused / Closed cards show who the
+     event was targeted to.
+   - Card height grows only with actual content.
+   - Existing card layout, fonts and actions stay unchanged.
+   ========================================================= */
+
+.calendarPage .scheduleCardAudience {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 7px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 0 0 21px !important;
+  padding: 0 !important;
+  color: #374151 !important;
+  font-size: 11.5px !important;
+  line-height: 18px !important;
+}
+
+.calendarPage .scheduleCardAudience .scheduleCardFieldLabel {
+  flex: 0 0 auto !important;
+  color: #2d4cc8 !important;
+  font-weight: 600 !important;
+}
+
+.calendarPage .scheduleCardAudienceValue {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+/* List views use the same text size as the other card details. */
+.calendarPage .calendarContentModeList .scheduleCardAudience {
+  font-size: 14px !important;
+  line-height: 18px !important;
+}
+
+/* Keep the card content-driven: audience text adds only the space it needs. */
+.calendarPage .calendarContentModeList .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
+  height: fit-content !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+/* No audience row exists for Saved cards, so no extra space is reserved. */
+.calendarPage .calendarContentModeList .eventCard .scheduleCardContent {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+/* Cards with action buttons reserve only their existing action-row space. */
+.calendarPage .calendarContentModeList .eventCard:has(.eventCardActions) {
+  padding-bottom: 58px !important;
+}
+
+/* Read-only / received cards have no action area, so finish close to content. */
+.calendarPage .calendarContentModeList .eventCard:not(:has(.eventCardActions)) {
+  padding-bottom: 18px !important;
+}
+
+@media (max-width: 900px) {
+  .calendarPage .calendarContentModeList .scheduleCardAudience,
+  .calendarPage .eventScroll > .eventCard.mobileActiveEventCard .scheduleCardAudience {
+    margin: 0 38px 4px 21px !important;
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+  }
+
+  .calendarPage .calendarContentModeList .eventCard:has(.eventCardActions),
+  .calendarPage .calendarContentModeList .eventCard:not(:has(.eventCardActions)) {
+    padding-bottom: 12px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .calendarPage .calendarContentModeList .eventCard:has(.eventCardActions),
+  .calendarPage .calendarContentModeList .eventCard:not(:has(.eventCardActions)) {
+    padding-bottom: 10px !important;
+  }
+}
+
+
+
+/* =========================================================
+   REMINDER SENT — HOVER DETAILS CARD ONLY
+   Shows Title / Date / Time / Audience.
+   Width and height grow only according to content.
+   ========================================================= */
+
+.calendarPage .scheduleReminderFlag {
+  position: relative !important;
+  overflow: visible !important;
+  cursor: default !important;
+}
+
+.calendarPage .reminderHoverCard {
+  position: absolute !important;
+  z-index: 5000 !important;
+
+  left: 50% !important;
+  bottom: calc(100% + 10px) !important;
+  transform: translateX(-50%) translateY(4px) !important;
+
+  width: max-content !important;
+  min-width: 190px !important;
+  max-width: min(340px, calc(100vw - 32px)) !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  padding: 10px 12px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+
+  border-radius: 10px !important;
+  background: #DFE6E9 !important;
+  box-shadow:
+    -4px -4px 8px rgba(255,255,255,.95),
+     4px  4px 8px rgba(174,181,184,.62) !important;
+
+  color: #374151 !important;
+  font-family: "Segoe UI", Inter, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
+  font-weight: 400 !important;
+
+  white-space: normal !important;
+  text-align: left !important;
+
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease,
+    visibility 140ms ease !important;
+}
+
+.calendarPage .scheduleReminderFlag:hover .reminderHoverCard,
+.calendarPage .scheduleReminderFlag:focus-visible .reminderHoverCard,
+.calendarPage .scheduleReminderFlag:focus-within .reminderHoverCard {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+.calendarPage .reminderHoverRow {
+  display: grid !important;
+  grid-template-columns: max-content minmax(0, 1fr) !important;
+  align-items: start !important;
+  gap: 8px !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.calendarPage .reminderHoverLabel {
+  color: #2D55D7 !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+}
+
+.calendarPage .reminderHoverValue {
+  min-width: 0 !important;
+  color: #374151 !important;
+  font-weight: 400 !important;
+
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+/* Small pointer under the hover card */
+.calendarPage .reminderHoverCard::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  bottom: -6px !important;
+  width: 12px !important;
+  height: 12px !important;
+  transform: translateX(-50%) rotate(45deg) !important;
+  background: #DFE6E9 !important;
+  box-shadow: 3px 3px 4px rgba(174,181,184,.25) !important;
+}
+
+/* Keep hover card readable on smaller screens. */
+@media (max-width: 767px) {
+  .calendarPage .reminderHoverCard {
+    min-width: 170px !important;
+    max-width: min(280px, calc(100vw - 20px)) !important;
+    padding: 9px 10px !important;
+    font-size: 11px !important;
+    line-height: 16px !important;
+  }
+
+  .calendarPage .reminderHoverRow {
+    gap: 6px !important;
+  }
+}
+
+
+
+/* =========================================================
+   REMINDER SENT HOVER CARD — DOWNWARD POSITION FIX
+   - opens below "Reminder Sent" instead of above it
+   - stays inside the visible card area
+   - adds a clean border
+   - responsive on mobile
+   - no TSX / logic changes
+   ========================================================= */
+
+.calendarPage .scheduleReminderFlag {
+  position: relative !important;
+  overflow: visible !important;
+  z-index: 40 !important;
+}
+
+.calendarPage .reminderHoverCard {
+  top: calc(100% + 10px) !important;
+  bottom: auto !important;
+
+  left: 50% !important;
+  right: auto !important;
+
+  transform: translateX(-50%) translateY(-4px) !important;
+
+  width: max-content !important;
+  min-width: 210px !important;
+  max-width: min(360px, calc(100vw - 28px)) !important;
+
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  padding: 11px 13px !important;
+
+  border: 1px solid rgba(45, 85, 215, 0.22) !important;
+  border-radius: 12px !important;
+
+  background: #DFE6E9 !important;
+
+  box-shadow:
+    -4px -4px 8px rgba(255,255,255,.95),
+     4px  4px 8px rgba(174,181,184,.60) !important;
+
+  overflow: visible !important;
+}
+
+/* Show animation now moves downward naturally. */
+.calendarPage .scheduleReminderFlag:hover .reminderHoverCard,
+.calendarPage .scheduleReminderFlag:focus-visible .reminderHoverCard,
+.calendarPage .scheduleReminderFlag:focus-within .reminderHoverCard {
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+/* Pointer is now above the popup because the popup opens downward. */
+.calendarPage .reminderHoverCard::after {
+  top: -6px !important;
+  bottom: auto !important;
+
+  left: 50% !important;
+
+  width: 12px !important;
+  height: 12px !important;
+
+  transform: translateX(-50%) rotate(45deg) !important;
+
+  background: #DFE6E9 !important;
+
+  border-left: 1px solid rgba(45, 85, 215, 0.18) !important;
+  border-top: 1px solid rgba(45, 85, 215, 0.18) !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+
+  box-shadow: none !important;
+}
+
+/* Keep the card above action buttons and other card content. */
+.calendarPage .eventCard:has(.scheduleReminderFlag:hover),
+.calendarPage .eventCard:has(.scheduleReminderFlag:focus-within) {
+  z-index: 120 !important;
+  overflow: visible !important;
+}
+
+.calendarPage .scheduleCardContent {
+  overflow: visible !important;
+}
+
+/* Desktop/list view:
+   slightly move the popup inward when the Reminder flag is near a side edge. */
+.calendarPage .calendarContentModeList .reminderHoverCard {
+  max-width: min(380px, calc(100vw - 40px)) !important;
+}
+
+/* Mobile/tablet:
+   keep popup fully inside screen and centered under the flag. */
+@media (max-width: 767px) {
+  .calendarPage .reminderHoverCard {
+    top: calc(100% + 8px) !important;
+
+    left: 50% !important;
+    right: auto !important;
+
+    width: min(280px, calc(100vw - 24px)) !important;
+    min-width: 0 !important;
+    max-width: calc(100vw - 24px) !important;
+
+    padding: 10px 11px !important;
+
+    font-size: 11px !important;
+    line-height: 16px !important;
+
+    border-radius: 10px !important;
+
+    transform: translateX(-50%) translateY(-3px) !important;
+  }
+
+  .calendarPage .scheduleReminderFlag:hover .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-visible .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-within .reminderHoverCard {
+    transform: translateX(-50%) translateY(0) !important;
+  }
+
+  .calendarPage .reminderHoverRow {
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .calendarPage .reminderHoverValue {
+    overflow-wrap: anywhere !important;
+  }
+}
+
+/* Very small phones:
+   anchor the popup to the left edge of the event card if centering could overflow. */
+@media (max-width: 420px) {
+  .calendarPage .scheduleReminderFlag {
+    position: static !important;
+  }
+
+  .calendarPage .reminderHoverCard {
+    left: 10px !important;
+    right: 10px !important;
+
+    width: auto !important;
+    max-width: none !important;
+
+    transform: translateY(-3px) !important;
+  }
+
+  .calendarPage .scheduleReminderFlag:hover .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-visible .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-within .reminderHoverCard {
+    transform: translateY(0) !important;
+  }
+
+  .calendarPage .reminderHoverCard::after {
+    left: 72% !important;
+  }
+}
+
+
+
+/* =========================================================
+   FINAL — REMINDER SENT POPUP SAME AS DESKTOP ON MOBILE
+   Only the Reminder Sent hover/focus popup is changed.
+   Desktop styling is preserved.
+   Mobile uses the SAME card structure, spacing and typography;
+   only max-width is limited so it stays inside the phone screen.
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .calendarPage .eventTitle:has(.scheduleReminderFlag),
+  .calendarPage .scheduleTitleLine:has(.scheduleReminderFlag) {
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .scheduleReminderFlag {
+    position: relative !important;
+    overflow: visible !important;
+    z-index: 60 !important;
+  }
+
+  .calendarPage .reminderHoverCard {
+    position: absolute !important;
+    z-index: 5000 !important;
+
+    top: calc(100% + 10px) !important;
+    bottom: auto !important;
+
+    left: 50% !important;
+    right: auto !important;
+
+    width: max-content !important;
+    min-width: 210px !important;
+    max-width: min(360px, calc(100vw - 28px)) !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    padding: 11px 13px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+
+    border: 1px solid rgba(45, 85, 215, 0.22) !important;
+    border-radius: 12px !important;
+
+    background: #DFE6E9 !important;
+
+    box-shadow:
+      -4px -4px 8px rgba(255,255,255,.95),
+       4px  4px 8px rgba(174,181,184,.60) !important;
+
+    color: #374151 !important;
+    font-family: "Segoe UI", Inter, sans-serif !important;
+    font-size: 12px !important;
+    line-height: 18px !important;
+    font-weight: 400 !important;
+
+    white-space: normal !important;
+    text-align: left !important;
+
+    overflow: visible !important;
+
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+
+    transform: translateX(-50%) translateY(-4px) !important;
+
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease,
+      visibility 140ms ease !important;
+  }
+
+  .calendarPage .scheduleReminderFlag:hover .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-visible .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-within .reminderHoverCard {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateX(-50%) translateY(0) !important;
+  }
+
+  .calendarPage .reminderHoverRow {
+    width: 100% !important;
+
+    display: grid !important;
+    grid-template-columns: max-content minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: 8px !important;
+  }
+
+  .calendarPage .reminderHoverLabel {
+    color: #2D55D7 !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+  }
+
+  .calendarPage .reminderHoverValue {
+    min-width: 0 !important;
+
+    color: #374151 !important;
+    font-weight: 400 !important;
+
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  .calendarPage .reminderHoverCard::after {
+    content: "" !important;
+
+    position: absolute !important;
+    top: -6px !important;
+    bottom: auto !important;
+
+    left: 50% !important;
+
+    width: 12px !important;
+    height: 12px !important;
+
+    transform: translateX(-50%) rotate(45deg) !important;
+
+    background: #DFE6E9 !important;
+
+    border-left: 1px solid rgba(45, 85, 215, 0.18) !important;
+    border-top: 1px solid rgba(45, 85, 215, 0.18) !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+
+    box-shadow: none !important;
+  }
+
+  .calendarPage .eventCard:has(.scheduleReminderFlag:hover),
+  .calendarPage .eventCard:has(.scheduleReminderFlag:focus-within) {
+    z-index: 120 !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .scheduleCardContent {
+    overflow: visible !important;
+  }
+}
+
+/* Very small phones:
+   keep the SAME desktop card design and typography.
+   Only constrain its width so it cannot leave the viewport. */
+@media (max-width: 420px) {
+  .calendarPage .scheduleReminderFlag {
+    position: relative !important;
+  }
+
+  .calendarPage .reminderHoverCard {
+    top: calc(100% + 10px) !important;
+    bottom: auto !important;
+
+    left: 50% !important;
+    right: auto !important;
+
+    width: max-content !important;
+    min-width: 210px !important;
+    max-width: calc(100vw - 20px) !important;
+
+    padding: 11px 13px !important;
+
+    border-radius: 12px !important;
+
+    font-size: 12px !important;
+    line-height: 18px !important;
+
+    transform: translateX(-50%) translateY(-4px) !important;
+  }
+
+  .calendarPage .scheduleReminderFlag:hover .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-visible .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-within .reminderHoverCard {
+    transform: translateX(-50%) translateY(0) !important;
+  }
+
+  .calendarPage .reminderHoverRow {
+    grid-template-columns: max-content minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .calendarPage .reminderHoverCard::after {
+    left: 50% !important;
+  }
+}
+
+
+
+/* =========================================================
+   MOBILE REMINDER POPUP — SHIFT RIGHT ONLY
+   Keeps the same desktop-style card.
+   Only repositions it on mobile so the left side does not break.
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .calendarPage .reminderHoverCard {
+    left: calc(50% + 28px) !important;
+    right: auto !important;
+  }
+
+  .calendarPage .scheduleReminderFlag:hover .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-visible .reminderHoverCard,
+  .calendarPage .scheduleReminderFlag:focus-within .reminderHoverCard {
+    transform: translateX(-50%) translateY(0) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .reminderHoverCard {
+    left: calc(50% + 34px) !important;
+    right: auto !important;
+
+    max-width: calc(100vw - 18px) !important;
+  }
+
+  .calendarPage .reminderHoverCard::after {
+    left: calc(50% - 34px) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .calendarPage .reminderHoverCard {
+    left: calc(50% + 38px) !important;
+    max-width: calc(100vw - 14px) !important;
+  }
+
+  .calendarPage .reminderHoverCard::after {
+    left: calc(50% - 38px) !important;
+  }
+}
+
+
+
+/* =========================================================
+   CALENDAR FILTERS — PUBLISH AUDIENCE LAYOUT FIX
+   1. Initial/default filters stay on ONE desktop row.
+   2. After an Audience mode is selected, extra dependent filters may
+      continue onto a second row.
+   3. Specific Organization + Actor stays on one line.
+   4. Organization list is readable and Role options do not break.
+   5. Clear button remains compact.
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  .calendarPage .calendarFilters.audienceFiltersInitial:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(250px, 1.55fr)
+      minmax(145px, 1fr)
+      minmax(145px, 1fr)
+      minmax(125px, .82fr)
+      78px !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
+  .calendarPage .calendarFilters.audienceFiltersSelected:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(250px, 1.45fr)
+      minmax(145px, 1fr)
+      minmax(145px, 1fr)
+      minmax(125px, .86fr)
+      78px !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(250px, 1.45fr)
+      minmax(150px, .9fr)
+      minmax(215px, 1.18fr)
+      minmax(150px, .9fr)
+      minmax(125px, .78fr)
+      78px !important;
+  }
+}
+
+/* Audience field + list must keep long publish option in one line. */
+.calendarPage .audienceFilterDropdown {
+  min-width: 0 !important;
+}
+
+.calendarPage .audienceFilterDropdown .filterDropdownField {
+  min-width: 0 !important;
+}
+
+.calendarPage .audienceFilterDropdown .filterDropdownValue {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+
+.calendarPage .audienceFilterDropdown .filterDropdownMenu {
+  width: max-content !important;
+  min-width: 100% !important;
+  max-width: 330px !important;
+}
+
+.calendarPage .audienceFilterDropdown .filterDropdownOption {
+  width: 100% !important;
+  min-width: 285px !important;
+}
+
+.calendarPage .audienceFilterDropdown .filterDropdownOption > span:last-child {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+
+/* Organization dropdown now has the complete Add Event organization list. */
+.calendarPage .organizationFilterDropdown .filterDropdownMenu {
+  width: max-content !important;
+  min-width: 100% !important;
+  max-width: 330px !important;
+  max-height: 330px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.calendarPage .organizationFilterDropdown .filterDropdownOption {
+  min-width: 235px !important;
+  height: auto !important;
+  min-height: 38px !important;
+}
+
+.calendarPage .organizationFilterDropdown .filterDropdownOption > span:last-child {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+
+/* Role list must not become the narrow/tall broken list shown in screenshot. */
+.calendarPage .roleFilterDropdown .filterDropdownMenu {
+  width: max-content !important;
+  min-width: 100% !important;
+  max-width: 275px !important;
+}
+
+.calendarPage .roleFilterDropdown .filterDropdownOption {
+  min-width: 205px !important;
+  height: auto !important;
+  min-height: 38px !important;
+}
+
+.calendarPage .roleFilterDropdown .filterDropdownOption > span:last-child {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+
+/* Keep the clear action smaller than the actual filters. */
+.calendarPage .calendarFilters > .clearButton {
+  width: 78px !important;
+  min-width: 78px !important;
+  max-width: 78px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* Tablet: keep readable widths and allow the selected-mode extras to wrap. */
+@media (min-width: 768px) and (max-width: 1100px) {
+  .calendarPage .calendarFilters.audienceFiltersInitial:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(220px, 1.45fr)
+      minmax(125px, 1fr)
+      minmax(125px, 1fr)
+      minmax(110px, .85fr)
+      72px !important;
+    gap: 8px !important;
+  }
+
+  .calendarPage .calendarFilters.audienceFiltersSelected:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(220px, 1.35fr)
+      repeat(3, minmax(120px, 1fr))
+      72px !important;
+    gap: 8px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(220px, 1.35fr)
+      minmax(130px, 1fr)
+      minmax(190px, 1.15fr)
+      minmax(130px, 1fr)
+      minmax(110px, .82fr)
+      72px !important;
+  }
+}
+
+/* Mobile remains two-column where needed, but dropdown menus are wide enough
+   to keep Audience/Role/Organization text readable. */
+@media (max-width: 767px) {
+  .calendarPage .calendarFilters.audienceFiltersInitial,
+  .calendarPage .calendarFilters.audienceFiltersSelected,
+  .calendarPage .calendarFilters.organizationActorFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .calendarPage .audienceFilterDropdown {
+    grid-column: 1 / -1 !important;
+  }
+
+  .calendarPage .audienceFilterDropdown .filterDropdownMenu {
+    width: min(310px, calc(100vw - 24px)) !important;
+    max-width: min(310px, calc(100vw - 24px)) !important;
+  }
+
+  .calendarPage .audienceFilterDropdown .filterDropdownOption {
+    min-width: 0 !important;
+  }
+
+  .calendarPage .organizationFilterDropdown .filterDropdownMenu,
+  .calendarPage .roleFilterDropdown .filterDropdownMenu {
+    width: min(280px, calc(100vw - 24px)) !important;
+    min-width: 100% !important;
+    max-width: min(280px, calc(100vw - 24px)) !important;
+  }
+
+  .calendarPage .organizationFilterDropdown .filterDropdownOption,
+  .calendarPage .roleFilterDropdown .filterDropdownOption {
+    min-width: 0 !important;
+  }
+
+  .calendarPage .audienceFilterDropdown .filterDropdownOption > span:last-child,
+  .calendarPage .organizationFilterDropdown .filterDropdownOption > span:last-child,
+  .calendarPage .roleFilterDropdown .filterDropdownOption > span:last-child {
+    white-space: nowrap !important;
+    font-size: 11px !important;
+    line-height: 16px !important;
+  }
+
+  .calendarPage .calendarFilters > .clearButton {
+    width: 72px !important;
+    min-width: 72px !important;
+    max-width: 72px !important;
+  }
+}
+
+
+
+/* =========================================================
+   FINAL FILTER SIZE / WRAP FIX
+   - dropdown list width = top field width
+   - long list text may wrap cleanly to max 2 lines
+   - default filters stay in one row on desktop
+   - selected audience modes may use a second row
+   - Specific Organization + Actor uses a clean 3-column layout
+   - Clear never gets cut off
+   ========================================================= */
+
+/* All filter menus stay exactly the same width as their top field. */
+.calendarPage .audienceFilterDropdown .filterDropdownMenu,
+.calendarPage .tenantFilterDropdown .filterDropdownMenu,
+.calendarPage .organizationFilterDropdown .filterDropdownMenu,
+.calendarPage .roleFilterDropdown .filterDropdownMenu,
+.calendarPage .statusFilterDropdown .filterDropdownMenu {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+/* Remove the old forced wide option widths. */
+.calendarPage .audienceFilterDropdown .filterDropdownOption,
+.calendarPage .tenantFilterDropdown .filterDropdownOption,
+.calendarPage .organizationFilterDropdown .filterDropdownOption,
+.calendarPage .roleFilterDropdown .filterDropdownOption,
+.calendarPage .statusFilterDropdown .filterDropdownOption {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 40px !important;
+  padding: 6px 8px !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+/* Long values inside opened lists wrap neatly, maximum two lines. */
+.calendarPage .audienceFilterDropdown .filterDropdownOption > span:last-child,
+.calendarPage .tenantFilterDropdown .filterDropdownOption > span:last-child,
+.calendarPage .organizationFilterDropdown .filterDropdownOption > span:last-child,
+.calendarPage .roleFilterDropdown .filterDropdownOption > span:last-child,
+.calendarPage .statusFilterDropdown .filterDropdownOption > span:last-child {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+
+  white-space: normal !important;
+  overflow: hidden !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  text-overflow: clip !important;
+
+  font-size: 14px !important;
+  line-height: 18px !important;
+  font-weight: 400 !important;
+}
+
+/* Selected field itself remains a clean single line. */
+.calendarPage .audienceFilterDropdown .filterDropdownValue,
+.calendarPage .tenantFilterDropdown .filterDropdownValue,
+.calendarPage .organizationFilterDropdown .filterDropdownValue,
+.calendarPage .roleFilterDropdown .filterDropdownValue,
+.calendarPage .statusFilterDropdown .filterDropdownValue {
+  width: 100% !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  font-weight: 500 !important;
+}
+
+/* The longest selected Audience value must stay readable on one line. */
+.calendarPage .audienceFilterDropdown .filterDropdownField {
+  min-width: 0 !important;
+}
+
+@media (min-width: 1101px) {
+  /* BEFORE choosing a special audience:
+     Audience + Tenant + Role + Status + Clear = one row. */
+  .calendarPage
+  .calendarFilters.audienceFiltersInitial:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(280px, 1.65fr)
+      minmax(160px, 1fr)
+      minmax(160px, 1fr)
+      minmax(145px, .9fr)
+      82px !important;
+    gap: 14px !important;
+    align-items: start !important;
+  }
+
+  /* Selected modes can use a second row instead of squeezing everything. */
+  .calendarPage
+  .calendarFilters.audienceFiltersSelected:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(280px, 1.5fr)
+      minmax(170px, 1fr)
+      minmax(170px, 1fr)
+      minmax(150px, .9fr) !important;
+    gap: 14px !important;
+    align-items: start !important;
+  }
+
+  /* Specific Organization + Actor:
+     Row 1: Audience | Tenant | Organization
+     Row 2: Role | Status | Clear */
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(300px, 1.45fr)
+      minmax(180px, .9fr)
+      minmax(260px, 1.2fr) !important;
+    gap: 14px 16px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .audienceFilterDropdown {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .tenantFilterDropdown {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .organizationFilterDropdown {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .roleFilterDropdown {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .statusFilterDropdown {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .clearButton {
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+  }
+}
+
+/* Clear button should never clip or fall outside the filter area. */
+.calendarPage .calendarFilters > .clearButton {
+  width: 82px !important;
+  min-width: 82px !important;
+  max-width: 82px !important;
+  height: 48px !important;
+  padding: 0 10px !important;
+  white-space: nowrap !important;
+  justify-self: start !important;
+}
+
+/* Tablet: same-width menus, clean wrapping and second-row support. */
+@media (min-width: 768px) and (max-width: 1100px) {
+  .calendarPage
+  .calendarFilters.audienceFiltersInitial:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(235px, 1.5fr)
+      minmax(135px, 1fr)
+      minmax(135px, 1fr)
+      minmax(120px, .85fr)
+      72px !important;
+    gap: 9px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.audienceFiltersSelected:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(235px, 1.35fr)
+      repeat(3, minmax(130px, 1fr)) !important;
+    gap: 9px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    grid-template-columns:
+      minmax(240px, 1.35fr)
+      minmax(145px, .9fr)
+      minmax(210px, 1.15fr) !important;
+    gap: 9px 11px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .roleFilterDropdown {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .statusFilterDropdown {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters
+  > .clearButton {
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+  }
+}
+
+/* Mobile: keep cards readable; menus equal the field width.
+   Long options can use two lines instead of becoming narrow/tall. */
+@media (max-width: 767px) {
+  .calendarPage .calendarFilters.audienceFiltersInitial,
+  .calendarPage .calendarFilters.audienceFiltersSelected,
+  .calendarPage .calendarFilters.organizationActorFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px 10px !important;
+  }
+
+  .calendarPage .audienceFilterDropdown {
+    grid-column: 1 / -1 !important;
+  }
+
+  .calendarPage .audienceFilterDropdown .filterDropdownMenu,
+  .calendarPage .tenantFilterDropdown .filterDropdownMenu,
+  .calendarPage .organizationFilterDropdown .filterDropdownMenu,
+  .calendarPage .roleFilterDropdown .filterDropdownMenu,
+  .calendarPage .statusFilterDropdown .filterDropdownMenu {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .calendarPage .audienceFilterDropdown .filterDropdownOption > span:last-child,
+  .calendarPage .tenantFilterDropdown .filterDropdownOption > span:last-child,
+  .calendarPage .organizationFilterDropdown .filterDropdownOption > span:last-child,
+  .calendarPage .roleFilterDropdown .filterDropdownOption > span:last-child,
+  .calendarPage .statusFilterDropdown .filterDropdownOption > span:last-child {
+    font-size: 11px !important;
+    line-height: 15px !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+  }
+
+  .calendarPage .calendarFilters > .clearButton {
+    width: 72px !important;
+    min-width: 72px !important;
+    max-width: 72px !important;
+    height: 40px !important;
+  }
+}
+
+
+
+/* =========================================================
+   FINAL SMALL FILTER CORRECTIONS
+   - Role is narrower for Specific Organization + Actor
+   - open filter menus always stay above Calendar month/year controls
+   - Calendar workspace stays underneath opened filter lists
+   ========================================================= */
+
+/* Keep the filter row above the calendar toolbar/month-year pickers. */
+.calendarPage .calendarFilters {
+  position: relative !important;
+  z-index: 300 !important;
+  overflow: visible !important;
+}
+
+.calendarPage .calendarFilters .filterDropdown {
+  position: relative !important;
+  z-index: 301 !important;
+  overflow: visible !important;
+}
+
+.calendarPage .calendarFilters .filterDropdown.open {
+  z-index: 900 !important;
+}
+
+.calendarPage .calendarFilters .filterDropdownMenu {
+  z-index: 950 !important;
+}
+
+/* Calendar controls must remain under any opened filter menu. */
+.calendarPage .calendarWorkspace,
+.calendarPage .calendarPanel,
+.calendarPage .calendarToolbar,
+.calendarPage .calendarMonthYearSelectors,
+.calendarPage .calendarMonthYearPickerShell,
+.calendarPage .calendarMonthYearPickerButton {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Specific Organization + Actor:
+   make Role smaller; Status/Clear follow naturally on row 2. */
+@media (min-width: 1101px) {
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .roleFilterDropdown {
+    width: 220px !important;
+    max-width: 220px !important;
+    justify-self: start !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .statusFilterDropdown {
+    width: 180px !important;
+    max-width: 180px !important;
+    justify-self: start !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .clearButton {
+    justify-self: start !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .roleFilterDropdown {
+    width: 190px !important;
+    max-width: 190px !important;
+    justify-self: start !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .statusFilterDropdown {
+    width: 160px !important;
+    max-width: 160px !important;
+    justify-self: start !important;
+  }
+}
+
+
+
+/* =========================================================
+   SPECIFIC ORGANIZATION + ACTOR — COMPACT WIDTH / GAP / SCROLLBAR
+   Only affects this selected audience mode.
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  /* Make the selected Audience field only as wide as its content needs. */
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    grid-template-columns:
+      max-content
+      minmax(170px, 220px)
+      minmax(260px, 1fr) !important;
+    column-gap: 18px !important;
+    row-gap: 12px !important;
+    align-items: start !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown {
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    justify-self: start !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownField {
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding-left: 18px !important;
+    padding-right: 46px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownValue {
+    width: auto !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  /* Row 1 */
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .tenantFilterDropdown {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .organizationFilterDropdown {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+  }
+
+  /* Row 2 — keep Role and Status closer together. */
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .roleFilterDropdown {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 180px !important;
+    max-width: 180px !important;
+    justify-self: start !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .statusFilterDropdown {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 170px !important;
+    max-width: 170px !important;
+    margin-left: 194px !important;
+    justify-self: start !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .clearButton {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    margin-left: 378px !important;
+    justify-self: start !important;
+  }
+}
+
+/* Proper thin neumorphic scrollbar for Organization dropdown. */
+.calendarPage .organizationFilterDropdown .filterDropdownMenu {
+  max-height: 320px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  scrollbar-width: thin !important;
+  scrollbar-color: #8f969b transparent !important;
+}
+
+.calendarPage
+.organizationFilterDropdown
+.filterDropdownMenu::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.calendarPage
+.organizationFilterDropdown
+.filterDropdownMenu::-webkit-scrollbar-track {
+  background: #dfe6e9 !important;
+  border-radius: 10px !important;
+  box-shadow:
+    inset -1px -1px 2px rgba(255,255,255,.92),
+    inset  1px  1px 2px rgba(174,181,184,.58) !important;
+}
+
+.calendarPage
+.organizationFilterDropdown
+.filterDropdownMenu::-webkit-scrollbar-thumb {
+  background: #9aa1a6 !important;
+  border-radius: 10px !important;
+  border: 1px solid #dfe6e9 !important;
+  box-shadow:
+    -1px -1px 2px rgba(255,255,255,.82),
+     1px  1px 2px rgba(174,181,184,.72) !important;
+}
+
+.calendarPage
+.organizationFilterDropdown
+.filterDropdownMenu::-webkit-scrollbar-thumb:hover {
+  background: #858d93 !important;
+}
+
+/* Tablet — compact but still responsive. */
+@media (min-width: 768px) and (max-width: 1100px) {
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    grid-template-columns:
+      max-content
+      minmax(145px, 190px)
+      minmax(210px, 1fr) !important;
+    column-gap: 10px !important;
+    row-gap: 10px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown {
+    width: max-content !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownField {
+    width: max-content !important;
+    padding-left: 14px !important;
+    padding-right: 40px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .roleFilterDropdown {
+    width: 160px !important;
+    max-width: 160px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .statusFilterDropdown {
+    width: 150px !important;
+    max-width: 150px !important;
+    margin-left: 170px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .clearButton {
+    margin-left: 330px !important;
+  }
+}
+
+
+
+/* =========================================================
+   SPECIFIC ORGANIZATION + ACTOR — FINAL GAP + ICON POSITION
+   Only adjusts spacing between Audience and Tenant, and moves
+   the Audience chevron to the far right.
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    grid-template-columns:
+      max-content
+      minmax(170px, 220px)
+      minmax(260px, 1fr) !important;
+
+    /* Reduce only the horizontal gap between columns. */
+    column-gap: 8px !important;
+    row-gap: 12px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown {
+    margin-right: 0 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .tenantFilterDropdown {
+    margin-left: 0 !important;
+  }
+
+  /* Keep the selected Audience field compact but give the chevron
+     its own right-side space so it does not sit beside the text. */
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownField {
+    position: relative !important;
+    padding-left: 18px !important;
+    padding-right: 52px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownChevron {
+    position: absolute !important;
+    right: 18px !important;
+    left: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) rotate(45deg) !important;
+    margin: 0 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown.open
+  .filterDropdownChevron {
+    transform: translateY(-50%) rotate(-135deg) !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    column-gap: 7px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownField {
+    padding-right: 46px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownChevron {
+    right: 15px !important;
+  }
+}
+
+
+
+/* =========================================================
+   GLOBAL ADMIN AUDIENCE FILTERS ONLY
+   Institute Admin / Coordinator / Faculty keep their old filter layout.
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
+    display: grid !important;
+    grid-template-columns:
+      390px
+      230px
+      minmax(300px, 1fr) !important;
+    column-gap: 10px !important;
+    row-gap: 12px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown {
+    width: 390px !important;
+    min-width: 390px !important;
+    max-width: 390px !important;
+    margin: 0 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownField {
+    width: 100% !important;
+    padding-left: 18px !important;
+    padding-right: 48px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .audienceFilterDropdown
+  .filterDropdownChevron {
+    right: 18px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .tenantFilterDropdown {
+    width: 230px !important;
+    margin: 0 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .organizationFilterDropdown {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .roleFilterDropdown {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 180px !important;
+    margin: 0 !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .statusFilterDropdown {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 170px !important;
+    margin-left: 192px !important;
+  }
+
+  .calendarPage
+  .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
+  > .clearButton {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    margin-left: 374px !important;
+  }
+}
+
+
+
+/* Cancelled status badge — red */
+.calendarPage .statusBadge.cancelled {
+  color: #B42318 !important;
+  background: #FDE2E0 !important;
+  border: 1px solid rgba(180, 35, 24, 0.20) !important;
+}
+
+
+
+/* =========================================================
+   FINAL MOBILE EVENT CARD / ARROW NAV FIX
+   MOBILE ONLY — desktop/tablet >= 768px remain unchanged.
+   ========================================================= */
+@media (max-width: 767px) {
+  .calendarPage .calendarContentModeList .eventScroll {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 10px 8px 12px !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard {
+    display: none !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 68px 16px 18px !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    border-radius: 14px !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  > .statusBadge {
+    position: absolute !important;
+    top: 14px !important;
+    right: 16px !important;
+    left: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+    z-index: 6 !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .reminderSentBadge {
+    position: absolute !important;
+    top: 40px !important;
+    right: 16px !important;
+    left: auto !important;
+    margin: 0 !important;
+    z-index: 5 !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .scheduleCardContent {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 9px !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .eventTitle,
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .eventTitle.eventTitleMultiLine {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 0 10px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 9px !important;
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .eventTitle strong {
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .eventCardActions {
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 16px 0 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)) !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .eventCardActionButton {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 38px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 20px !important;
+    font-size: 12px !important;
+    line-height: 38px !important;
+    white-space: nowrap !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard:has(.eventCardActions) {
+    padding-bottom: 18px !important;
+  }
+
+  .calendarPage .mobileScheduleCardNav {
+    width: 100% !important;
+    margin: 14px 0 0 !important;
+    padding: 0 14px 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+  }
+
+  .calendarPage .mobileScheduleCardNav button {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: #DFE6E9 !important;
+    box-shadow:
+      -3px -3px 6px rgba(255,255,255,.9),
+       3px  3px 6px rgba(174,181,184,.58) !important;
+  }
+
+  .calendarPage .mobileScheduleCardNav button:disabled {
+    opacity: .4 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard {
+    padding: 66px 14px 16px !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  > .statusBadge {
+    top: 13px !important;
+    right: 14px !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .reminderSentBadge {
+    top: 39px !important;
+    right: 14px !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .eventCardActions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .calendarPage
+  .calendarContentModeList
+  .eventScroll
+  > .eventCard.mobileActiveEventCard
+  .eventCardActionButton {
+    height: 36px !important;
+    font-size: 11px !important;
+    line-height: 36px !important;
+  }
+}
+
+
+/* =========================================================
+   EVENT LIST SEARCH
+   All Events / Published / Saved / My Events /
+   Student My Schedules only.
+   ========================================================= */
+.calendarPage .eventListSearchWrap {
+  position: relative;
+  width: 100%;
+  margin: 0 0 16px;
+}
+
+.calendarPage .eventListSearchInput {
+  width: 100%;
+  height: 44px;
+  padding: 0 46px 0 16px;
+  border: 0;
+  outline: 0;
+  border-radius: 10px;
+  color: #374151;
+  background: #DFE6E9;
+  box-shadow:
+    inset -3px -3px 5px rgba(255,255,255,.92),
+    inset 3px 3px 5px rgba(196,196,196,.72);
+  font-family: "Segoe UI", Inter, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.calendarPage .eventListSearchInput::placeholder {
+  color: #7A8494;
+  opacity: 1;
+}
+
+.calendarPage .eventListSearchInput:focus {
+  box-shadow:
+    inset -3px -3px 5px rgba(255,255,255,.95),
+    inset 3px 3px 5px rgba(173,181,186,.78),
+    0 0 0 1px rgba(45,76,200,.22);
+}
+
+.calendarPage .eventListSearchInput::-webkit-search-cancel-button {
+  display: none;
+}
+
+.calendarPage .eventListSearchClear {
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #2D4CC8;
+  background: #DFE6E9;
+  box-shadow:
+    -2px -2px 4px rgba(255,255,255,.9),
+    2px 2px 4px rgba(174,181,184,.55);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.calendarPage .eventListSearchClear:active {
+  box-shadow:
+    inset -2px -2px 4px rgba(255,255,255,.9),
+    inset 2px 2px 4px rgba(174,181,184,.55);
+}
+
+@media (max-width: 767px) {
+  .calendarPage .eventListSearchWrap {
+    margin-bottom: 12px;
+  }
+
+  .calendarPage .eventListSearchInput {
+    height: 40px;
+    padding-left: 13px;
+    padding-right: 42px;
+    border-radius: 9px;
+    font-size: 12px;
+  }
+
+  .calendarPage .eventListSearchClear {
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .eventListSearchInput {
+    height: 38px;
+    font-size: 11px;
+  }
+}
+
+
+/* =========================================================
+   ADD DROPDOWN ONLY
+   Desktop Add + Mobile +.
+   ========================================================= */
+.calendarAddChooser {
+  position: fixed;
+  z-index: 2147483640;
+  width: 170px;
+  max-width: calc(100vw - 20px);
+  padding: 8px;
+  margin: 0;
+  border: 0;
+  border-radius: 10px;
+  background: #DFE6E9;
+  box-shadow: inset -8px -8px 16px #FFFFFF, inset 8px 8px 16px #c4c4c4;
+  transform: translateY(-6);
+}
+
+.calendarAddChooser button {
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 10px;
+  margin: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #2F3547;
+  font-family: "Segoe UI", Inter, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.calendarAddChooser button + button {
+  margin-top: 2px;
+}
+
+.calendarAddChooser button:hover,
+.calendarAddChooser button:focus-visible {
+  outline: 0;
+  box-shadow:
+    inset -2px -2px 4px #FFFFFF,
+    inset 2px 2px 4px #C4C4C4;
+}
+
+.calendarAddChooser button img {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+
+/* =========================================================
+   SUPER / PLATFORM ADMIN LIST FILTER LOCATION
+   Move the existing Audience / Tenant / Role / Status filters
+   inside All Events / Published / Saved / My Events only.
+   ========================================================= */
+.calendarPage .calendarContentModeList .listCalendarFilters {
+  width: 100%;
+  margin: 0 0 16px !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarContentModeList .listCalendarFilters {
+    display: grid !important;
+    width: 100% !important;
+    margin: 0 0 12px !important;
+    padding: 0 !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px 10px !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarContentModeList .listCalendarFilters > .filterDropdown,
+  .calendarPage .calendarContentModeList .listCalendarFilters > .clearButton {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .calendarPage .calendarContentModeList .listCalendarFilters > .audienceFilterDropdown {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+
+/* =========================================================
+   SUPER / PLATFORM ADMIN COMPACT FILTER ROW
+   All Users + Status + Clear only.
+   ========================================================= */
+.calendarPage .calendarContentModeList .allUsersCompactFilters {
+  width: 100%;
+  margin: 0 0 16px !important;
+  display: grid !important;
+  grid-template-columns: minmax(280px, 1fr) minmax(220px, .72fr) 118px !important;
+  gap: 20px !important;
+  align-items: start !important;
+}
+
+.calendarPage .calendarContentModeList .allUsersCompactFilters .filterDropdown,
+.calendarPage .calendarContentModeList .allUsersCompactFilters .clearButton {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.calendarPage .allUsersNestedDropdown {
+  position: relative;
+  z-index: 120;
+}
+
+.calendarPage .allUsersNestedDropdown.open {
+  z-index: 130;
+}
+
+.calendarPage .allUsersNestedMenu {
+  max-height: 340px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+.calendarPage .allUsersBackOption {
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  font-weight: 600 !important;
+}
+
+.calendarPage .allUsersBackArrow {
+  width: 18px;
+  flex: 0 0 18px;
+  display: inline-grid;
+  place-items: center;
+  color: #2D4CC8;
+  font-size: 24px;
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarContentModeList .allUsersCompactFilters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 8px 10px !important;
+    margin: 0 0 12px !important;
+  }
+
+  .calendarPage
+    .calendarContentModeList
+    .allUsersCompactFilters
+    .allUsersNestedDropdown {
+    grid-column: 1 / -1 !important;
+  }
+
+  .calendarPage .allUsersNestedMenu {
+    max-height: 280px;
+  }
+}
+
+
+
+/* =========================================================
+   SUPER / PLATFORM ADMIN LIST FILTERS
+   All Users + Month + Year + Status + Clear
+   ========================================================= */
+.calendarPage .calendarContentModeList .allUsersCompactFilters {
+  grid-template-columns:
+    minmax(250px, 1.15fr)
+    minmax(150px, .7fr)
+    minmax(130px, .58fr)
+    minmax(180px, .8fr)
+    118px !important;
+  gap: 16px !important;
+}
+
+@media (max-width: 1100px) and (min-width: 768px) {
+  .calendarPage .calendarContentModeList .allUsersCompactFilters {
+    grid-template-columns:
+      minmax(220px, 1fr)
+      minmax(130px, .7fr)
+      minmax(120px, .62fr)
+      minmax(160px, .8fr)
+      100px !important;
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarContentModeList .allUsersCompactFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .calendarPage
+    .calendarContentModeList
+    .allUsersCompactFilters
+    .allUsersNestedDropdown {
+    grid-column: 1 / -1 !important;
+  }
+
+  .calendarPage
+    .calendarContentModeList
+    .allUsersCompactFilters
+    .clearButton {
+    grid-column: 2 !important;
+  }
+}
+
+
+/* =========================================================
+   MONTH / YEAR / ALL USERS DROPDOWN REFINEMENTS
+   ========================================================= */
+
+/* Month: show about 4-5 options at once, then scroll. */
+.calendarPage .monthFilterDropdown .filterDropdownMenu {
+  max-height: 220px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin;
+  scrollbar-color: #AEB5B8 #DFE6E9;
+}
+
+/* Year can scroll if future event years extend the list. */
+.calendarPage .yearFilterDropdown .filterDropdownMenu {
+  max-height: 220px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin;
+  scrollbar-color: #AEB5B8 #DFE6E9;
+}
+
+/* Neuomorphic scrollbar track/thumb - no flat white block. */
+.calendarPage .monthFilterDropdown .filterDropdownMenu::-webkit-scrollbar,
+.calendarPage .yearFilterDropdown .filterDropdownMenu::-webkit-scrollbar,
+.calendarPage .allUsersNestedMenu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.calendarPage .monthFilterDropdown .filterDropdownMenu::-webkit-scrollbar-track,
+.calendarPage .yearFilterDropdown .filterDropdownMenu::-webkit-scrollbar-track,
+.calendarPage .allUsersNestedMenu::-webkit-scrollbar-track {
+  background: #DFE6E9;
+  border-radius: 999px;
+  box-shadow:
+    inset 2px 2px 4px #C4C4C4,
+    inset -2px -2px 4px #FFFFFF;
+}
+
+.calendarPage .monthFilterDropdown .filterDropdownMenu::-webkit-scrollbar-thumb,
+.calendarPage .yearFilterDropdown .filterDropdownMenu::-webkit-scrollbar-thumb,
+.calendarPage .allUsersNestedMenu::-webkit-scrollbar-thumb {
+  background: #DFE6E9;
+  border-radius: 999px;
+  box-shadow:
+    -1px -1px 2px #FFFFFF,
+     1px 1px 2px #AEB5B8;
+}
+
+/* Organization search inside Specific Tenant. */
+.calendarPage .allUsersOrganizationSearchWrap {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 7px 6px 9px;
+  background: #DFE6E9;
+}
+
+.calendarPage .allUsersOrganizationSearchWrap input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border: 0;
+  outline: 0;
+  border-radius: 9px;
+  background: #DFE6E9;
+  color: #2F3547;
+  font-family: "Segoe UI", Inter, sans-serif;
+  font-size: 12px;
+  box-shadow:
+    inset 3px 3px 6px #C4C4C4,
+    inset -3px -3px 6px #FFFFFF;
+}
+
+.calendarPage .allUsersOrganizationSearchWrap input::placeholder {
+  color: #7A8393;
+  opacity: 1;
+}
+
+/* Keep nested content smooth and contained. */
+.calendarPage .allUsersNestedMenu {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .monthFilterDropdown .filterDropdownMenu,
+  .calendarPage .yearFilterDropdown .filterDropdownMenu {
+    max-height: 205px !important;
+  }
+
+  .calendarPage .allUsersNestedMenu {
+    max-height: 280px !important;
+  }
+
+  .calendarPage .allUsersOrganizationSearchWrap {
+    padding: 6px 5px 8px;
+  }
+
+  .calendarPage .allUsersOrganizationSearchWrap input {
+    height: 36px;
+    font-size: 11px;
+  }
+}
+
+
+/* =========================================================
+   ALL USERS DROPDOWN VISUAL FIXES ONLY
+   ========================================================= */
+
+/* Keep the dropdown/menu background fully neuomorphic. */
+.calendarPage .allUsersNestedMenu {
+  background: #DFE6E9 !important;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #AEB5B8 #DFE6E9;
+  overscroll-behavior: contain;
+}
+
+/* Search bar must stay above scrolling options/checkboxes. */
+.calendarPage .allUsersOrganizationSearchWrap {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  isolation: isolate;
+  background: #DFE6E9 !important;
+  padding: 8px 7px 10px !important;
+  border-radius: 10px 10px 0 0;
+  box-shadow:
+    0 8px 10px #DFE6E9,
+    -2px -2px 4px rgba(255,255,255,.85),
+     2px  2px 4px rgba(174,181,184,.32);
+}
+
+/* Ensure scrolling options never paint on top of the sticky search area. */
+.calendarPage .allUsersNestedMenu .filterDropdownOption {
+  position: relative;
+  z-index: 1;
+}
+
+/* Neuomorphic scrollbar: remove white browser track/background. */
+.calendarPage .allUsersNestedMenu::-webkit-scrollbar {
+  width: 9px !important;
+  background: #DFE6E9 !important;
+}
+
+.calendarPage .allUsersNestedMenu::-webkit-scrollbar-track {
+  background: #DFE6E9 !important;
+  border-radius: 999px !important;
+  box-shadow:
+    inset 2px 2px 4px #C4C4C4,
+    inset -2px -2px 4px #FFFFFF !important;
+}
+
+.calendarPage .allUsersNestedMenu::-webkit-scrollbar-thumb {
+  background: #DFE6E9 !important;
+  border: 1px solid rgba(174,181,184,.55) !important;
+  border-radius: 999px !important;
+  box-shadow:
+    -1px -1px 2px #FFFFFF,
+     1px  1px 3px #AEB5B8 !important;
+}
+
+.calendarPage .allUsersNestedMenu::-webkit-scrollbar-corner {
+  background: #DFE6E9 !important;
+}
+
+/* Keep the search itself above all checkbox/radio rows. */
+.calendarPage .allUsersOrganizationSearchWrap input {
+  position: relative;
+  z-index: 51;
+  background: #DFE6E9 !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .allUsersOrganizationSearchWrap {
+    z-index: 60 !important;
+    padding: 7px 6px 9px !important;
+  }
+
+  .calendarPage .allUsersNestedMenu::-webkit-scrollbar {
+    width: 8px !important;
+  }
+}
+
+/* =========================================================
+   SPECIFIC TENANT SEARCH BAR BORDER / SCROLL FIX
+   ========================================================= */
+.calendarPage .allUsersOrganizationSearchWrap {
+  padding: 6px 6px 10px !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #DFE6E9 !important;
+  z-index: 80 !important;
+}
+
+.calendarPage .allUsersOrganizationSearchWrap::before,
+.calendarPage .allUsersOrganizationSearchWrap::after {
+  content: none !important;
+  display: none !important;
+}
+
+.calendarPage .allUsersOrganizationSearchWrap input {
+  width: 100% !important;
+  height: 40px !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 9px !important;
+  background: #DFE6E9 !important;
+  box-shadow:
+    inset 3px 3px 6px #C4C4C4,
+    inset -3px -3px 6px #FFFFFF !important;
+  z-index: 81 !important;
+}
+
+.calendarPage .allUsersNestedMenu .filterDropdownOption {
+  z-index: 1 !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .allUsersOrganizationSearchWrap {
+    padding: 5px 5px 8px !important;
+  }
+
+  .calendarPage .allUsersOrganizationSearchWrap input {
+    height: 38px !important;
+  }
+}
+
+
+/* =========================================================
+   TENANT ONLY KPI CARDS
+   Shown below the filter row and above the search bar.
+   ========================================================= */
+.calendarPage .tenantKpiSection {
+  width: 100%;
+  margin: 0 0 16px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(105px, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+.calendarPage .tenantKpiCard {
+  min-width: 0;
+  min-height: 104px;
+  padding: 13px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  text-align: center;
+  border: 0;
+  border-radius: 12px;
+  background: #DFE6E9;
+  box-shadow:
+    -4px -4px 8px rgba(255,255,255,.92),
+     4px  4px 8px rgba(174,181,184,.58);
+}
+
+.calendarPage .tenantKpiCardTotal {
+  box-shadow:
+    inset -3px -3px 6px rgba(255,255,255,.88),
+    inset  3px  3px 6px rgba(174,181,184,.50);
+}
+
+.calendarPage .tenantKpiLabel {
+  width: 100%;
+  color: #4C5568;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 15px;
+  overflow-wrap: anywhere;
+}
+
+.calendarPage .tenantKpiValue {
+  color: #2D4CC8;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+/* Tablet */
+@media (max-width: 1100px) and (min-width: 768px) {
+  .calendarPage .tenantKpiSection {
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .calendarPage .tenantKpiCard {
+    min-height: 96px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .calendarPage .tenantKpiSection {
+    width: 100%;
+    margin: 0 0 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .calendarPage .tenantKpiCard {
+    width: 100%;
+    min-width: 0;
+    min-height: 88px;
+    padding: 11px 8px;
+    border-radius: 10px;
+  }
+
+  .calendarPage .tenantKpiCardTotal {
+    grid-column: 1 / -1;
+  }
+
+  .calendarPage .tenantKpiLabel {
+    font-size: 10px;
+    line-height: 14px;
+  }
+
+  .calendarPage .tenantKpiValue {
+    font-size: 21px;
+    line-height: 25px;
+  }
+}
+
+
+/* =========================================================
+   CALENDAR EVENT LIST POSITION FIX
+   Opens directly below the selected date cell.
+   Edge dates stay inside the calendar/viewport.
+   ========================================================= */
+
+.calendarPage .monthGrid,
+.calendarPage .calendarPanel,
+.calendarPage .dayCell {
+  overflow: visible !important;
+}
+
+.calendarPage .dayCell:has(.calendarDayEventList),
+.calendarPage .dayCell:has(.calendarDayPopup) {
+  position: relative !important;
+  z-index: 300 !important;
+}
+
+.calendarPage .calendarDayEventList,
+.calendarPage .calendarDayPopup {
+  top: calc(100% + 7px) !important;
+  bottom: auto !important;
+  margin: 0 !important;
+}
+
+/* Sunday / Monday: open inward from the left. */
+.calendarPage .calendarDayEventList.calendarPopupAlignLeft,
+.calendarPage .calendarDayPopup.calendarPopupAlignLeft {
+  left: 0 !important;
+  right: auto !important;
+  transform: none !important;
+}
+
+/* Middle columns: center directly below their own date cell. */
+.calendarPage .calendarDayEventList.calendarPopupAlignCenter,
+.calendarPage .calendarDayPopup.calendarPopupAlignCenter {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+}
+
+/* Friday / Saturday: open inward from the right. */
+.calendarPage .calendarDayEventList.calendarPopupAlignRight,
+.calendarPage .calendarDayPopup.calendarPopupAlignRight {
+  left: auto !important;
+  right: 0 !important;
+  transform: none !important;
+}
+
+.calendarPage .calendarDayEventList {
+  max-width: min(220px, calc(100vw - 24px)) !important;
+}
+
+.calendarPage .calendarDayPopup {
+  max-width: min(260px, calc(100vw - 24px)) !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarDayEventList,
+  .calendarPage .calendarDayPopup {
+    position: absolute !important;
+    top: calc(100% + 5px) !important;
+    bottom: auto !important;
+  }
+
+  .calendarPage .calendarDayEventList {
+    width: 165px !important;
+    max-width: calc(100vw - 18px) !important;
+  }
+
+  .calendarPage .calendarDayPopup {
+    width: 180px !important;
+    max-width: calc(100vw - 18px) !important;
+  }
+
+  .calendarPage .calendarDayEventList.calendarPopupAlignLeft,
+  .calendarPage .calendarDayPopup.calendarPopupAlignLeft {
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+  }
+
+  .calendarPage .calendarDayEventList.calendarPopupAlignCenter,
+  .calendarPage .calendarDayPopup.calendarPopupAlignCenter {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .calendarPage .calendarDayEventList.calendarPopupAlignRight,
+  .calendarPage .calendarDayPopup.calendarPopupAlignRight {
+    left: auto !important;
+    right: 0 !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .calendarDayEventList {
+    width: 150px !important;
+    max-width: calc(100vw - 14px) !important;
+  }
+
+  .calendarPage .calendarDayPopup {
+    width: 165px !important;
+    max-width: calc(100vw - 14px) !important;
+  }
+}
+
+
+/* =========================================================
+   YEAR DROPDOWN — SHOW 4 TO 5 ITEMS, THEN SCROLL
+   ========================================================= */
+.calendarPage .yearFilterDropdown .filterDropdownMenu {
+  max-height: 218px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin;
+  scrollbar-color: #AEB5B8 #DFE6E9;
+}
+
+/* =========================================================
+   ALL USERS -> SPECIFIC TENANT NAVIGATION
+   Right arrow = next list, left arrow = go back.
+   ========================================================= */
+.calendarPage .allUsersNestedMenu .filterDropdownOption {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.calendarPage .allUsersOptionLabel {
+  min-width: 0;
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.calendarPage .allUsersNextArrow {
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  margin-left: auto;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 22px;
+}
+
+.calendarPage .allUsersNextArrow img,
+.calendarPage .allUsersBackArrow img {
+  display: block;
+  object-fit: contain;
+}
+
+.calendarPage .allUsersBackOption {
+  position: sticky !important;
+  top: 0;
+  z-index: 90 !important;
+  min-height: 42px;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  background: #DFE6E9 !important;
+  font-weight: 600 !important;
+  box-shadow:
+    0 6px 8px rgba(223,230,233,.96),
+    inset 0 -1px 0 rgba(196,196,196,.30);
+}
+
+.calendarPage .allUsersOrganizationBackOption {
+  top: 0 !important;
+}
+
+.calendarPage .allUsersBackArrow {
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 22px;
+}
+
+/* Organization search sits below the sticky Back row. */
+.calendarPage .allUsersOrganizationBackOption + .allUsersOrganizationSearchWrap {
+  top: 42px !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .yearFilterDropdown .filterDropdownMenu {
+    max-height: 205px !important;
+  }
+
+  .calendarPage .allUsersBackOption {
+    min-height: 40px;
+  }
+
+  .calendarPage .allUsersOrganizationBackOption + .allUsersOrganizationSearchWrap {
+    top: 40px !important;
+  }
+}
+
+
+/* =========================================================
+   ALL USERS / SPECIFIC TENANT — TOP FIELD BACK ARROW ONLY
+   No duplicate back sentence inside the dropdown list.
+   ========================================================= */
+
+.calendarPage .allUsersNestedDropdown {
+  position: relative !important;
+}
+
+.calendarPage .allUsersHeaderBackButton {
+  position: absolute !important;
+  left: 13px !important;
+  top: 50% !important;
+  z-index: 130 !important;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  transform: translateY(-50%) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+
+.calendarPage .allUsersHeaderBackButton img {
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  object-fit: contain !important;
+}
+
+.calendarPage .allUsersNestedDropdown .filterDropdownField.withBackArrow {
+  padding-left: 43px !important;
+}
+
+/*
+ * The organization search is the first item in the scroll area now.
+ * Keep it fully opaque and sticky so organization rows never overlap
+ * it while scrolling.
+ */
+.calendarPage .allUsersNestedMenu .allUsersOrganizationSearchWrap {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 120 !important;
+  isolation: isolate !important;
+  background: #DFE6E9 !important;
+  margin: 0 !important;
+  padding: 8px 7px 10px !important;
+  box-shadow:
+    0 8px 10px #DFE6E9,
+    -2px -2px 4px rgba(255,255,255,.85),
+     2px  2px 4px rgba(174,181,184,.28) !important;
+}
+
+.calendarPage .allUsersNestedMenu .allUsersOrganizationSearchWrap input {
+  position: relative !important;
+  z-index: 121 !important;
+  background: #DFE6E9 !important;
+}
+
+.calendarPage .allUsersNestedMenu > .filterDropdownOption {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Previous temporary inner back-row rules are no longer used. */
+.calendarPage .allUsersBackOption,
+.calendarPage .allUsersOrganizationBackOption {
+  position: static !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .allUsersHeaderBackButton {
+    left: 10px !important;
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .calendarPage .allUsersNestedDropdown .filterDropdownField.withBackArrow {
+    padding-left: 38px !important;
+  }
+
+  .calendarPage .allUsersNestedMenu .allUsersOrganizationSearchWrap {
+    top: 0 !important;
+    padding: 6px 5px 8px !important;
+  }
+}
+
