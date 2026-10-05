@@ -20652,3 +20652,48 @@ body {
   }
 }
 
+
+/* =========================================================
+   MOBILE CALENDAR — DAY CELL + BUTTON POSITION ONLY
+   Keeps all other calendar styles and functionality unchanged.
+   ========================================================= */
+@media (max-width: 767px) {
+  .calendarPage:not(.studentViewerPage) .dayCell {
+    position: relative !important;
+  }
+
+  .calendarPage:not(.studentViewerPage) .dayPlus,
+  .calendarPage:not(.studentViewerPage) .dayPlusHover {
+    position: absolute !important;
+    width: 13px !important;
+    height: 13px !important;
+    min-width: 13px !important;
+    min-height: 13px !important;
+
+    left: auto !important;
+    right: 3px !important;
+    top: auto !important;
+    bottom: 3px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    font-size: 14px !important;
+    line-height: 13px !important;
+
+    z-index: 20 !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage:not(.studentViewerPage) .dayPlus,
+  .calendarPage:not(.studentViewerPage) .dayPlusHover {
+    right: 2px !important;
+    bottom: 2px !important;
+  }
+}
+

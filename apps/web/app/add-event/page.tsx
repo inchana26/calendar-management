@@ -3256,7 +3256,13 @@ export default function AddEventPage({
   };
 
   const publishAudienceDisplayValue =
-    publishAudienceType === "All" ? "Default" : publishAudienceType;
+    publishAudienceType === "All"
+      ? "Default"
+      : publishAudienceType === "Tenant Only"
+        ? "Tenant"
+        : publishAudienceType === "Actor Only"
+          ? "Actor"
+          : publishAudienceType;
 
 
 
@@ -5595,8 +5601,8 @@ export default function AddEventPage({
                       value={publishAudienceDisplayValue}
                       options={[
                         "Default",
-                        "Tenant Only",
-                        "Actor Only",
+                        "Tenant",
+                        "Actor",
                         "Specific Tenant",
                       ]}
                       open={openDropdown === "publishAudience"}
@@ -5609,7 +5615,15 @@ export default function AddEventPage({
                       }
                       onSelect={(value) => {
                         selectPublishAudienceType(
-                          (value === "Default" ? "All" : value) as PublishAudienceType
+                          (
+                            value === "Default"
+                              ? "All"
+                              : value === "Tenant"
+                                ? "Tenant Only"
+                                : value === "Actor"
+                                  ? "Actor Only"
+                                  : value
+                          ) as PublishAudienceType
                         );
                         setOpenDropdown(null);
                         setFormError("");

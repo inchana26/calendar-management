@@ -2705,11 +2705,15 @@ function AllUsersFilterDropdown({
     ? "All Users"
     : value === "All Audiences"
       ? "Default"
-      : value === "Specific Tenant" && organization !== "All Organizations"
-        ? organization
-        : value === "Specific Tenant" && tenant !== "All Tenants"
-          ? tenant
-          : value;
+      : value === "Tenant Only"
+        ? "Tenant"
+        : value === "Actor Only"
+          ? "Actor"
+          : value === "Specific Tenant" && organization !== "All Organizations"
+            ? organization
+            : value === "Specific Tenant" && tenant !== "All Tenants"
+              ? tenant
+              : value;
 
   const headerDisplayValue =
     level === "tenants"
@@ -2721,8 +2725,8 @@ function AllUsersFilterDropdown({
     value: AllUsersFilterMode;
   }> = [
     { label: "Default", value: "All Audiences" },
-    { label: "Tenant Only", value: "Tenant Only" },
-    { label: "Actor Only", value: "Actor Only" },
+    { label: "Tenant", value: "Tenant Only" },
+    { label: "Actor", value: "Actor Only" },
     { label: "Specific Tenant", value: "Specific Tenant" },
   ];
 
@@ -4984,10 +4988,13 @@ export default function CalendarManagementPage() {
 
       if (isReceivedPublishedEvent) {
         // A received event is read-only for the recipient.
-        // Show it in Calendar / All Events and My Events only.
-        // Do not place it in the recipient's Published / Saved /
-        // Scheduled / Paused management sections.
-        if (scheduleTab === "All" || isMySchedulesTab) {
+        // Keep it visible in Calendar / All Events / Published / My Events.
+        // Saved / Scheduled / Paused management sections must still exclude it.
+        if (
+          scheduleTab === "All" ||
+          scheduleTab === "Published" ||
+          isMySchedulesTab
+        ) {
           return (
             statusMatch &&
             audienceModeMatch &&
