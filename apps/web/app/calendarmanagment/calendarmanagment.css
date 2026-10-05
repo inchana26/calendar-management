@@ -429,7 +429,6 @@
   line-height: 16px;
 }
 
-
 .statusBadge.saved { color: #7b5c00; background: #e9dfb8; }
 
 .eventTitle {
@@ -3933,7 +3932,6 @@ body {
   }
 }
 
-
 .statusBadge.scheduled,
 .eventStatus.scheduled,
 .scheduleStatus.scheduled,
@@ -4702,12 +4700,10 @@ body {
   }
 }
 
-
 .statusBadge.scheduled {
   color: #d71920 !important;
   background: #f2d2d2 !important;
 }
-
 
 .calendarPage .calendarWorkspace.weekImageLayout {
   grid-template-columns: minmax(0, 1fr);
@@ -8255,12 +8251,6 @@ body {
     font-weight: 700 !important;
   }
 
-  .calendarPage .mobileMonthHeadingActions {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-  }
-
   .calendarPage .mobileMonthHeadingButton {
     position: static !important;
     width: 34px !important;
@@ -8745,10 +8735,6 @@ body {
   .calendarPage .mobileMonthHeadingRow h2 {
     font-size: 20px !important;
     line-height: 27px !important;
-  }
-
-  .calendarPage .mobileMonthHeadingActions {
-    gap: 12px !important;
   }
 
   .calendarPage .mobileMonthHeadingButton {
@@ -9987,11 +9973,6 @@ body {
     overflow: visible !important;
   }
 
-  .calendarPage .mobileMonthHeadingActions {
-    position: relative !important;
-    z-index: 8000 !important;
-  }
-
   .calendarPage .mobileMonthHeadingButton.active {
     border: 1px solid #2D4CC8 !important;
   }
@@ -10438,10 +10419,6 @@ body {
 
   .calendarPage .calendarFilters.mobileFiltersOpen + .calendarWorkspace {
     margin-top: 14px !important;
-  }
-
-  .calendarPage .mobileMonthHeadingActions {
-    z-index: 20 !important;
   }
 
   .calendarPage .eventScroll {
@@ -14833,11 +14810,6 @@ body {
   }
 }
 
-/* =========================================================
-   SCHEDULE CARD — LONG ATTACHMENT + BOTTOM ACTION BUTTON
-   Keeps the existing card design; only allows long attachment
-   text to wrap, card height to grow, and keeps 3-dots below it.
-   ========================================================= */
 .calendarPage .schedulePanel .eventCard {
   height: auto !important;
   min-height: 0 !important;
@@ -14901,18 +14873,10 @@ body {
   }
 }
 
-/* SCHEDULE CARD — MOVE TITLE SLIGHTLY DOWN ONLY */
 .calendarPage .schedulePanel .eventCard .eventTitle {
   margin-top: 12px !important;
 }
 
-
-/* =========================================================
-   STUDENT EVENT CARD ONLY
-   - no status badge
-   - attachment download button
-   - card height follows content with no extra bottom space
-   ========================================================= */
 .calendarPage.studentViewerPage .schedulePanel .eventCard {
   height: auto !important;
   min-height: 0 !important;
@@ -14981,10 +14945,6 @@ body {
   }
 }
 
-/* =========================================================
-   MY SCHEDULES — STAFF RECEIVED SCHEDULES ONLY
-   Keeps the existing three tabs unchanged and adds a fourth.
-   ========================================================= */
 .calendarPage .scheduleTabs.scheduleTabsWithMySchedules {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -15001,7 +14961,6 @@ body {
   right: 8px;
 }
 
-/* Received My Schedules use the same compact attachment/download presentation. */
 .calendarPage .schedulePanel .studentScheduleCardAttachment {
   display: flex;
   align-items: center;
@@ -15022,12 +14981,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   MY SCHEDULES — COMPACT RECEIVED CARD
-   Same attachment/download presentation as Student view.
-   Only affects the My Schedules tab.
-   ========================================================= */
 .calendarPage .scheduleTabs.scheduleTabsWithMySchedules {
   width: 100% !important;
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -15124,8 +15077,6 @@ body {
   }
 }
 
-
-/* MY SCHEDULES TABS — KEEP ORIGINAL FONT, REDUCE ONLY TAB SPACING */
 .calendarPage .scheduleTabs.scheduleTabsWithMySchedules {
   display: flex !important;
   align-items: center !important;
@@ -15165,11 +15116,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   SCHEDULE TABS — FOUR LABELS FIT CLEANLY
-   Original typography is preserved; only spacing/layout is corrected.
-   ========================================================= */
 .calendarPage .scheduleTabs.scheduleTabsWithMySchedules {
   display: grid !important;
   grid-template-columns: auto auto auto auto !important;
@@ -15227,11 +15173,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   FINAL SCHEDULE HEADER SPACING FIX
-   Only tab spacing + count/date row spacing.
-   ========================================================= */
 .calendarPage .scheduleTabs.scheduleTabsWithMySchedules {
   display: flex !important;
   align-items: center !important;
@@ -15320,17 +15261,6 @@ body {
   }
 }
 
-
-/* ===== Publish Audience: completed Tenant + Actor pairs one-by-one ===== */
-
-
-/* ===== FINAL FIX: Audience field grows automatically with every selected pair ===== */
-
-
-/* Keep dropdown/flyouts visible without creating horizontal/vertical scrollbars */
-
-
-/* ===== Schedule tabs: bring edge items inward and reduce gaps slightly ===== */
 .calendarPage .scheduleTabs {
   width: calc(100% - 28px) !important;
   max-width: none !important;
@@ -15346,7 +15276,6 @@ body {
 }
 
 @media (max-width: 767px) {
-  
 
   .calendarPage .scheduleTabs {
     width: calc(100% - 24px) !important;
@@ -15356,8 +15285,6 @@ body {
   }
 }
 
-
-/* ===== FINAL: compact schedule tab spacing only ===== */
 .calendarPage .scheduleTabs {
   width: auto !important;
   margin-left: 14px !important;
@@ -15384,10 +15311,6 @@ body {
   }
 }
 
-/* =========================================================
-   FINAL MOBILE SCHEDULE CARD HEADER — STATUS NEVER OVERLAPS TITLE
-   Targets normal cards AND mobileActiveEventCard.
-   ========================================================= */
 @media (max-width: 767px) {
   .calendarPage .schedulePanel .eventScroll > .eventCard,
   .calendarPage .schedulePanel .eventScroll > .eventCard.mobileActiveEventCard {
@@ -15400,7 +15323,6 @@ body {
     box-sizing: border-box !important;
   }
 
-  /* Dedicated status row at the top-right of every card. */
   .calendarPage .schedulePanel .eventScroll > .eventCard > .statusBadge,
   .calendarPage .schedulePanel .eventScroll > .eventCard.mobileActiveEventCard > .statusBadge {
     position: absolute !important;
@@ -15413,7 +15335,6 @@ body {
     z-index: 5 !important;
   }
 
-  /* Content begins BELOW the status row. */
   .calendarPage .schedulePanel .eventScroll > .eventCard .scheduleCardContent,
   .calendarPage .schedulePanel .eventScroll > .eventCard.mobileActiveEventCard .scheduleCardContent {
     width: 100% !important;
@@ -15429,7 +15350,6 @@ body {
     overflow: visible !important;
   }
 
-  /* Remove the old right reservation/margin that pulled title into badge area. */
   .calendarPage .schedulePanel .eventScroll > .eventCard .scheduleCardContent .eventTitle,
   .calendarPage .schedulePanel .eventScroll > .eventCard .scheduleCardContent .eventTitle.eventTitleMultiLine,
   .calendarPage .schedulePanel .eventScroll > .eventCard.mobileActiveEventCard .scheduleCardContent .eventTitle,
@@ -15486,7 +15406,6 @@ body {
   }
 }
 
-/* ===== FINAL MOBILE SCHEDULE TAB GAP ONLY ===== */
 @media (max-width: 767px) {
   .calendarPage .schedulePanel .scheduleTabs,
   .calendarPage .schedulePanel .scheduleTabs.scheduleTabsWithMySchedules {
@@ -15519,9 +15438,8 @@ body {
   }
 }
 
-/* ===== FINAL MOBILE TOP CONTROLS — CLEAR SEPARATION ===== */
 @media (max-width: 767px) {
-  /* Give the four buttons visible space on every side. */
+
   .calendarPage .schedulePanel .scheduleTabs,
   .calendarPage .schedulePanel .scheduleTabs.scheduleTabsWithMySchedules {
     width: 100% !important;
@@ -15544,7 +15462,6 @@ body {
     transform: none !important;
   }
 
-  /* Separate both arrows from the event/date text. */
   .calendarPage .schedulePanel .scheduleDateRow {
     width: 100% !important;
     padding: 0 14px !important;
@@ -15590,10 +15507,6 @@ body {
   }
 }
 
-/* =========================================================
-   MOBILE SCHEDULE HEADER — FINAL VISUAL ALIGNMENT
-   Only top tabs + date arrows. Event cards are untouched.
-   ========================================================= */
 @media (max-width: 767px) {
   .calendarPage .schedulePanel .scheduleTabs,
   .calendarPage .schedulePanel .scheduleTabs.scheduleTabsWithMySchedules {
@@ -15750,11 +15663,6 @@ body {
   }
 }
 
-/* =========================================================
-   FINAL RECEIVED/PUBLISHED CARD — CONTENT HEIGHT ONLY
-   Removes the unnecessary empty area below the Download button.
-   Only affects received cards in specific tenant/actor views.
-   ========================================================= */
 .calendarPage .schedulePanel .eventScroll > .eventCard.receivedScheduleCard,
 .calendarPage .schedulePanel .eventScroll > .eventCard.receivedScheduleCard.mobileActiveEventCard {
   height: fit-content !important;
@@ -15788,12 +15696,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   MOBILE MY EVENTS — REDUCE ONLY THE EMPTY TOP SPACE
-   Keeps all existing card styles/logic unchanged.
-   Cards without a status badge do not need the reserved 56–58px header area.
-   ========================================================= */
 @media (max-width: 767px) {
   .calendarPage .schedulePanel .eventScroll > .eventCard:not(:has(> .statusBadge)),
   .calendarPage .schedulePanel .eventScroll > .eventCard.mobileActiveEventCard:not(:has(> .statusBadge)) {
@@ -15807,14 +15709,6 @@ body {
     padding-top: 16px !important;
   }
 }
-
-
-
-/* =========================================================
-   CALENDAR MANAGEMENT — MAIN VIEW SWITCH
-   Calendar / All / Published / Saved / My Events
-   Student: Calendar / My Schedules
-   ========================================================= */
 
 .calendarPage .calendarContentViewSwitch {
   width: 100%;
@@ -15853,12 +15747,10 @@ body {
   min-width: 150px;
 }
 
-/* Only the selected main content is visible. */
 .calendarPage .contentPanelHidden {
   display: none !important;
 }
 
-/* Calendar view uses the full available content width. */
 .calendarPage .calendarWorkspace.calendarContentModeCalendar {
   display: block !important;
   width: 100%;
@@ -15869,7 +15761,6 @@ body {
   max-width: none;
 }
 
-/* Event-list views use the full former calendar + schedule width. */
 .calendarPage .calendarWorkspace.calendarContentModeList {
   display: block !important;
   width: 100%;
@@ -15884,7 +15775,6 @@ body {
   padding: 22px 22px 24px;
 }
 
-/* The old right-side tab strip is no longer used. */
 .calendarPage .calendarContentModeList .scheduleTabs {
   display: none !important;
 }
@@ -15918,7 +15808,6 @@ body {
   line-height: 20px;
 }
 
-/* Large cards in All / Published / Saved / My Events / My Schedules. */
 .calendarPage .calendarContentModeList .eventScroll {
   width: 100%;
   max-height: none;
@@ -15959,7 +15848,6 @@ body {
   border-radius: 9px;
 }
 
-/* Make 3-dot menu actions proper neumorphic buttons in list views. */
 .calendarPage .calendarContentModeList .eventMenu {
   width: 170px;
   padding: 9px;
@@ -15986,15 +15874,11 @@ body {
     inset  2px  2px 4px rgba(174,181,184,.48);
 }
 
-/* Student My Schedules remains read-only but uses the same full-width cards. */
 .calendarPage .studentCalendarWorkspace.calendarContentModeList .eventCard {
   padding-right: 22px;
 }
 
 @media (max-width: 1100px) {
-  .calendarPage .calendarContentViewSwitch {
-    gap: 9px;
-  }
 
   .calendarPage .calendarContentViewSwitch button {
     min-width: 104px;
@@ -16109,20 +15993,11 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   FINAL EVENT LIST CARD VIEW
-   Better card spacing, border/shadow, typography and actions.
-   ========================================================= */
-
-/* Remove the top separator line from All / Published / Saved / My Events. */
 .calendarPage .scheduleListHeader {
   border-bottom: 0 !important;
   margin-bottom: 8px !important;
 }
 
-/* Keep cards away from the outer panel border. */
 .calendarPage .calendarContentModeList .schedulePanel {
   padding: 22px 24px 24px !important;
 }
@@ -16138,7 +16013,6 @@ body {
   scrollbar-color: #DFE6E9 transparent !important;
 }
 
-/* Neuomorphic list scroller when multiple cards are present. */
 .calendarPage .calendarContentModeList .eventScroll::-webkit-scrollbar {
   width: 16px !important;
 }
@@ -16167,7 +16041,6 @@ body {
     -4px -4px 8px #C4C4C4 !important;
 }
 
-/* Card no longer touches the panel border. */
 .calendarPage .calendarContentModeList .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
@@ -16185,7 +16058,6 @@ body {
     -4px -4px 8px #C4C4C4 !important;
 }
 
-/* Requested typography: title 14px, remaining details minimum 12px. */
 .calendarPage .calendarContentModeList .eventTitle,
 .calendarPage .calendarContentModeList .eventTitle strong,
 .calendarPage .calendarContentModeList .scheduleCardContent .eventTitle,
@@ -16214,7 +16086,6 @@ body {
   text-align: center !important;
 }
 
-/* 3-dot button/menu removed in list views; actions are direct buttons. */
 .calendarPage .calendarContentModeList .eventMenuWrap,
 .calendarPage .calendarContentModeList .moreButton,
 .calendarPage .calendarContentModeList .eventMenu {
@@ -16265,10 +16136,6 @@ body {
 .calendarPage .eventCardActionDanger {
   color: #D71920 !important;
 }
-
-/* =========================================================
-   MONTH / YEAR DROPDOWNS
-   ========================================================= */
 
 .calendarPage .calendarMonthYearSelectors {
   margin: 0 auto 23px;
@@ -16414,22 +16281,11 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   ACTION BUTTON POSITION FIX ONLY
-   Source: user's uploaded CSS file.
-   No font-size changes.
-   Desktop: actions stay in one row at the bottom-right.
-   Mobile: actions remain at the bottom and wrap only if needed.
-   ========================================================= */
-
 .calendarPage .calendarContentModeList .eventCard {
     position: relative !important;
     height: auto !important;
     min-height: 170px !important;
 
-    /* Keep enough room below the card content for the action row. */
     padding-bottom: 72px !important;
 }
 
@@ -16463,9 +16319,6 @@ body {
     margin: 0 !important;
 }
 
-/* Tablet / mobile:
-   keep buttons at the bottom after the content.
-   They wrap only when screen width is not enough. */
 @media (max-width: 900px) {
     .calendarPage .calendarContentModeList .eventCard {
         display: flex !important;
@@ -16511,22 +16364,12 @@ body {
     }
 }
 
-
-
-/* =========================================================
-   FINAL RIGHT + BOTTOM SPACING FIX
-   Based on the exact CSS file uploaded in the latest turn.
-   No font-size changes.
-   ========================================================= */
-
-/* Give the list panel balanced inner spacing. */
 .calendarPage .calendarContentModeList .schedulePanel {
     padding-left: 16px !important;
     padding-right: 16px !important;
     padding-bottom: 14px !important;
 }
 
-/* Keep the scroll area away from both left and right edges equally. */
 .calendarPage .calendarContentModeList .eventScroll {
     position: relative !important;
     top: auto !important;
@@ -16544,7 +16387,6 @@ body {
     box-sizing: border-box !important;
 }
 
-/* Reduce card width slightly so right-side shadow has breathing room too. */
 .calendarPage .calendarContentModeList .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
@@ -16558,21 +16400,15 @@ body {
     box-sizing: border-box !important;
 }
 
-/* Last card also keeps space below instead of touching the list bottom. */
 .calendarPage .calendarContentModeList .eventScroll > .eventCard:last-child {
     margin-bottom: 10px !important;
 }
 
-/* Desktop action buttons: stay inside the card with right/bottom breathing room. */
 .calendarPage .calendarContentModeList .eventCardActions {
     right: 20px !important;
     bottom: 16px !important;
     max-width: calc(100% - 40px) !important;
 }
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
 
 @media (max-width: 900px) {
     .calendarPage .calendarContentModeList .schedulePanel {
@@ -16638,33 +16474,21 @@ body {
     }
 }
 
-
-
-/* =========================================================
-   BOTTOM GAP REDUCTION ONLY
-   Uses the exact latest uploaded CSS.
-   Rest of the styles stay unchanged.
-   ========================================================= */
-
-/* Desktop: reduce the reserved area below the card content. */
 .calendarPage .calendarContentModeList .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
     padding-bottom: 48px !important;
 }
 
-/* Bring the action row slightly closer to the card bottom. */
 .calendarPage .calendarContentModeList .eventCardActions {
     bottom: 8px !important;
- 
+
 }
 
-/* Reduce extra space after the last card too. */
 .calendarPage .calendarContentModeList .eventScroll > .eventCard:last-child {
     margin-bottom: 4px !important;
 }
 
-/* Mobile/tablet: keep the existing flow, only reduce the lower gap. */
 @media (max-width: 900px) {
     .calendarPage .calendarContentModeList .eventCard,
     .calendarPage .calendarContentModeList .eventScroll > .eventCard,
@@ -16693,14 +16517,6 @@ body {
         margin-top: 7px !important;
     }
 }
-
-
-
-/* =========================================================
-   MONTH / YEAR PICKER — REFERENCE LAYOUT FIX
-   ONLY this section is changed.
-   Calendar grid/cell dimensions are NOT changed.
-   ========================================================= */
 
 .calendarPage .calendarPanel:has(.calendarMonthYearPopover) {
   overflow: visible !important;
@@ -16772,7 +16588,6 @@ body {
   transform: rotate(180deg) !important;
 }
 
-/* Popover overlays the existing calendar, so nothing gets pushed down. */
 .calendarPage .calendarMonthYearPopover {
   position: absolute !important;
   top: calc(100% + 10px) !important;
@@ -16891,8 +16706,6 @@ body {
      3px  3px 6px #C4C4C4 !important;
 }
 
-/* Every month/year is enabled.
-   Only the selected value uses the blue active state. */
 .calendarPage .calendarMonthYearOption.active {
   color: #2D55D7 !important;
   font-weight: 600 !important;
@@ -16983,16 +16796,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   MONTH / YEAR SIZE RESTORE ONLY
-   - restore top Month / Year controls to previous compact size
-   - reduce only the dropdown/popup size
-   - calendar sizing/layout stays unchanged
-   ========================================================= */
-
-/* Restore top Month + Year button sizing like the previous layout. */
 .calendarPage .calendarMonthYearPickerShell {
   margin: 0 auto 23px !important;
   gap: 10px !important;
@@ -17028,7 +16831,6 @@ body {
   flex: 0 0 14px !important;
 }
 
-/* Reduce popup size only. */
 .calendarPage .calendarMonthYearPopover {
   width: 320px !important;
   max-width: calc(100vw - 32px) !important;
@@ -17071,7 +16873,6 @@ body {
   border-radius: 10px !important;
 }
 
-/* Mobile: preserve the same compact proportions. */
 @media (max-width: 767px) {
   .calendarPage .calendarMonthYearPickerShell {
     width: 100% !important;
@@ -17145,18 +16946,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   MONTH / YEAR RESPONSIVE FIX ONLY
-   - restore full Month/Year text
-   - prevent option text clipping/breaking
-   - keep popup compact and centered
-   - keep existing calendar sizing unchanged
-   ========================================================= */
-
-/* Restore the original top control proportions so
-   "September" and "2026" are fully visible. */
 .calendarPage .calendarMonthYearPickerButton {
   width: 225px !important;
   min-width: 225px !important;
@@ -17176,8 +16965,6 @@ body {
   white-space: nowrap !important;
 }
 
-/* Keep popup large enough for complete month names,
-   but smaller than the first oversized version. */
 .calendarPage .calendarMonthYearPopover {
   width: 370px !important;
   max-width: calc(100vw - 28px) !important;
@@ -17187,7 +16974,6 @@ body {
   transform: translateX(-50%) !important;
 }
 
-/* Slightly smaller header than before while keeping icons clear. */
 .calendarPage .calendarPickerHeader {
   grid-template-columns: 46px minmax(0, 1fr) 46px !important;
   gap: 8px !important;
@@ -17206,7 +16992,6 @@ body {
   height: 20px !important;
 }
 
-/* Prevent September / November / December from clipping. */
 .calendarPage .calendarMonthOptionGrid,
 .calendarPage .calendarYearOptionGrid {
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -17227,7 +17012,6 @@ body {
   font-size: 13px !important;
 }
 
-/* Tablet/mobile: do not allow the top controls or popup to collapse. */
 @media (max-width: 767px) {
   .calendarPage .calendarMonthYearPickerShell {
     width: 100% !important;
@@ -17296,7 +17080,6 @@ body {
   }
 }
 
-/* Small mobile: keep text visible without breaking the calendar. */
 @media (max-width: 480px) {
   .calendarPage .calendarMonthYearPickerShell {
     gap: 6px !important;
@@ -17349,21 +17132,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   MONTH / YEAR COMPACT SPACING FIX ONLY
-   - reduce overall control width
-   - reduce gap between Month and Year
-   - reduce text-to-icon spacing
-   - keep full values visible
-   - no calendar/grid changes
-   ========================================================= */
-
-.calendarPage .calendarMonthYearPickerShell {
-  gap: 6px !important;
-}
-
 .calendarPage .calendarMonthYearPickerButton {
   width: 176px !important;
   min-width: 176px !important;
@@ -17389,11 +17157,7 @@ body {
   margin-left: 4px !important;
 }
 
-/* Responsive compact controls */
 @media (max-width: 767px) {
-  .calendarPage .calendarMonthYearPickerShell {
-    gap: 5px !important;
-  }
 
   .calendarPage .calendarMonthYearPickerButton {
     flex: 0 0 160px !important;
@@ -17432,28 +17196,8 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   MOBILE MONTH / YEAR POPUP FIX ONLY
-   - keeps popup fully inside mobile screen
-   - no clipping on right side
-   - keeps 4-column year/month grid
-   - reduces popup/control sizes only on mobile
-   - calendar grid remains unchanged
-   ========================================================= */
-
 @media (max-width: 767px) {
-  .calendarPage .calendarMonthYearPickerShell {
-    position: relative !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    justify-content: center !important;
-    gap: 5px !important;
-  }
 
-  /* Make popup position relative to the full Month/Year row,
-     not only to the Year button. */
   .calendarPage .calendarMonthYearPopover {
     position: absolute !important;
     top: calc(100% + 7px) !important;
@@ -17571,17 +17315,8 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   FINAL MOBILE MONTH/YEAR OVERFLOW FIX
-   Only month/year picker mobile layout changed.
-   Keeps + and 3-dots visible on the right.
-   Calendar sizes remain unchanged.
-   ========================================================= */
-
 @media (max-width: 767px) {
-  /* Keep room on the right for + and 3-dots actions. */
+
   .calendarPage .mobileMonthHeadingRow {
     position: relative !important;
     display: flex !important;
@@ -17640,7 +17375,6 @@ body {
     margin-left: 3px !important;
   }
 
-  /* Keep + and 3-dot buttons visible and above popup. */
   .calendarPage .mobileMonthHeadingActions {
     position: relative !important;
     z-index: 140 !important;
@@ -17650,14 +17384,13 @@ body {
 
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    gap: 10px !important;
   }
 
   .calendarPage .mobileMonthHeadingButton {
     flex: 0 0 auto !important;
   }
 
-  /* Popup must stay inside the actual calendar panel width. */
   .calendarPage .calendarMonthYearPopover {
     position: absolute !important;
     top: calc(100% + 8px) !important;
@@ -17677,8 +17410,6 @@ body {
     box-sizing: border-box !important;
   }
 
-  /* Both month and year popup open from the left edge of selector row,
-     so they cannot cover/cut off the right-side action icons. */
   .calendarPage .calendarMonthPopover,
   .calendarPage .calendarYearPopover {
     left: 0 !important;
@@ -17726,21 +17457,11 @@ body {
 }
 
 @media (max-width: 420px) {
-  .calendarPage .calendarMonthYearPickerShell {
-    max-width: calc(100% - 86px) !important;
-    grid-template-columns: minmax(0, 1fr) 82px !important;
-    gap: 4px !important;
-  }
 
   .calendarPage .calendarYearPickerButton {
     width: 82px !important;
     min-width: 82px !important;
     max-width: 82px !important;
-  }
-
-  .calendarPage .calendarMonthYearPopover {
-    width: min(326px, calc(100vw - 18px)) !important;
-    max-width: calc(100vw - 18px) !important;
   }
 
   .calendarPage .calendarMonthOptionGrid,
@@ -17756,10 +17477,6 @@ body {
 }
 
 @media (max-width: 360px) {
-  .calendarPage .calendarMonthYearPickerShell {
-    max-width: calc(100% - 82px) !important;
-    grid-template-columns: minmax(0, 1fr) 76px !important;
-  }
 
   .calendarPage .calendarYearPickerButton {
     width: 76px !important;
@@ -17773,20 +17490,10 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   YEAR LABEL VISIBILITY FIX ONLY
-   - keep full 4-digit year visible on mobile
-   - reduce Month width slightly to give Year more room
-   - keep + and 3-dots visible
-   - no calendar/grid changes
-   ========================================================= */
-
 @media (max-width: 767px) {
   .calendarPage .calendarMonthYearPickerShell {
     grid-template-columns: minmax(0, 1fr) 104px !important;
-    gap: 5px !important;
+    gap: 8px !important;
     max-width: calc(100% - 92px) !important;
   }
 
@@ -17806,10 +17513,6 @@ body {
 }
 
 @media (max-width: 420px) {
-  .calendarPage .calendarMonthYearPickerShell {
-    grid-template-columns: minmax(0, 1fr) 98px !important;
-    max-width: calc(100% - 86px) !important;
-  }
 
   .calendarPage .calendarYearPickerButton {
     width: 98px !important;
@@ -17824,6 +17527,7 @@ body {
   .calendarPage .calendarMonthYearPickerShell {
     grid-template-columns: minmax(0, 1fr) 94px !important;
     max-width: calc(100% - 82px) !important;
+    transform: translatey(-8);
   }
 
   .calendarPage .calendarYearPickerButton {
@@ -17833,16 +17537,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   EVENT CARD AUTO CONTENT HEIGHT FIX ONLY
-   - no unnecessary bottom space when there are no action buttons
-   - if extra content exists, card grows automatically
-   - cards with action buttons keep only the space required for them
-   - rest of the calendar/layout stays unchanged
-   ========================================================= */
-
 .calendarPage .calendarContentModeList .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
@@ -17850,22 +17544,17 @@ body {
   min-height: 0 !important;
   max-height: none !important;
 
-  /* normal content-only card */
   padding-bottom: 18px !important;
 
   align-self: flex-start !important;
 }
 
-/* When the card actually contains action buttons,
-   reserve only the space needed for that action row. */
 .calendarPage .calendarContentModeList .eventCard:has(.eventCardActions),
 .calendarPage .calendarContentModeList .eventScroll > .eventCard:has(.eventCardActions),
 .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard:has(.eventCardActions) {
   padding-bottom: 58px !important;
 }
 
-/* Keep inner content natural so description / attachment / extra text
-   increases the card height automatically. */
 .calendarPage .calendarContentModeList .eventCard .scheduleCardContent {
   height: auto !important;
   min-height: 0 !important;
@@ -17873,12 +17562,10 @@ body {
   margin-bottom: 0 !important;
 }
 
-/* Cards without buttons should not reserve any invisible action area. */
 .calendarPage .calendarContentModeList .eventCard:not(:has(.eventCardActions)) {
   padding-bottom: 18px !important;
 }
 
-/* Reduce only the final outside gap after the last card. */
 .calendarPage .calendarContentModeList .eventScroll > .eventCard:last-child {
   margin-bottom: 4px !important;
 }
@@ -17893,8 +17580,6 @@ body {
     padding-bottom: 12px !important;
   }
 
-  /* Mobile action buttons are already in normal flow,
-     so no large reserved bottom area is needed. */
   .calendarPage .calendarContentModeList .eventCard:has(.eventCardActions),
   .calendarPage .calendarContentModeList .eventScroll > .eventCard:has(.eventCardActions),
   .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard:has(.eventCardActions) {
@@ -17913,17 +17598,6 @@ body {
     padding-bottom: 10px !important;
   }
 }
-
-
-
-/* =========================================================
-   EVENT CARD — PUBLISHED AUDIENCE DETAILS ONLY
-   - Saved events show no audience row.
-   - Published / Scheduled / Paused / Closed cards show who the
-     event was targeted to.
-   - Card height grows only with actual content.
-   - Existing card layout, fonts and actions stay unchanged.
-   ========================================================= */
 
 .calendarPage .scheduleCardAudience {
   display: flex !important;
@@ -17955,13 +17629,11 @@ body {
   word-break: normal !important;
 }
 
-/* List views use the same text size as the other card details. */
 .calendarPage .calendarContentModeList .scheduleCardAudience {
   font-size: 14px !important;
   line-height: 18px !important;
 }
 
-/* Keep the card content-driven: audience text adds only the space it needs. */
 .calendarPage .calendarContentModeList .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard,
 .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard {
@@ -17970,19 +17642,16 @@ body {
   max-height: none !important;
 }
 
-/* No audience row exists for Saved cards, so no extra space is reserved. */
 .calendarPage .calendarContentModeList .eventCard .scheduleCardContent {
   height: auto !important;
   min-height: 0 !important;
   max-height: none !important;
 }
 
-/* Cards with action buttons reserve only their existing action-row space. */
 .calendarPage .calendarContentModeList .eventCard:has(.eventCardActions) {
   padding-bottom: 58px !important;
 }
 
-/* Read-only / received cards have no action area, so finish close to content. */
 .calendarPage .calendarContentModeList .eventCard:not(:has(.eventCardActions)) {
   padding-bottom: 18px !important;
 }
@@ -18007,14 +17676,6 @@ body {
     padding-bottom: 10px !important;
   }
 }
-
-
-
-/* =========================================================
-   REMINDER SENT — HOVER DETAILS CARD ONLY
-   Shows Title / Date / Time / Audience.
-   Width and height grow only according to content.
-   ========================================================= */
 
 .calendarPage .scheduleReminderFlag {
   position: relative !important;
@@ -18101,7 +17762,6 @@ body {
   word-break: normal !important;
 }
 
-/* Small pointer under the hover card */
 .calendarPage .reminderHoverCard::after {
   content: "" !important;
   position: absolute !important;
@@ -18114,7 +17774,6 @@ body {
   box-shadow: 3px 3px 4px rgba(174,181,184,.25) !important;
 }
 
-/* Keep hover card readable on smaller screens. */
 @media (max-width: 767px) {
   .calendarPage .reminderHoverCard {
     min-width: 170px !important;
@@ -18128,17 +17787,6 @@ body {
     gap: 6px !important;
   }
 }
-
-
-
-/* =========================================================
-   REMINDER SENT HOVER CARD — DOWNWARD POSITION FIX
-   - opens below "Reminder Sent" instead of above it
-   - stays inside the visible card area
-   - adds a clean border
-   - responsive on mobile
-   - no TSX / logic changes
-   ========================================================= */
 
 .calendarPage .scheduleReminderFlag {
   position: relative !important;
@@ -18177,14 +17825,12 @@ body {
   overflow: visible !important;
 }
 
-/* Show animation now moves downward naturally. */
 .calendarPage .scheduleReminderFlag:hover .reminderHoverCard,
 .calendarPage .scheduleReminderFlag:focus-visible .reminderHoverCard,
 .calendarPage .scheduleReminderFlag:focus-within .reminderHoverCard {
   transform: translateX(-50%) translateY(0) !important;
 }
 
-/* Pointer is now above the popup because the popup opens downward. */
 .calendarPage .reminderHoverCard::after {
   top: -6px !important;
   bottom: auto !important;
@@ -18206,7 +17852,6 @@ body {
   box-shadow: none !important;
 }
 
-/* Keep the card above action buttons and other card content. */
 .calendarPage .eventCard:has(.scheduleReminderFlag:hover),
 .calendarPage .eventCard:has(.scheduleReminderFlag:focus-within) {
   z-index: 120 !important;
@@ -18217,14 +17862,10 @@ body {
   overflow: visible !important;
 }
 
-/* Desktop/list view:
-   slightly move the popup inward when the Reminder flag is near a side edge. */
 .calendarPage .calendarContentModeList .reminderHoverCard {
   max-width: min(380px, calc(100vw - 40px)) !important;
 }
 
-/* Mobile/tablet:
-   keep popup fully inside screen and centered under the flag. */
 @media (max-width: 767px) {
   .calendarPage .reminderHoverCard {
     top: calc(100% + 8px) !important;
@@ -18262,8 +17903,6 @@ body {
   }
 }
 
-/* Very small phones:
-   anchor the popup to the left edge of the event card if centering could overflow. */
 @media (max-width: 420px) {
   .calendarPage .scheduleReminderFlag {
     position: static !important;
@@ -18289,16 +17928,6 @@ body {
     left: 72% !important;
   }
 }
-
-
-
-/* =========================================================
-   FINAL — REMINDER SENT POPUP SAME AS DESKTOP ON MOBILE
-   Only the Reminder Sent hover/focus popup is changed.
-   Desktop styling is preserved.
-   Mobile uses the SAME card structure, spacing and typography;
-   only max-width is limited so it stays inside the phone screen.
-   ========================================================= */
 
 @media (max-width: 767px) {
   .calendarPage .eventTitle:has(.scheduleReminderFlag),
@@ -18438,9 +18067,6 @@ body {
   }
 }
 
-/* Very small phones:
-   keep the SAME desktop card design and typography.
-   Only constrain its width so it cannot leave the viewport. */
 @media (max-width: 420px) {
   .calendarPage .scheduleReminderFlag {
     position: relative !important;
@@ -18483,14 +18109,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   MOBILE REMINDER POPUP — SHIFT RIGHT ONLY
-   Keeps the same desktop-style card.
-   Only repositions it on mobile so the left side does not break.
-   ========================================================= */
-
 @media (max-width: 767px) {
   .calendarPage .reminderHoverCard {
     left: calc(50% + 28px) !important;
@@ -18528,18 +18146,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   CALENDAR FILTERS — PUBLISH AUDIENCE LAYOUT FIX
-   1. Initial/default filters stay on ONE desktop row.
-   2. After an Audience mode is selected, extra dependent filters may
-      continue onto a second row.
-   3. Specific Organization + Actor stays on one line.
-   4. Organization list is readable and Role options do not break.
-   5. Clear button remains compact.
-   ========================================================= */
-
 @media (min-width: 1101px) {
   .calendarPage .calendarFilters.audienceFiltersInitial:not(.tenantScopedFilters) {
     grid-template-columns:
@@ -18575,7 +18181,6 @@ body {
   }
 }
 
-/* Audience field + list must keep long publish option in one line. */
 .calendarPage .audienceFilterDropdown {
   min-width: 0 !important;
 }
@@ -18612,7 +18217,6 @@ body {
   line-height: 20px !important;
 }
 
-/* Organization dropdown now has the complete Add Event organization list. */
 .calendarPage .organizationFilterDropdown .filterDropdownMenu {
   width: max-content !important;
   min-width: 100% !important;
@@ -18637,7 +18241,6 @@ body {
   line-height: 20px !important;
 }
 
-/* Role list must not become the narrow/tall broken list shown in screenshot. */
 .calendarPage .roleFilterDropdown .filterDropdownMenu {
   width: max-content !important;
   min-width: 100% !important;
@@ -18659,7 +18262,6 @@ body {
   line-height: 20px !important;
 }
 
-/* Keep the clear action smaller than the actual filters. */
 .calendarPage .calendarFilters > .clearButton {
   width: 78px !important;
   min-width: 78px !important;
@@ -18668,7 +18270,6 @@ body {
   padding-right: 8px !important;
 }
 
-/* Tablet: keep readable widths and allow the selected-mode extras to wrap. */
 @media (min-width: 768px) and (max-width: 1100px) {
   .calendarPage .calendarFilters.audienceFiltersInitial:not(.tenantScopedFilters) {
     grid-template-columns:
@@ -18700,8 +18301,6 @@ body {
   }
 }
 
-/* Mobile remains two-column where needed, but dropdown menus are wide enough
-   to keep Audience/Role/Organization text readable. */
 @media (max-width: 767px) {
   .calendarPage .calendarFilters.audienceFiltersInitial,
   .calendarPage .calendarFilters.audienceFiltersSelected,
@@ -18750,19 +18349,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   FINAL FILTER SIZE / WRAP FIX
-   - dropdown list width = top field width
-   - long list text may wrap cleanly to max 2 lines
-   - default filters stay in one row on desktop
-   - selected audience modes may use a second row
-   - Specific Organization + Actor uses a clean 3-column layout
-   - Clear never gets cut off
-   ========================================================= */
-
-/* All filter menus stay exactly the same width as their top field. */
 .calendarPage .audienceFilterDropdown .filterDropdownMenu,
 .calendarPage .tenantFilterDropdown .filterDropdownMenu,
 .calendarPage .organizationFilterDropdown .filterDropdownMenu,
@@ -18775,7 +18361,6 @@ body {
   overflow-x: hidden !important;
 }
 
-/* Remove the old forced wide option widths. */
 .calendarPage .audienceFilterDropdown .filterDropdownOption,
 .calendarPage .tenantFilterDropdown .filterDropdownOption,
 .calendarPage .organizationFilterDropdown .filterDropdownOption,
@@ -18791,7 +18376,6 @@ body {
   box-sizing: border-box !important;
 }
 
-/* Long values inside opened lists wrap neatly, maximum two lines. */
 .calendarPage .audienceFilterDropdown .filterDropdownOption > span:last-child,
 .calendarPage .tenantFilterDropdown .filterDropdownOption > span:last-child,
 .calendarPage .organizationFilterDropdown .filterDropdownOption > span:last-child,
@@ -18816,7 +18400,6 @@ body {
   font-weight: 400 !important;
 }
 
-/* Selected field itself remains a clean single line. */
 .calendarPage .audienceFilterDropdown .filterDropdownValue,
 .calendarPage .tenantFilterDropdown .filterDropdownValue,
 .calendarPage .organizationFilterDropdown .filterDropdownValue,
@@ -18832,14 +18415,12 @@ body {
   font-weight: 500 !important;
 }
 
-/* The longest selected Audience value must stay readable on one line. */
 .calendarPage .audienceFilterDropdown .filterDropdownField {
   min-width: 0 !important;
 }
 
 @media (min-width: 1101px) {
-  /* BEFORE choosing a special audience:
-     Audience + Tenant + Role + Status + Clear = one row. */
+
   .calendarPage
   .calendarFilters.audienceFiltersInitial:not(.tenantScopedFilters) {
     grid-template-columns:
@@ -18852,7 +18433,6 @@ body {
     align-items: start !important;
   }
 
-  /* Selected modes can use a second row instead of squeezing everything. */
   .calendarPage
   .calendarFilters.audienceFiltersSelected:not(.tenantScopedFilters) {
     grid-template-columns:
@@ -18864,9 +18444,6 @@ body {
     align-items: start !important;
   }
 
-  /* Specific Organization + Actor:
-     Row 1: Audience | Tenant | Organization
-     Row 2: Role | Status | Clear */
   .calendarPage
   .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
     grid-template-columns:
@@ -18920,7 +18497,6 @@ body {
   }
 }
 
-/* Clear button should never clip or fall outside the filter area. */
 .calendarPage .calendarFilters > .clearButton {
   width: 82px !important;
   min-width: 82px !important;
@@ -18931,7 +18507,6 @@ body {
   justify-self: start !important;
 }
 
-/* Tablet: same-width menus, clean wrapping and second-row support. */
 @media (min-width: 768px) and (max-width: 1100px) {
   .calendarPage
   .calendarFilters.audienceFiltersInitial:not(.tenantScopedFilters) {
@@ -18983,8 +18558,6 @@ body {
   }
 }
 
-/* Mobile: keep cards readable; menus equal the field width.
-   Long options can use two lines instead of becoming narrow/tall. */
 @media (max-width: 767px) {
   .calendarPage .calendarFilters.audienceFiltersInitial,
   .calendarPage .calendarFilters.audienceFiltersSelected,
@@ -19026,16 +18599,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   FINAL SMALL FILTER CORRECTIONS
-   - Role is narrower for Specific Organization + Actor
-   - open filter menus always stay above Calendar month/year controls
-   - Calendar workspace stays underneath opened filter lists
-   ========================================================= */
-
-/* Keep the filter row above the calendar toolbar/month-year pickers. */
 .calendarPage .calendarFilters {
   position: relative !important;
   z-index: 300 !important;
@@ -19056,7 +18619,6 @@ body {
   z-index: 950 !important;
 }
 
-/* Calendar controls must remain under any opened filter menu. */
 .calendarPage .calendarWorkspace,
 .calendarPage .calendarPanel,
 .calendarPage .calendarToolbar,
@@ -19067,8 +18629,6 @@ body {
   z-index: 1 !important;
 }
 
-/* Specific Organization + Actor:
-   make Role smaller; Status/Clear follow naturally on row 2. */
 @media (min-width: 1101px) {
   .calendarPage
   .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
@@ -19111,15 +18671,8 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   SPECIFIC ORGANIZATION + ACTOR — COMPACT WIDTH / GAP / SCROLLBAR
-   Only affects this selected audience mode.
-   ========================================================= */
-
 @media (min-width: 1101px) {
-  /* Make the selected Audience field only as wide as its content needs. */
+
   .calendarPage
   .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
     grid-template-columns:
@@ -19161,7 +18714,6 @@ body {
     text-overflow: clip !important;
   }
 
-  /* Row 1 */
   .calendarPage
   .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
   > .tenantFilterDropdown {
@@ -19178,7 +18730,6 @@ body {
     width: 100% !important;
   }
 
-  /* Row 2 — keep Role and Status closer together. */
   .calendarPage
   .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
   > .roleFilterDropdown {
@@ -19210,7 +18761,6 @@ body {
   }
 }
 
-/* Proper thin neumorphic scrollbar for Organization dropdown. */
 .calendarPage .organizationFilterDropdown .filterDropdownMenu {
   max-height: 320px !important;
   overflow-y: auto !important;
@@ -19253,7 +18803,6 @@ body {
   background: #858d93 !important;
 }
 
-/* Tablet — compact but still responsive. */
 @media (min-width: 768px) and (max-width: 1100px) {
   .calendarPage
   .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
@@ -19302,14 +18851,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   SPECIFIC ORGANIZATION + ACTOR — FINAL GAP + ICON POSITION
-   Only adjusts spacing between Audience and Tenant, and moves
-   the Audience chevron to the far right.
-   ========================================================= */
-
 @media (min-width: 1101px) {
   .calendarPage
   .calendarFilters.organizationActorFilters:not(.tenantScopedFilters) {
@@ -19318,7 +18859,6 @@ body {
       minmax(170px, 220px)
       minmax(260px, 1fr) !important;
 
-    /* Reduce only the horizontal gap between columns. */
     column-gap: 8px !important;
     row-gap: 12px !important;
   }
@@ -19335,8 +18875,6 @@ body {
     margin-left: 0 !important;
   }
 
-  /* Keep the selected Audience field compact but give the chevron
-     its own right-side space so it does not sit beside the text. */
   .calendarPage
   .calendarFilters.organizationActorFilters:not(.tenantScopedFilters)
   > .audienceFilterDropdown
@@ -19386,13 +18924,6 @@ body {
     right: 15px !important;
   }
 }
-
-
-
-/* =========================================================
-   GLOBAL ADMIN AUDIENCE FILTERS ONLY
-   Institute Admin / Coordinator / Faculty keep their old filter layout.
-   ========================================================= */
 
 @media (min-width: 1101px) {
   .calendarPage
@@ -19472,21 +19003,12 @@ body {
   }
 }
 
-
-
-/* Cancelled status badge — red */
 .calendarPage .statusBadge.cancelled {
   color: #B42318 !important;
   background: #FDE2E0 !important;
   border: 1px solid rgba(180, 35, 24, 0.20) !important;
 }
 
-
-
-/* =========================================================
-   FINAL MOBILE EVENT CARD / ARROW NAV FIX
-   MOBILE ONLY — desktop/tablet >= 768px remain unchanged.
-   ========================================================= */
 @media (max-width: 767px) {
   .calendarPage .calendarContentModeList .eventScroll {
     position: relative !important;
@@ -19720,12 +19242,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   EVENT LIST SEARCH
-   All Events / Published / Saved / My Events /
-   Student My Schedules only.
-   ========================================================= */
 .calendarPage .eventListSearchWrap {
   position: relative;
   width: 100%;
@@ -19821,11 +19337,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   ADD DROPDOWN ONLY
-   Desktop Add + Mobile +.
-   ========================================================= */
 .calendarAddChooser {
   position: fixed;
   z-index: 2147483640;
@@ -19879,12 +19390,6 @@ body {
   flex: 0 0 18px;
 }
 
-
-/* =========================================================
-   SUPER / PLATFORM ADMIN LIST FILTER LOCATION
-   Move the existing Audience / Tenant / Role / Status filters
-   inside All Events / Published / Saved / My Events only.
-   ========================================================= */
 .calendarPage .calendarContentModeList .listCalendarFilters {
   width: 100%;
   margin: 0 0 16px !important;
@@ -19912,11 +19417,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   SUPER / PLATFORM ADMIN COMPACT FILTER ROW
-   All Users + Status + Clear only.
-   ========================================================= */
 .calendarPage .calendarContentModeList .allUsersCompactFilters {
   width: 100%;
   margin: 0 0 16px !important;
@@ -19983,12 +19483,6 @@ body {
   }
 }
 
-
-
-/* =========================================================
-   SUPER / PLATFORM ADMIN LIST FILTERS
-   All Users + Month + Year + Status + Clear
-   ========================================================= */
 .calendarPage .calendarContentModeList .allUsersCompactFilters {
   grid-template-columns:
     minmax(250px, 1.15fr)
@@ -20031,12 +19525,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   MONTH / YEAR / ALL USERS DROPDOWN REFINEMENTS
-   ========================================================= */
-
-/* Month: show about 4-5 options at once, then scroll. */
 .calendarPage .monthFilterDropdown .filterDropdownMenu {
   max-height: 220px !important;
   overflow-y: auto !important;
@@ -20045,7 +19533,6 @@ body {
   scrollbar-color: #AEB5B8 #DFE6E9;
 }
 
-/* Year can scroll if future event years extend the list. */
 .calendarPage .yearFilterDropdown .filterDropdownMenu {
   max-height: 220px !important;
   overflow-y: auto !important;
@@ -20054,7 +19541,6 @@ body {
   scrollbar-color: #AEB5B8 #DFE6E9;
 }
 
-/* Neuomorphic scrollbar track/thumb - no flat white block. */
 .calendarPage .monthFilterDropdown .filterDropdownMenu::-webkit-scrollbar,
 .calendarPage .yearFilterDropdown .filterDropdownMenu::-webkit-scrollbar,
 .calendarPage .allUsersNestedMenu::-webkit-scrollbar {
@@ -20081,7 +19567,6 @@ body {
      1px 1px 2px #AEB5B8;
 }
 
-/* Organization search inside Specific Tenant. */
 .calendarPage .allUsersOrganizationSearchWrap {
   position: sticky;
   top: 0;
@@ -20111,7 +19596,6 @@ body {
   opacity: 1;
 }
 
-/* Keep nested content smooth and contained. */
 .calendarPage .allUsersNestedMenu {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
@@ -20137,12 +19621,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   ALL USERS DROPDOWN VISUAL FIXES ONLY
-   ========================================================= */
-
-/* Keep the dropdown/menu background fully neuomorphic. */
 .calendarPage .allUsersNestedMenu {
   background: #DFE6E9 !important;
   scrollbar-gutter: stable;
@@ -20151,7 +19629,6 @@ body {
   overscroll-behavior: contain;
 }
 
-/* Search bar must stay above scrolling options/checkboxes. */
 .calendarPage .allUsersOrganizationSearchWrap {
   position: sticky !important;
   top: 0 !important;
@@ -20166,13 +19643,11 @@ body {
      2px  2px 4px rgba(174,181,184,.32);
 }
 
-/* Ensure scrolling options never paint on top of the sticky search area. */
 .calendarPage .allUsersNestedMenu .filterDropdownOption {
   position: relative;
   z-index: 1;
 }
 
-/* Neuomorphic scrollbar: remove white browser track/background. */
 .calendarPage .allUsersNestedMenu::-webkit-scrollbar {
   width: 9px !important;
   background: #DFE6E9 !important;
@@ -20199,7 +19674,6 @@ body {
   background: #DFE6E9 !important;
 }
 
-/* Keep the search itself above all checkbox/radio rows. */
 .calendarPage .allUsersOrganizationSearchWrap input {
   position: relative;
   z-index: 51;
@@ -20217,9 +19691,6 @@ body {
   }
 }
 
-/* =========================================================
-   SPECIFIC TENANT SEARCH BAR BORDER / SCROLL FIX
-   ========================================================= */
 .calendarPage .allUsersOrganizationSearchWrap {
   padding: 6px 6px 10px !important;
   border: 0 !important;
@@ -20263,11 +19734,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   TENANT ONLY KPI CARDS
-   Shown below the filter row and above the search bar.
-   ========================================================= */
 .calendarPage .tenantKpiSection {
   width: 100%;
   margin: 0 0 16px;
@@ -20317,7 +19783,6 @@ body {
   line-height: 28px;
 }
 
-/* Tablet */
 @media (max-width: 1100px) and (min-width: 768px) {
   .calendarPage .tenantKpiSection {
     grid-template-columns: repeat(4, minmax(120px, 1fr));
@@ -20329,7 +19794,6 @@ body {
   }
 }
 
-/* Mobile */
 @media (max-width: 767px) {
   .calendarPage .tenantKpiSection {
     width: 100%;
@@ -20361,13 +19825,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   CALENDAR EVENT LIST POSITION FIX
-   Opens directly below the selected date cell.
-   Edge dates stay inside the calendar/viewport.
-   ========================================================= */
-
 .calendarPage .monthGrid,
 .calendarPage .calendarPanel,
 .calendarPage .dayCell {
@@ -20387,7 +19844,6 @@ body {
   margin: 0 !important;
 }
 
-/* Sunday / Monday: open inward from the left. */
 .calendarPage .calendarDayEventList.calendarPopupAlignLeft,
 .calendarPage .calendarDayPopup.calendarPopupAlignLeft {
   left: 0 !important;
@@ -20395,7 +19851,6 @@ body {
   transform: none !important;
 }
 
-/* Middle columns: center directly below their own date cell. */
 .calendarPage .calendarDayEventList.calendarPopupAlignCenter,
 .calendarPage .calendarDayPopup.calendarPopupAlignCenter {
   left: 50% !important;
@@ -20403,7 +19858,6 @@ body {
   transform: translateX(-50%) !important;
 }
 
-/* Friday / Saturday: open inward from the right. */
 .calendarPage .calendarDayEventList.calendarPopupAlignRight,
 .calendarPage .calendarDayPopup.calendarPopupAlignRight {
   left: auto !important;
@@ -20471,10 +19925,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   YEAR DROPDOWN — SHOW 4 TO 5 ITEMS, THEN SCROLL
-   ========================================================= */
 .calendarPage .yearFilterDropdown .filterDropdownMenu {
   max-height: 218px !important;
   overflow-y: auto !important;
@@ -20483,10 +19933,6 @@ body {
   scrollbar-color: #AEB5B8 #DFE6E9;
 }
 
-/* =========================================================
-   ALL USERS -> SPECIFIC TENANT NAVIGATION
-   Right arrow = next list, left arrow = go back.
-   ========================================================= */
 .calendarPage .allUsersNestedMenu .filterDropdownOption {
   display: flex !important;
   align-items: center !important;
@@ -20541,7 +19987,6 @@ body {
   flex: 0 0 22px;
 }
 
-/* Organization search sits below the sticky Back row. */
 .calendarPage .allUsersOrganizationBackOption + .allUsersOrganizationSearchWrap {
   top: 42px !important;
 }
@@ -20559,12 +20004,6 @@ body {
     top: 40px !important;
   }
 }
-
-
-/* =========================================================
-   ALL USERS / SPECIFIC TENANT — TOP FIELD BACK ARROW ONLY
-   No duplicate back sentence inside the dropdown list.
-   ========================================================= */
 
 .calendarPage .allUsersNestedDropdown {
   position: relative !important;
@@ -20599,11 +20038,6 @@ body {
   padding-left: 43px !important;
 }
 
-/*
- * The organization search is the first item in the scroll area now.
- * Keep it fully opaque and sticky so organization rows never overlap
- * it while scrolling.
- */
 .calendarPage .allUsersNestedMenu .allUsersOrganizationSearchWrap {
   position: sticky !important;
   top: 0 !important;
@@ -20629,7 +20063,6 @@ body {
   z-index: 1 !important;
 }
 
-/* Previous temporary inner back-row rules are no longer used. */
 .calendarPage .allUsersBackOption,
 .calendarPage .allUsersOrganizationBackOption {
   position: static !important;
@@ -20652,11 +20085,6 @@ body {
   }
 }
 
-
-/* =========================================================
-   MOBILE CALENDAR — DAY CELL + BUTTON POSITION ONLY
-   Keeps all other calendar styles and functionality unchanged.
-   ========================================================= */
 @media (max-width: 767px) {
   .calendarPage:not(.studentViewerPage) .dayCell {
     position: relative !important;
@@ -20697,3 +20125,613 @@ body {
   }
 }
 
+@media (max-width: 767px) {
+  .calendarPage .calendarPanel {
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearSelectors,
+  .calendarPage .calendarMonthYearPickerShell {
+    position: relative !important;
+    z-index: 1000 !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover,
+  .calendarPage .calendarMonthPopover,
+  .calendarPage .calendarYearPopover {
+    z-index: 1100 !important;
+    background: #DFE6E9 !important;
+    isolation: isolate !important;
+  }
+
+  .calendarPage .calendarPanel h2,
+  .calendarPage .calendarToolbar,
+  .calendarPage .monthGrid,
+  .calendarPage .alternateView {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+}
+
+@media (max-width: 767px) {
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) {
+    width: 100% !important;
+    margin-top: 10px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    align-items: stretch !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) button {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 8px !important;
+
+    border-radius: 18px !important;
+
+    font-size: 13px !important;
+    line-height: 18px !important;
+    font-weight: 600 !important;
+
+    white-space: nowrap !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch)
+  button:last-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  .calendarPage .mobileMonthHeadingRow {
+    width: 100% !important;
+    margin: 0 0 8px !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+
+    gap: 6px !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerShell {
+    position: relative !important;
+    z-index: 120 !important;
+
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: calc(100% - 40px) !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 92px !important;
+    align-items: center !important;
+
+    gap: 6px !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    height: 36px !important;
+    min-height: 36px !important;
+
+    padding: 0 10px 0 13px !important;
+    border-radius: 18px !important;
+
+    font-size: 14px !important;
+    line-height: 18px !important;
+    font-weight: 400 !important;
+
+    gap: 5px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 92px !important;
+    min-width: 92px !important;
+    max-width: 92px !important;
+
+    font-size: 14px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton > span {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton img {
+    width: 11px !important;
+    height: 11px !important;
+    min-width: 11px !important;
+    flex: 0 0 11px !important;
+    margin-left: 2px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingActions {
+    position: relative !important;
+    z-index: 140 !important;
+
+    flex: 0 0 34px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+
+    margin: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 0 !important;
+  }
+
+  .calendarPage .mobileMonthHeadingButton {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 7px !important;
+
+    font-size: 14px !important;
+    line-height: 14px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingButton img {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingActions
+  .mobileMonthHeadingButton:nth-child(2) {
+    display: none !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    position: absolute !important;
+
+    top: calc(100% + 6px) !important;
+    left: 0 !important;
+    right: auto !important;
+
+    width: min(320px, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+
+    margin: 0 !important;
+    padding: 8px !important;
+
+    transform: none !important;
+
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+
+    z-index: 1100 !important;
+  }
+
+  .calendarPage .calendarMonthPopover,
+  .calendarPage .calendarYearPopover {
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+  }
+
+  .calendarPage .calendarPickerHeader {
+    width: 100% !important;
+    grid-template-columns: 34px minmax(0, 1fr) 34px !important;
+    gap: 5px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .calendarPage .calendarPickerHeaderArrow img {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .calendarPage .calendarPickerHeader strong {
+    font-size: 14px !important;
+    line-height: 18px !important;
+  }
+
+  .calendarPage .calendarMonthOptionGrid,
+  .calendarPage .calendarYearOptionGrid {
+    width: 100% !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+
+    padding: 0 2px !important;
+
+    font-size: 12px !important;
+    line-height: 16px !important;
+
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .calendarPage .viewSwitch {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+
+    height: 36px !important;
+    min-height: 36px !important;
+
+    padding: 0 !important;
+    gap: 0 !important;
+
+    border-radius: 10px !important;
+  }
+
+  .calendarPage .viewSwitch button {
+    width: 100% !important;
+
+    height: 36px !important;
+    min-height: 36px !important;
+
+    padding: 0 5px !important;
+
+    font-size: 13px !important;
+    line-height: 34px !important;
+
+    border-radius: 9px !important;
+  }
+
+  .calendarPage .calendarContentModeList .eventMenuWrap {
+    display: block !important;
+  }
+
+  .calendarPage .calendarContentModeList .moreButton {
+    display: grid !important;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) {
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) button {
+    height: 34px !important;
+    min-height: 34px !important;
+
+    font-size: 12px !important;
+    line-height: 17px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingRow {
+    gap: 4px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerShell {
+    max-width: calc(100% - 37px) !important;
+    grid-template-columns: minmax(0, 1fr) 80px !important;
+    gap: 4px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    height: 34px !important;
+    min-height: 34px !important;
+
+    padding: 0 7px 0 10px !important;
+
+    font-size: 12px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+
+    font-size: 12px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingActions {
+    flex-basis: 32px !important;
+    width: 32px !important;
+    min-width: 32px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingButton {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+
+    font-size: 14px !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover {
+    width: min(295px, calc(100vw - 14px)) !important;
+    max-width: calc(100vw - 14px) !important;
+  }
+
+  .calendarPage .calendarMonthYearOption {
+    height: 32px !important;
+    min-height: 32px !important;
+
+    font-size: 12px !important;
+  }
+
+  .calendarPage .viewSwitch {
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .calendarPage .viewSwitch button {
+    height: 34px !important;
+    min-height: 34px !important;
+
+    font-size: 12px !important;
+    line-height: 32px !important;
+  }
+}
+
+@media (max-width: 767px) {
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) {
+    width: 100% !important;
+    margin-top: 10px !important;
+
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) button {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+
+    padding: 0 6px !important;
+
+    border-radius: 17px !important;
+
+    font-size: 12px !important;
+    line-height: 16px !important;
+    font-weight: 600 !important;
+
+    white-space: nowrap !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch)
+  button:nth-child(1) {
+    grid-column: 1 / span 2 !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch)
+  button:nth-child(2) {
+    grid-column: 3 / span 2 !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch)
+  button:nth-child(3) {
+    grid-column: 5 / span 2 !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch)
+  button:nth-child(4) {
+    grid-column: 2 / span 2 !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch)
+  button:nth-child(5) {
+    grid-column: 4 / span 2 !important;
+  }
+
+  .calendarPage .mobileMonthHeadingRow {
+    width: 100% !important;
+
+    margin: 8px 0 8px !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerShell {
+    flex: 1 1 auto !important;
+
+    width: auto !important;
+    max-width: calc(100% - 40px) !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 88px !important;
+
+    gap: 6px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+
+    padding: 0 9px 0 12px !important;
+
+    border-radius: 17px !important;
+
+    font-size: 13px !important;
+    line-height: 18px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 88px !important;
+    min-width: 88px !important;
+    max-width: 88px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton img {
+    width: 11px !important;
+    height: 11px !important;
+
+    flex: 0 0 11px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingActions {
+    flex: 0 0 34px !important;
+
+    width: 34px !important;
+    min-width: 34px !important;
+
+    margin: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .calendarPage .mobileMonthHeadingButton {
+    width: 32px !important;
+    height: 32px !important;
+
+    min-width: 32px !important;
+    min-height: 32px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 14px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingActions
+  .mobileMonthHeadingButton:nth-child(2) {
+    display: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) {
+    gap: 10spx !important;
+  }
+
+  .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) button {
+    height: 32px !important;
+    min-height: 32px !important;
+
+    padding: 0 4px !important;
+
+    font-size: 12px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerShell {
+    grid-template-columns: minmax(0, 1fr) 78px !important;
+    gap: 4px !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton {
+    height: 32px !important;
+    min-height: 32px !important;
+
+    font-size: 12px !important;
+  }
+
+  .calendarPage .calendarYearPickerButton {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingActions {
+    width: 32px !important;
+    min-width: 32px !important;
+    flex-basis: 32px !important;
+  }
+
+  .calendarPage .mobileMonthHeadingButton {
+    width: 30px !important;
+    height: 30px !important;
+     transform: translateY(-8);
+    min-width: 30px !important;
+    min-height: 30px !important;
+  }
+}
+
+@media (max-width: 767px) {
+
+  .calendarPage .calendarWorkspace.calendarContentModeList {
+    margin-top: 4px !important;
+  }
+
+  .calendarPage .calendarContentModeList .schedulePanel {
+    padding-top: 6px !important;
+  }
+
+  .calendarPage .scheduleListHeader {
+    min-height: 36px !important;
+    margin-top: 0 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .calendarPage .scheduleListHeader > div {
+    min-height: 36px !important;
+  }
+
+  .calendarPage .calendarContentModeList .allUsersCompactFilters,
+  .calendarPage .calendarContentModeList .listCalendarFilters {
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .calendarPage .calendarWorkspace.calendarContentModeList {
+    margin-top: 2px !important;
+  }
+
+  .calendarPage .calendarContentModeList .schedulePanel {
+    padding-top: 0px !important;
+  }
+
+  .calendarPage .scheduleListHeader {
+    min-height: 34px !important;
+    margin-bottom: 5px !important;
+  }
+
+  .calendarPage .scheduleListHeader > div {
+    min-height: 34px !important;
+  }
+}

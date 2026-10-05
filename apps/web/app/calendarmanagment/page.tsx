@@ -76,11 +76,11 @@ type CalendarEvent = {
   localOwner?: string;
 };
 
-/* ========================================
-   BACKEND EVENT TYPES / MAPPING
-   Backend-only addition. Existing UI and
-   calendar logic remain unchanged.
-======================================== */
+                                           
+                                
+                                         
+                                   
+                                           
 
 type BackendEventStatus =
   | "SAVED"
@@ -271,11 +271,11 @@ function getBackendAudienceDetails(event: BackendEvent) {
     return event.status === "SAVED" ? "" : "All";
   }
 
-  /*
-   * Broad Tenant Only publishing sends every tenant as separate TENANT
-   * audience rows. On the card we keep that readable as just "Tenant"
-   * instead of printing every tenant name.
-   */
+    
+                                                                       
+                                                                      
+                                           
+     
   const tenantAudienceIds = audiences
     .filter(
       (item) => String(item.audienceType || "").toUpperCase() === "TENANT"
@@ -302,10 +302,10 @@ function getBackendAudienceDetails(event: BackendEvent) {
     return "Tenant";
   }
 
-  /*
-   * Broad Actor Only publishing sends the complete actor hierarchy as ROLE
-   * rows. Collapse that to "Actor" instead of showing a long actor list.
-   */
+    
+                                                                           
+                                                                         
+     
   const roleAudienceCount = audiences.filter(
     (item) => String(item.audienceType || "").toUpperCase() === "ROLE"
   ).length;
@@ -489,7 +489,7 @@ function parseStoredAttachment(value?: string) {
       };
     }
   } catch {
-    // Backward-compatible old filename-only attachment.
+                                                        
   }
 
   return {
@@ -546,8 +546,8 @@ async function downloadEventAttachment(attachment?: string) {
   link.click();
   link.remove();
 
-  // Keep the Blob URL alive briefly so the browser can finish placing the
-  // file in its Downloads list. We do not navigate to or open the file.
+                                                                          
+                                                                        
   window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
 
@@ -1643,10 +1643,10 @@ const tenants = ["All Tenants", "University & College", "Skill Academy", "Bootca
 const roles = ["All Roles", "Platform Admin", "Institute Admin", "Coordinator", "Faculty", "Student"];
 const statuses = ["All Status", "Published", "Saved", "Scheduled", "Paused", "Closed", "Cancelled"];
 
-/*
- * Keep the Calendar organization filter identical to the organization list
- * used by Add Event -> Specific Organization + Actor.
- */
+  
+                                                                           
+                                                      
+   
 const publishOrganizationsByTenant: Record<string, string[]> = {
   "University & College": [
     "North Valley University",
@@ -3179,8 +3179,8 @@ export default function CalendarManagementPage() {
   const [listMonthFilterTouched, setListMonthFilterTouched] = useState(false);
   const [listYearFilter, setListYearFilter] = useState("All Years");
   const [listYearFilterTouched, setListYearFilterTouched] = useState(false);
-  // IMPORTANT: Server and first client render must start with the same data.
-  // Reading localStorage inside the useState initializer causes a hydration mismatch.
+                                                                             
+                                                                                      
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [openMenuSource, setOpenMenuSource] = useState<"calendar" | "schedule" | null>(null);
@@ -3223,7 +3223,7 @@ export default function CalendarManagementPage() {
   const [cancelEvent, setCancelEvent] = useState<CalendarEvent | null>(null);
   const [cancelReason, setCancelReason] = useState("");
 
-  // Publish Event popup state
+                              
   const [publishEvent, setPublishEvent] = useState<CalendarEvent | null>(null);
   const [publishOrganizer, setPublishOrganizer] = useState("");
   const [publishError, setPublishError] = useState("");
@@ -3237,7 +3237,7 @@ export default function CalendarManagementPage() {
   const [publishActor, setPublishActor] = useState("");
   const [publishTargets, setPublishTargets] = useState<Array<{ tenant: string; actor: string }>>([]);
 
-  // Auto Publish popup state
+                             
   const [autoPublishEvent, setAutoPublishEvent] = useState<CalendarEvent | null>(null);
   const [autoPublishDate, setAutoPublishDate] = useState("");
   const [autoPublishCalendarOpen, setAutoPublishCalendarOpen] = useState(false);
@@ -3445,8 +3445,8 @@ export default function CalendarManagementPage() {
     login?.role === "SUPER_ADMIN" ||
     login?.role === "PLATFORM_ADMIN";
 
-  // The filter data points come from the active tenant first, then the
-  // signed-in role hierarchy is applied on top of those tenant data points.
+                                                                       
+                                                                            
   const activeFilterTenant =
     isTenantScopedRole || isStudentView
       ? signedInTenant
@@ -3456,16 +3456,16 @@ export default function CalendarManagementPage() {
     tenantFilterData[activeFilterTenant] ||
     tenantFilterData["All Tenants"];
 
-  /*
-   * Calendar Role/Actor filter labels must follow the same tenant-specific
-   * terminology already used in Add Event publishing.
-   *
-   * This tenant-label conversion is used ONLY for SUPER_ADMIN and
-   * PLATFORM_ADMIN because those roles can change the Tenant filter.
-   *
-   * Institute Admin / Coordinator / Faculty keep their existing filter
-   * behavior exactly as before.
-   */
+    
+                                                                           
+                                                      
+    
+                                                                  
+                                                                     
+    
+                                                                       
+                                
+     
   const calendarActorLabelsByTenant: Record<
     string,
     Record<string, string>
@@ -3516,11 +3516,11 @@ export default function CalendarManagementPage() {
       ...tenantRoles.filter((item) => allowedRoles.includes(item)),
     ];
 
-    /*
-     * SUPER ADMIN / PLATFORM ADMIN:
-     * when a concrete Tenant is selected, display that tenant's Actor names
-     * exactly like Add Event.
-     */
+      
+                                    
+                                                                            
+                              
+       
     if (
       login?.role === "SUPER_ADMIN" ||
       login?.role === "PLATFORM_ADMIN"
@@ -3541,10 +3541,10 @@ export default function CalendarManagementPage() {
               "Student",
             ];
 
-      /*
-       * "All Tenants" has no single tenant terminology, so keep the existing
-       * generic role names. Platform Admin remains global here.
-       */
+        
+                                                                             
+                                                                
+         
       if (activeFilterTenant === "All Tenants") {
         return [
           "All Roles",
@@ -3569,14 +3569,14 @@ export default function CalendarManagementPage() {
       ];
     }
 
-    /*
-     * Tenant-scoped users keep the SAME hierarchy as before,
-     * but the visible Actor names now follow their signed-in tenant.
-     *
-     * Example:
-     * Corporate Institute Admin -> L&D Coordinator, Trainer, Employee
-     * University Institute Admin -> Coordinator, Faculty, Student
-     */
+      
+                                                             
+                                                                     
+      
+               
+                                                                      
+                                                                  
+       
     const tenantActorLabels =
       calendarActorLabelsByTenant[activeFilterTenant] || {};
 
@@ -3635,7 +3635,7 @@ export default function CalendarManagementPage() {
 
     const organizations = new Set<string>();
 
-    // Always show the same organizations that are available in Add Event.
+                                                                          
     if (selectedTenant) {
       (publishOrganizationsByTenant[selectedTenant] || []).forEach(
         (organizationName) => organizations.add(organizationName)
@@ -3648,7 +3648,7 @@ export default function CalendarManagementPage() {
       });
     }
 
-    // Also keep any organization already stored on real published events.
+                                                                          
     events.forEach((event) => {
       const ids =
         event.audienceIds?.length
@@ -3696,8 +3696,8 @@ export default function CalendarManagementPage() {
   const showAudienceOrganizationFilter =
     audienceFilter === "Specific Organization + Actor";
 
-  // Learner/Student remains read-only. Other signed-in roles can use
-  // the filter row, with Role options restricted by the hierarchy above.
+                                                                     
+                                                                         
   const hideCalendarFilters = isStudentView;
 
   const studentTenant = login?.displayTenant || "All Tenants";
@@ -3959,7 +3959,7 @@ export default function CalendarManagementPage() {
       }
 
       if (response.status === 404) {
-        // The DB row is already gone, so the UI can safely remove it.
+                                                                      
         return true;
       }
 
@@ -3979,7 +3979,7 @@ export default function CalendarManagementPage() {
     }
   };
 
-  // Load persisted events only after hydration is complete.
+                                                            
   useEffect(() => {
     const storedEvents = window.localStorage.getItem("calendar:events");
     if (!storedEvents) return;
@@ -3998,20 +3998,20 @@ export default function CalendarManagementPage() {
         ]);
       }
     } catch {
-      // Keep initialEvents if stored data is invalid.
+                                                      
     }
   }, []);
 
-  /* ========================================
-     LOAD EVENTS FROM BACKEND
-     Backend-only addition. No UI changes.
-  ======================================== */
+                                             
+                             
+                                          
+                                             
 
   useEffect(() => {
     const loadBackendEvents = async () => {
       const token = window.localStorage.getItem("calendar_access_token");
 
-      // Keep all existing local calendar behavior when no backend token exists.
+                                                                                
       if (!token) return;
 
       try {
@@ -4043,34 +4043,34 @@ export default function CalendarManagementPage() {
           backendEventToCalendarEvent
         );
 
-        /*
-         * EVENT PERSISTENCE FIX
-         *
-         * Do NOT replace the complete frontend event list every 5 seconds.
-         * The backend GET /events can be audience-scoped for the signed-in user.
-         * Replacing the entire state with that response was removing a newly
-         * created Institute Admin / Coordinator / Faculty event from the UI
-         * whenever the polling request did not return that event.
-         *
-         * Instead:
-         *   1. Backend events remain the source of truth when they are returned.
-         *   2. Existing locally-created events that are not in the current
-         *      backend response are preserved.
-         *   3. Matching events are de-duplicated by backendId first and by
-         *      title/date/time as a fallback.
-         */
+          
+                                
+          
+                                                                           
+                                                                                 
+                                                                             
+                                                                            
+                                                                  
+          
+                   
+                                                                                 
+                                                                           
+                                               
+                                                                           
+                                              
+           
         setEvents((previousEvents) => {
-          /*
-           * PERMANENT EVENT PERSISTENCE
-           *
-           * Reused events are allowed to have the same date/time and must
-           * remain as separate records. Therefore we never de-duplicate by
-           * title/date/time.
-           *
-           * Backend events are matched ONLY by backendId. Existing frontend
-           * metadata (for example reminderSentAt) is preserved when the
-           * backend polling refresh returns the same event.
-           */
+            
+                                        
+            
+                                                                          
+                                                                           
+                             
+            
+                                                                            
+                                                                        
+                                                            
+             
           const previousByBackendId = new Map<string, CalendarEvent>();
 
           previousEvents.forEach((event) => {
@@ -4135,8 +4135,8 @@ export default function CalendarManagementPage() {
 
     void loadBackendEvents();
 
-    // Recipient pages must fetch newly-published assignments from PostgreSQL,
-    // not wait for a full page reload. Refresh on window focus and periodically.
+                                                                              
+                                                                                 
     const handleFocus = () => {
       void loadBackendEvents();
     };
@@ -4198,8 +4198,8 @@ export default function CalendarManagementPage() {
     return Number.isNaN(endDateTime.getTime()) ? null : endDateTime;
   };
 
-  // Automatically close Published events only after their actual end
-  // date/time passes. Explicitly cancelled events remain "Cancelled".
+                                                                     
+                                                                      
   useEffect(() => {
     const closeFinishedEvents = () => {
       const now = Date.now();
@@ -4220,7 +4220,7 @@ export default function CalendarManagementPage() {
 
           changed = true;
 
-          // Natural event completion remains CLOSED.
+                                                     
           void patchBackendEvent(event, { status: "CLOSED" });
 
           return {
@@ -4252,9 +4252,9 @@ export default function CalendarManagementPage() {
     return () => window.clearInterval(closeIntervalId);
   }, []);
 
-  // Convert Scheduled events to Published automatically when their
-  // scheduled date/time is reached. The check also works after a reload
-  // because scheduledPublishAt is persisted with calendar:events.
+                                                                   
+                                                                        
+                                                                  
   useEffect(() => {
     const publishDueEvents = () => {
       const now = Date.now();
@@ -4726,7 +4726,7 @@ export default function CalendarManagementPage() {
       const normalizedEventTenant =
         normalizedEventTenants[0] || "";
 
-      // Multiple publish targets can contain several tenants.
+                                                              
       const tenantMatch =
         normalizedActiveTenant === "ALL TENANTS" ||
         !event.tenant ||
@@ -4768,10 +4768,10 @@ export default function CalendarManagementPage() {
         !!signedInAudienceRole &&
         normalizedEventRoles.includes(signedInAudienceRole);
 
-      // A received event belongs to this user only when the published
-      // Tenant + Actor pair matches this signed-in tenant and role.
-      // New multi-pair Publish stores pairs as "Tenant::Actor".
-      // Keep the old TENANT + ROLE matching too for existing events.
+                                                                      
+                                                                    
+                                                                
+                                                                     
       const exactTargetPairMatch = (event.audience || "")
         .split(",")
         .map((item) => item.trim())
@@ -4791,9 +4791,9 @@ export default function CalendarManagementPage() {
           );
         });
 
-      // Default publish has no audience rows/metadata, so it is for everyone.
-      // Specific publish must match one exact Tenant + Actor target pair.
-      // Keep the old TENANT + ROLE match for older saved events.
+                                                                              
+                                                                          
+                                                                 
       const isDefaultPublishedAudience =
         !event.tenant &&
         !event.role &&
@@ -4905,15 +4905,15 @@ export default function CalendarManagementPage() {
         exactCreatorMatch || actorCreatorMatch ||
         (!!localOwner && event.localOwner === localOwner);
 
-      // Add / Reuse writes into local state immediately. Before the next
-      // backend refresh there may be no createdBy value yet. Such an event
-      // is still owned by the current calendar screen and must stay visible
-      // in the right-side schedule list.
+                                                                         
+                                                                           
+                                                                            
+                                         
       const isLocallyManagedEvent = !event.createdBy;
 
-      // GET /events is already audience-filtered by the backend:
-      // Default => everyone; TARGET => exact Tenant + Actor recipient.
-      // My Events shows published events received from somebody else.
+                                                                 
+                                                                       
+                                                                      
       const receivedScheduleMatch =
         !isMySchedulesTab ||
         (
@@ -4921,10 +4921,10 @@ export default function CalendarManagementPage() {
           !isCreatedBySignedInUser
         );
 
-      // IMPORTANT:
-      // Once an event has an explicit TENANT + ROLE audience, it must not leak
-      // into another signed-in actor's All/Published/etc. views.
-      // The publisher/creator can still see and manage the event they created.
+                   
+                                                                               
+                                                                 
+                                                                               
       const normalizedCreator = (event.createdBy || "")
         .replace(/^calendar-/i, "")
         .replace(/[-_]+/g, " ")
@@ -4959,17 +4959,17 @@ export default function CalendarManagementPage() {
         isCreatedBySignedInUser ||
         exactReceivedAudienceMatch;
 
-      // The backend GET /events already returns only events this signed-in
-      // user is allowed to receive. Therefore a received Published event must
-      // remain visible in:
-      //   1. My Events
-      //   2. Published
-      //   3. All
-      //   4. Calendar views
-      //
-      // Do not apply the sender-side Tenant/Role dropdown filters again to a
-      // received event. With multiple TARGET pairs event.tenant/event.role can
-      // contain comma-joined values, which previously hid valid recipients.
+                                                                           
+                                                                              
+                           
+                       
+                       
+                 
+                            
+        
+                                                                             
+                                                                               
+                                                                            
       const isReceivedPublishedEvent =
         event.status === "Published" &&
         !isCreatedBySignedInUser &&
@@ -4987,9 +4987,9 @@ export default function CalendarManagementPage() {
       }
 
       if (isReceivedPublishedEvent) {
-        // A received event is read-only for the recipient.
-        // Keep it visible in Calendar / All Events / Published / My Events.
-        // Saved / Scheduled / Paused management sections must still exclude it.
+                                                           
+                                                                            
+                                                                                
         if (
           scheduleTab === "All" ||
           scheduleTab === "Published" ||
@@ -5006,9 +5006,9 @@ export default function CalendarManagementPage() {
         return false;
       }
 
-      // Never hide the creator's own Add / Reuse / Publish event merely
-      // because it was assigned to another Tenant + Actor.
-      // Also keep a just-created local event visible until backend refresh.
+                                                                        
+                                                           
+                                                                            
       if (isCreatedBySignedInUser || isLocallyManagedEvent) {
         return (
           statusMatch &&
@@ -5101,15 +5101,15 @@ export default function CalendarManagementPage() {
     setView(nextView);
   };
 
-  /*
-   * LIST VIEW SEARCH
-   * Used only by All Events, Published, Saved, My Events and
-   * Student -> My Schedules. Calendar view stays unchanged.
-   *
-   * A phrase can match any text shown/stored on the event card:
-   * title, subtitle, date, time, location, status, priority,
-   * audience, description, attachment or publisher.
-   */
+    
+                     
+                                                             
+                                                            
+    
+                                                                
+                                                             
+                                                    
+     
   const tenantKpiData = useMemo(() => {
     const tenantNames = tenants.filter((item) => item !== "All Tenants");
 
@@ -5124,14 +5124,14 @@ export default function CalendarManagementPage() {
         }
       };
 
-      /*
-       * 1. Direct tenant metadata.
-       * 2. TENANT / ORGANIZATION / TARGET audience rows.
-       * 3. TARGET ids such as Tenant::Organization::Actor.
-       *
-       * This keeps KPI numbers tied to the live event list, not to the
-       * hard-coded organization master list.
-       */
+        
+                                   
+                                                         
+                                                           
+        
+                                                                       
+                                             
+         
       (event.tenant || "")
         .split(",")
         .map((item) => item.trim())
@@ -5160,10 +5160,10 @@ export default function CalendarManagementPage() {
     }));
 
     return {
-      /*
-       * Total Events counts unique live events that belong to at least one
-       * tenant. Individual tenant cards show their own current event count.
-       */
+        
+                                                                           
+                                                                            
+         
       total: events.filter((event) => eventTenantNames(event).length > 0).length,
       items,
     };
@@ -5185,17 +5185,17 @@ export default function CalendarManagementPage() {
   }, [listYearFilter, listYearOptions]);
 
   const listVisibleEvents = useMemo(() => {
-    /*
-     * LIST FILTER FIX
-     *
-     * Month and Year must work even when the Search box is empty.
-     * Previously this function returned visibleEvents immediately when there
-     * was no search query, so selecting November/Year did not filter the list.
-     *
-     * All existing Audience / Tenant / Actor / Organization / Status filters
-     * are already applied in visibleEvents above. This layer only adds the
-     * list Month, Year and optional Search filtering.
-     */
+      
+                      
+      
+                                                                  
+                                                                             
+                                                                               
+      
+                                                                             
+                                                                           
+                                                      
+       
     if (contentView === "Calendar") {
       return visibleEvents;
     }
@@ -5228,10 +5228,10 @@ export default function CalendarManagementPage() {
         return false;
       }
 
-      /*
-       * Month / Year filtering must still work when Search is empty.
-       * Only run the text-match step when the user actually typed a query.
-       */
+        
+                                                                     
+                                                                           
+         
       if (!query) {
         return true;
       }
@@ -5430,7 +5430,7 @@ export default function CalendarManagementPage() {
     window.localStorage.removeItem("calendar:selected-event");
     window.localStorage.removeItem("calendar:reuse-event");
 
-    // Pass only the clicked calendar date to the existing Add Event form.
+                                                                          
     window.localStorage.setItem(
       "calendar:add-event-date",
       JSON.stringify({
@@ -5447,9 +5447,9 @@ export default function CalendarManagementPage() {
     setOpenMenu(null);
 
     if (mode === "edit") {
-      // IMPORTANT:
-      // AddEventPage reads this exact key.
-      // Store the exact event whose Edit button was clicked.
+                   
+                                           
+                                                             
       window.localStorage.setItem(
         "calendar:event-action",
         JSON.stringify({
@@ -5462,7 +5462,7 @@ export default function CalendarManagementPage() {
       return;
     }
 
-    // REUSE: use the same reliable transfer key as Edit.
+                                                         
     window.localStorage.removeItem("calendar:reuse-event");
     window.localStorage.setItem(
       "calendar:event-action",
@@ -5606,14 +5606,14 @@ export default function CalendarManagementPage() {
     "Corporate",
   ];
 
-  // Keep the backend actor values unchanged, but show tenant-friendly
-  // actor names in the Publish form.
-  //
-  // Backend values:
-  // Institute Admins / Coordinators / Faculty / Students
-  //
-  // Example Corporate labels:
-  // Corporate Admin / L&D Coordinator / Trainer / Employee
+                                                                      
+                                     
+    
+                    
+                                                         
+    
+                              
+                                                           
   const publishActors = (() => {
     switch (login?.role) {
       case "SUPER_ADMIN":
@@ -5703,10 +5703,10 @@ export default function CalendarManagementPage() {
     setPublishError("");
     setPublishAudienceSelected(false);
 
-    // Every Publish popup opens as a fresh publish action.
-    // Do not display recipients from an earlier publish in this popup.
-    // The backend still keeps the already-published recipients for THIS event,
-    // and a new specific Tenant + Actor selection is added to that same event.
+                                                           
+                                                                       
+                                                                               
+                                                                               
     setPublishAudienceOpen(false);
     setPublishAudienceType("Default");
     setPublishFlyout(null);
@@ -5745,13 +5745,13 @@ export default function CalendarManagementPage() {
     }
 
     if (value === "Specific Tenant") {
-      // Tenant is a scope only. The actual receiver is selected next.
+                                                                      
       setPublishAudienceOpen(true);
       setPublishFlyout("tenant");
       return;
     }
 
-    // Specific Actor: choose receiver first.
+                                             
     setPublishAudienceOpen(true);
     setPublishFlyout("actor");
   };
@@ -5774,7 +5774,7 @@ export default function CalendarManagementPage() {
     setPublishError("");
     setPublishTenant(value);
 
-    // Actor-first flow for Super Admin / Platform Admin.
+                                                         
     if (publishActor) {
       addPublishTarget(value, publishActor);
       setPublishTenant("");
@@ -5784,7 +5784,7 @@ export default function CalendarManagementPage() {
       return;
     }
 
-    // Tenant-first flow: choose the receiving actor next.
+                                                          
     setPublishAudienceType("Specific Tenant");
     setPublishAudienceOpen(true);
     setPublishFlyout("actor");
@@ -5794,7 +5794,7 @@ export default function CalendarManagementPage() {
     setPublishError("");
     setPublishActor(value);
 
-    // Platform Admin is global, so no tenant dropdown is needed.
+                                                                 
     if (isGlobalPublishActor(value)) {
       addPublishTarget("All Tenants", value);
       setPublishTenant("");
@@ -5804,8 +5804,8 @@ export default function CalendarManagementPage() {
       return;
     }
 
-    // Institute Admin / Coordinator / Faculty are already tenant-scoped.
-    // Their own signed-in tenant is applied automatically.
+                                                                         
+                                                           
     if (isTenantScopedPublisher) {
       if (!signedInTenant || signedInTenant === "All Tenants") {
         setPublishError("Unable to identify the signed-in tenant.");
@@ -5820,7 +5820,7 @@ export default function CalendarManagementPage() {
       return;
     }
 
-    // If tenant was selected first, finish the target now.
+                                                           
     if (publishTenant) {
       addPublishTarget(publishTenant, value);
       setPublishTenant("");
@@ -5830,8 +5830,8 @@ export default function CalendarManagementPage() {
       return;
     }
 
-    // Super Admin / Platform Admin choosing a tenant-scoped actor
-    // must now choose which tenant receives the event.
+                                                                  
+                                                       
     setPublishAudienceOpen(true);
     setPublishFlyout("tenant");
   };
@@ -5876,10 +5876,10 @@ export default function CalendarManagementPage() {
     const updatedBackendEvent = await patchBackendEvent(currentPublishEvent, {
       status: "PUBLISHED",
       scheduledPublishAt: null,
-      // Default = everyone for THIS event.
-      // Specific = the Tenant + Actor pair(s) selected in this fresh popup.
-      // The backend owns recipient history for this event and must merge
-      // new TARGET rows only with this event's existing TARGET rows.
+                                           
+                                                                            
+                                                                         
+                                                                     
       audiences:
         currentAudienceType === "Default"
           ? []
@@ -5915,8 +5915,8 @@ export default function CalendarManagementPage() {
       return saveEvents(nextEvents);
     });
 
-    // Fetch again after every publish so repeated/second/multiple publishes
-    // always use the latest DB audience rows.
+                                                                            
+                                              
     const token = window.localStorage.getItem("calendar_access_token");
 
     if (token) {
@@ -5938,13 +5938,13 @@ export default function CalendarManagementPage() {
           if (Array.isArray(backendEvents)) {
             const mappedEvents = backendEvents.map(backendEventToCalendarEvent);
 
-            /*
-             * Do not replace the whole calendar after Publish.
-             * GET /events can be audience-scoped, so replacing all events here
-             * was removing reused/local/reminder-sent events immediately after
-             * a publish. Merge only matching backendIds and preserve everything
-             * else.
-             */
+              
+                                                               
+                                                                               
+                                                                               
+                                                                                
+                    
+               
             setEvents((previousEvents) => {
               const previousByBackendId = new Map<string, CalendarEvent>();
 
@@ -6046,8 +6046,8 @@ export default function CalendarManagementPage() {
     setAutoPublishTimeOpen(false);
     setAutoPublishError("");
 
-    // Close only the Publish form. Keep its audience selections in state
-    // so Save Schedule can apply them to this same event.
+                                                                         
+                                                          
     setPublishAudienceOpen(false);
     setPublishFlyout(null);
     setPublishEvent(null);
@@ -6152,7 +6152,7 @@ export default function CalendarManagementPage() {
     void patchBackendEvent(autoPublishEvent, {
       status: "SCHEDULED",
       scheduledPublishAt: scheduledDate.toISOString(),
-      // Default = everyone. Clear any previous TENANT/ROLE targeting.
+                                                                      
       audiences:
         publishAudienceType === "Default"
           ? []
@@ -6216,8 +6216,8 @@ export default function CalendarManagementPage() {
   const sendReminder = () => {
     if (!reminderEvent) return;
 
-    // Backend reminder API can be connected here later.
-    // reminderEvent + reminderDescription contain the selected dynamic values.
+                                                        
+                                                                               
     const sentEvent = reminderEvent;
 
     setReminderEvent(null);
@@ -6426,20 +6426,20 @@ export default function CalendarManagementPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Clear the input immediately so the same browser change event cannot be
-    // processed twice while the async upload is still running.
+                                                                             
+                                                               
     e.target.value = "";
 
     const reader = new FileReader();
 
     reader.onload = async () => {
-      /*
-       * BULK UPLOAD DATE/TIME SAFETY FIX
-       *
-       * Keep the existing CSV/template/backend/schedule flow exactly the same,
-       * but normalize common CSV/Excel date and time formats before calling
-       * Date.toISOString(). This prevents "RangeError: Invalid time value".
-       */
+        
+                                         
+        
+                                                                               
+                                                                            
+                                                                            
+         
       const parseCsvDate = (value: string) => {
         const raw = (value || "").trim().replace(/^"|"$/g, "");
         if (!raw) return null;
@@ -6482,7 +6482,7 @@ export default function CalendarManagementPage() {
 
         if (!raw) return fallback;
 
-        // Excel can export a time as a fraction of a day, e.g. 0.5 = 12:00.
+                                                                            
         if (/^(?:0(?:\.\d+)?|1(?:\.0+)?)$/.test(raw)) {
           const fraction = Number(raw);
 
@@ -6498,7 +6498,7 @@ export default function CalendarManagementPage() {
           }
         }
 
-        // 24-hour values: 9:30, 09:30, 09:30:00
+                                                
         let match = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
         if (match) {
           const hour = Number(match[1]);
@@ -6521,7 +6521,7 @@ export default function CalendarManagementPage() {
           return fallback;
         }
 
-        // 12-hour values: 9 AM, 9:30 AM, 09:30AM, 09:30:00 PM
+                                                              
         match = raw.match(
           /^(\d{1,2})(?::(\d{2}))?(?::\d{2})?\s*(am|pm)$/i
         );
@@ -6586,7 +6586,7 @@ export default function CalendarManagementPage() {
           0
         );
 
-        // Reject impossible calendar values such as 2026-02-31.
+                                                                
         if (
           Number.isNaN(localDateTime.getTime()) ||
           localDateTime.getFullYear() !== year ||
@@ -6630,8 +6630,8 @@ export default function CalendarManagementPage() {
           const start = normalizeCsvTime(rawStart || "", "10:00");
           let end = normalizeCsvTime(rawEnd || "", "11:00");
 
-          // If the imported end time is invalid/equal/earlier, keep the row
-          // usable by moving the end time one hour after start where possible.
+                                                                            
+                                                                               
           const startMinutes =
             Number(start.slice(0, 2)) * 60 + Number(start.slice(3, 5));
           let endMinutes =
@@ -6696,7 +6696,7 @@ export default function CalendarManagementPage() {
         })
         .filter((event): event is NonNullable<typeof event> => Boolean(event));
 
-      // Remove duplicate rows inside the same CSV before any POST request.
+                                                                           
       const uniqueParsed = parsed.filter((event, index, allEvents) => {
         const key =
           `${event.title}|${event.year}-${event.month}-${event.day}|${event.start}|${event.end}|${event.location}`.toLowerCase();
@@ -6715,8 +6715,8 @@ export default function CalendarManagementPage() {
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
       if (token) {
-        // Read the database first. This keeps the existing duplicate-prevention
-        // behavior: uploading the same CSV again will not create another copy.
+                                                                                
+                                                                               
         let existingBackendEvents: BackendEvent[] = [];
 
         try {
@@ -6783,8 +6783,8 @@ export default function CalendarManagementPage() {
           const startDateIso = toBackendIso(dateValue, startTime);
           const endDateIso = toBackendIso(dateValue, endTime);
 
-          // Never call toISOString() on an invalid Date.
-          // Invalid rows are skipped without breaking the whole bulk upload.
+                                                         
+                                                                             
           if (!startDateIso || !endDateIso) {
             console.error(
               "Skipped invalid bulk upload row:",
@@ -6841,8 +6841,8 @@ export default function CalendarManagementPage() {
 
             const saved = (await response.json()) as BackendEvent;
 
-            // Use the backend response so the bulk-created item has backendId,
-            // start/end dates and all fields required by the schedule panel.
+                                                                               
+                                                                             
             const mappedSavedEvent = backendEventToCalendarEvent(saved);
 
             savedBackendEvents.push(mappedSavedEvent);
@@ -7245,8 +7245,8 @@ export default function CalendarManagementPage() {
                     if (item === "Calendar") {
                       setScheduleTab("All");
                     } else if (item === "My Schedules") {
-                      // Student schedules are already audience-filtered by the
-                      // existing learner visibility logic.
+                                                                               
+                                                           
                       setScheduleTab("All");
                     } else {
                       setScheduleTab(item);
@@ -8222,8 +8222,8 @@ export default function CalendarManagementPage() {
                       })()}
 
                       {(() => {
-                        // Schedule card uses the exact values saved by Add / Edit / Reuse.
-                        // Do not substitute placeholder location/attendee values for form fields.
+                                                                                           
+                                                                                                  
                         const cardTitle = (event.eventTitle || event.title || "").trim();
                         const cardSubtitle = (event.eventSubtitle || event.subtitle || "").trim();
                         const cardStartDate = (event.startDate || event.date || "").trim();
@@ -8647,9 +8647,9 @@ export default function CalendarManagementPage() {
                     </button>
                   </div>
 
-                  {/* <p className="cmCancelEventPrompt">
-                    This event is already published. Cancelling it will mark the event as closed for the selected users.
-                  </p> */}
+                                                         
+                                                                                                                        
+                          
 
                   <div className="cmCancelEventInfo">
                     <p><strong>Event :</strong> {cancelEvent.eventTitle || cancelEvent.title}</p>
@@ -8669,9 +8669,9 @@ export default function CalendarManagementPage() {
                     placeholder="Enter the message users should receive about this cancellation"
                   />
 
-                  {/* <p className="cmCancelEventNotice">
-                    Users who can view this event will see it as Closed. This message can be connected to your notification API later for in-app, email or push notification delivery.
-                  </p> */}
+                                                         
+                                                                                                                                                                                      
+                          
 
                   <div className="cmCancelEventActions">
                     <button type="button" className="cmCancelEventBack" onClick={closeCancelEventModal}>
