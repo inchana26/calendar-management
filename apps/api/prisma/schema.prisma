@@ -1,13 +1,4 @@
 // Calendar Management - Prisma Schema
-// Simplified according to the Calendar Management requirement.
-//
-// Database is used only for the main Calendar Management functionality.
-// Tenant, Division, Department, Calendar, Reminder and User tables
-// are not duplicated in this module.
-//
-// Main tables:
-// 1. Event
-// 2. EventAudience
 
 generator client {
   provider = "prisma-client"
@@ -17,7 +8,6 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
 
 // ============================================================
 // EVENT STATUS
@@ -29,69 +19,51 @@ enum EventStatus {
   PUBLISHED
   PAUSED
   CLOSED
+  CANCELLED
 }
-
 
 // ============================================================
 // EVENT
 // ============================================================
-//
-// Main Calendar Management table.
-//
-// Handles:
-// - Create Event
-// - Save Event
-// - Edit Event
-// - Bulk Upload
-// - Schedule Event
-// - Publish Event
-// - Pause Event
-// - Close Event
-//
-// Calendar Management should fetch these records from the
-// database instead of depending on frontend/localStorage data.
-// ============================================================
 
 model Event {
-  id          String      @id @default(cuid())
+  id String @id @default(cuid())
 
-  // Event information
   title       String
   subtitle    String?
   description String?
 
-  // Event date and time
-  startDate   DateTime
-  endDate     DateTime
+  startDate DateTime
+  endDate   DateTime
+  startTime String?
+  endTime   String?
 
-  // Kept separately because the existing frontend
-  // already handles date/time values separately.
-  startTime   String?
-  endTime     String?
+  location   String?
+  priority   String?
+  attachment String?
 
-  // Event additional information
-  location    String?
-  priority    String?
-  attachment  String?
+  status EventStatus @default(SAVED)
 
-  // Current event state
-  status      EventStatus @default(SAVED)
-
-  // Used when Publish is scheduled for a future time.
   scheduledPublishAt DateTime?
+  publishedAt        DateTime?
 
-  // Stores the actual published time.
-  publishedAt DateTime?
+  // Original creator.
+  createdBy           String?
+  createdByRole       String?
+  createdByTenantType String?
 
-  // Existing/onboarding user ID.
-  // We do not create another User table in Calendar Management.
-  createdBy String?
+  // Most recent user who performed Publish.
+  lastPublishedBy           String?
+  lastPublishedByRole       String?
+  lastPublishedByTenantType String?
 
-  // Audit fields
+  // ALL / TENANT / ACTOR / TENANT_ACTOR /
+  // ORGANIZATION_ACTOR / SPECIFIC
+  lastPublishedAudienceMode String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Target audience for this event
   audiences EventAudience[]
 
   @@index([status])
@@ -99,45 +71,42 @@ model Event {
   @@index([endDate])
   @@index([scheduledPublishAt])
   @@index([createdBy])
+  @@index([lastPublishedBy])
 }
-
 
 // ============================================================
 // EVENT AUDIENCE
-// ============================================================
-//
-// Stores who should receive/see the event.
-//
-// Actual users/roles/divisions/etc. should come from the
-// existing onboarding/user system.
-//
-// We only store the identifier required by Calendar Management.
-// This avoids creating duplicate User, Tenant, Division and
-// Department tables.
 // ============================================================
 
 model EventAudience {
   id String @id @default(cuid())
 
-  // Event this audience belongs to
   eventId String
 
-  // ID received from the existing user/onboarding system.
-  //
-  // Depending on the selected target audience this can identify
-  // the required user/group from the existing system.
+  // Examples:
+  // TENANT -> Corporate
+  // ROLE   -> Faculty / Trainer / Employee etc.
+  // TARGET -> Corporate::Faculty
+  // TARGET -> Corporate::Apex Global Pvt Ltd::Faculty
   audienceId String
 
-  // Example values can represent the type of selected audience.
-  // We keep this flexible instead of creating unnecessary tables.
+  // TENANT / ROLE / TARGET / ORGANIZATION
   audienceType String?
+
+  // Who published this audience target.
+  // These fields are populated when the event is actually PUBLISHED.
+  publishedBy           String?
+  publishedByRole       String?
+  publishedByTenantType String?
+  publishedAt           DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
- event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, audienceId])
   @@index([eventId])
   @@index([audienceId])
+  @@index([publishedBy])
 }

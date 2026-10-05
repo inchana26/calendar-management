@@ -46,11 +46,6 @@ export class EventsController {
     return this.eventsService.findAll(user);
   }
 
-  /*
-   * Real event attachment upload.
-   * This stores the actual file on the API server instead of storing only
-   * the browser filename.
-   */
   @Post('attachments')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -65,7 +60,9 @@ export class EventsController {
           '.png',
         ]);
 
-        const extension = extname(file.originalname || '').toLowerCase();
+        const extension = extname(
+          file.originalname || '',
+        ).toLowerCase();
 
         if (!allowedExtensions.has(extension)) {
           callback(
@@ -89,25 +86,40 @@ export class EventsController {
     },
   ) {
     if (!file) {
-      throw new BadRequestException('Attachment file is required.');
+      throw new BadRequestException(
+        'Attachment file is required.',
+      );
     }
 
-    await fs.mkdir(this.attachmentDirectory, {
-      recursive: true,
-    });
+    await fs.mkdir(
+      this.attachmentDirectory,
+      {
+        recursive: true,
+      },
+    );
 
-    const extension = extname(file.originalname || '').toLowerCase();
+    const extension = extname(
+      file.originalname || '',
+    ).toLowerCase();
+
     const safeBaseName =
-      basename(file.originalname || 'attachment', extension)
+      basename(
+        file.originalname || 'attachment',
+        extension,
+      )
         .replace(/[^a-zA-Z0-9._-]+/g, '-')
-        .replace(/^-+|-+$/g, '') || 'attachment';
+        .replace(/^-+|-+$/g, '') ||
+      'attachment';
 
     const storedName = `${Date.now()}-${Math.random()
       .toString(36)
       .slice(2, 10)}-${safeBaseName}${extension}`;
 
     await fs.writeFile(
-      join(this.attachmentDirectory, storedName),
+      join(
+        this.attachmentDirectory,
+        storedName,
+      ),
       file.buffer,
     );
 
@@ -121,10 +133,6 @@ export class EventsController {
     };
   }
 
-  /*
-   * Protected download endpoint.
-   * The frontend calls this with the same Bearer token used by /events.
-   */
   @Get('attachments/:storedName')
   async downloadAttachment(
     @Param('storedName')
@@ -132,10 +140,16 @@ export class EventsController {
     @Res()
     response: Response,
   ) {
-    const safeStoredName = basename(storedName);
+    const safeStoredName =
+      basename(storedName);
 
-    if (!safeStoredName || safeStoredName !== storedName) {
-      throw new BadRequestException('Invalid attachment name.');
+    if (
+      !safeStoredName ||
+      safeStoredName !== storedName
+    ) {
+      throw new BadRequestException(
+        'Invalid attachment name.',
+      );
     }
 
     const filePath = join(
@@ -146,7 +160,9 @@ export class EventsController {
     try {
       await fs.access(filePath);
     } catch {
-      throw new BadRequestException('Attachment file was not found.');
+      throw new BadRequestException(
+        'Attachment file was not found.',
+      );
     }
 
     return response.download(filePath);
@@ -154,14 +170,16 @@ export class EventsController {
 
   @Get(':id')
   findOne(
-    @Param('id') id: string,
+    @Param('id')
+    id: string,
   ) {
     return this.eventsService.findOne(id);
   }
 
   @Post()
   create(
-    @Body() data: CreateEventDto,
+    @Body()
+    data: CreateEventDto,
     @CurrentUser()
     user: JwtUser,
   ) {
@@ -173,18 +191,20 @@ export class EventsController {
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id')
+    id: string,
     @Body()
     data: UpdateEventDto,
+    @CurrentUser()
+    user: JwtUser,
   ) {
     return this.eventsService.update(
       id,
       data,
+      user,
     );
   }
 
-  // Fallback delete when frontend does not have backendId.
-  // IMPORTANT: Keep this BEFORE @Delete(':id').
   @Delete('by-details')
   removeByDetails(
     @Body()
@@ -199,13 +219,11 @@ export class EventsController {
     );
   }
 
-  // Normal delete using exact PostgreSQL Event ID.
   @Delete(':id')
   remove(
-    @Param('id') id: string,
+    @Param('id')
+    id: string,
   ) {
-    return this.eventsService.remove(
-      id,
-    );
+    return this.eventsService.remove(id);
   }
 }
