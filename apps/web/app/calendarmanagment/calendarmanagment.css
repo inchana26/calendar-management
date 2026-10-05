@@ -20468,7 +20468,6 @@ body {
     height: 30px !important;
     min-width: 30px !important;
     min-height: 30px !important;
-
     font-size: 14px !important;
   }
 
@@ -20683,7 +20682,7 @@ body {
   .calendarPage .mobileMonthHeadingButton {
     width: 30px !important;
     height: 30px !important;
-     transform: translateY(-8);
+     transform: translateY(-4);
     min-width: 30px !important;
     min-height: 30px !important;
   }
@@ -20735,3 +20734,67 @@ body {
     min-height: 34px !important;
   }
 }
+
+
+
+@media (max-width: 767px) {
+  .calendarPage .mobileMonthHeadingRow {
+    position: relative !important;
+    z-index: 2000 !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerShell {
+    position: relative !important;
+    z-index: 2100 !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerButton,
+  .calendarPage .calendarYearPickerButton {
+    position: relative !important;
+    z-index: 2101 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover,
+  .calendarPage .calendarMonthPopover,
+  .calendarPage .calendarYearPopover {
+    position: absolute !important;
+    z-index: 2200 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .calendarPage .calendarToolbar,
+  .calendarPage .viewSwitch {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  .calendarPage .calendarPanel {
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendarPage .mobileMonthHeadingRow {
+    position: relative !important;
+    z-index: 2000 !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPickerShell {
+    position: relative !important;
+    z-index: 2100 !important;
+    overflow: visible !important;
+  }
+
+  .calendarPage .calendarMonthYearPopover,
+  .calendarPage .calendarMonthPopover,
+  .calendarPage .calendarYearPopover {
+    z-index: 2200 !important;
+  }
+}
+
