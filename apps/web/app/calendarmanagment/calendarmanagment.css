@@ -20507,7 +20507,7 @@ body {
     display: grid !important;
     grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
 
-    gap: 6px !important;
+    gap: 10px !important;
   }
 
   .calendarPage .calendarContentViewSwitch:not(.studentContentViewSwitch) button {
@@ -20555,7 +20555,7 @@ body {
 
   .calendarPage .mobileMonthHeadingRow {
     width: 100% !important;
-
+     transform: translateY(-5);
     margin: 8px 0 8px !important;
     padding: 0 !important;
 
