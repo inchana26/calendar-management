@@ -7039,178 +7039,7 @@ export default function CalendarManagementPage() {
               </div>
             </section>
 
-            {!hideCalendarFilters && !showPublishAudienceFilters && (
-            <section
-              className={`calendarFilters ${
-                isTenantScopedRole ? "tenantScopedFilters" : ""
-              } ${
-                audienceFilter === "All Audiences"
-                  ? "audienceFiltersInitial"
-                  : "audienceFiltersSelected"
-              } ${
-                audienceFilter === "Specific Organization + Actor"
-                  ? "organizationActorFilters"
-                  : ""
-              } ${mobileFiltersOpen ? "mobileFiltersOpen" : ""}`}
-            >
-              {showPublishAudienceFilters && (
-                <FilterDropdown
-                  className="audienceFilterDropdown"
-                  label="All Users"
-                  value={audienceFilter}
-                  options={audienceFilterOptions}
-                  open={openFilter === "audience"}
-                  onToggle={() =>
-                    setOpenFilter(
-                      openFilter === "audience" ? null : "audience"
-                    )
-                  }
-                  onSelect={(value) => {
-                    setAudienceFilter(value as AudienceFilterType);
-                    setTenant("All Tenants");
-                    setRole("All Roles");
-                    setOrganization("All Organizations");
-                    setOpenFilter(null);
-                  }}
-                />
-              )}
-
-              {showTenantFilter && showPublishAudienceFilters && showAudienceTenantFilter ? (
-                <FilterDropdown
-                  className="tenantFilterDropdown"
-                  label="Tenant"
-                  value={tenant}
-                  options={tenants}
-                  open={openFilter === "tenant"}
-                  onToggle={() =>
-                    setOpenFilter(
-                      openFilter === "tenant" ? null : "tenant"
-                    )
-                  }
-                  onSelect={(value) => {
-                    setTenant(value);
-                    setRole("All Roles");
-                    setOrganization("All Organizations");
-                    setStatus("All Status");
-                    setDepartment("All Departments");
-                    setSelectedDepartmentDivision("");
-                    setOpenFilter(null);
-                  }}
-                />
-              ) : isTenantScopedRole ? (
-                <>
-                  <CheckboxFilterDropdown
-                    label="Division"
-                    value={selectedDepartmentDivision}
-                    options={availableDivisionOptions}
-                    open={openFilter === "division"}
-                    className="divisionFilterDropdown"
-                    onToggle={() =>
-                      setOpenFilter(
-                        openFilter === "division" ? null : "division"
-                      )
-                    }
-                    onSelect={(value) => {
-                      setSelectedDepartmentDivision(value);
-                      setDepartment("All Departments");
-                      setOpenFilter("department");
-                    }}
-                  />
-
-                  <CheckboxFilterDropdown
-                    label="Department"
-                    value={
-                      department === "All Departments"
-                        ? ""
-                        : department
-                    }
-                    options={availableDepartmentOptions}
-                    open={openFilter === "department"}
-                    disabled={!selectedDepartmentDivision}
-                    className="departmentFilterDropdown"
-                    onToggle={() =>
-                      setOpenFilter(
-                        openFilter === "department" ? null : "department"
-                      )
-                    }
-                    onSelect={(value) => {
-                      setDepartment(value);
-                      setOpenFilter(null);
-                    }}
-                  />
-                </>
-              ) : null}
-
-              {showPublishAudienceFilters && showAudienceOrganizationFilter && (
-                <FilterDropdown
-                  className="organizationFilterDropdown"
-                  label="Organization"
-                  value={organization}
-                  options={availableOrganizationOptions}
-                  open={openFilter === "organization"}
-                  onToggle={() =>
-                    setOpenFilter(
-                      openFilter === "organization"
-                        ? null
-                        : "organization"
-                    )
-                  }
-                  onSelect={(value) => {
-                    setOrganization(value);
-                    setOpenFilter(null);
-                  }}
-                />
-              )}
-
-              {(showPublishAudienceFilters ? showAudienceRoleFilter : true) && (
-                <FilterDropdown
-                  className="roleFilterDropdown"
-                  label="Role"
-                  value={role}
-                  options={availableRoleOptions}
-                  open={openFilter === "role"}
-                  onToggle={() =>
-                    setOpenFilter(
-                      openFilter === "role" ? null : "role"
-                    )
-                  }
-                  onSelect={(value) => {
-                    setRole(value);
-                    setOpenFilter(null);
-                  }}
-                />
-              )}
-
-              <FilterDropdown
-                className="statusFilterDropdown"
-                label="Status"
-                value={status}
-                options={availableStatusOptions}
-                open={openFilter === "status"}
-                onToggle={() =>
-                  setOpenFilter(
-                    openFilter === "status" ? null : "status"
-                  )
-                }
-                onSelect={(value) => {
-                  setStatus(value);
-                  setOpenFilter(null);
-                }}
-              />
-
-              <button
-                className="neoButton clearButton"
-                onClick={() => {
-                  clearFilters();
-                  setMobileFiltersOpen(false);
-                }}
-              >
-                Clear
-              </button>
-            </section>
-            )}
-
-            <section
+                        <section
               className={`calendarContentViewSwitch ${
                 isStudentView ? "studentContentViewSwitch" : ""
               }`}
@@ -7983,6 +7812,177 @@ export default function CalendarManagementPage() {
                     </span>
                   </div>
                 </div>
+
+{!hideCalendarFilters && !showPublishAudienceFilters && contentView !== "Calendar" && (
+            <section
+              className={`calendarFilters listCalendarFilters ${
+                isTenantScopedRole ? "tenantScopedFilters" : ""
+              } ${
+                audienceFilter === "All Audiences"
+                  ? "audienceFiltersInitial"
+                  : "audienceFiltersSelected"
+              } ${
+                audienceFilter === "Specific Organization + Actor"
+                  ? "organizationActorFilters"
+                  : ""
+              } ${mobileFiltersOpen ? "mobileFiltersOpen" : ""}`}
+            >
+              {showPublishAudienceFilters && (
+                <FilterDropdown
+                  className="audienceFilterDropdown"
+                  label="All Users"
+                  value={audienceFilter}
+                  options={audienceFilterOptions}
+                  open={openFilter === "audience"}
+                  onToggle={() =>
+                    setOpenFilter(
+                      openFilter === "audience" ? null : "audience"
+                    )
+                  }
+                  onSelect={(value) => {
+                    setAudienceFilter(value as AudienceFilterType);
+                    setTenant("All Tenants");
+                    setRole("All Roles");
+                    setOrganization("All Organizations");
+                    setOpenFilter(null);
+                  }}
+                />
+              )}
+
+              {showTenantFilter && showPublishAudienceFilters && showAudienceTenantFilter ? (
+                <FilterDropdown
+                  className="tenantFilterDropdown"
+                  label="Tenant"
+                  value={tenant}
+                  options={tenants}
+                  open={openFilter === "tenant"}
+                  onToggle={() =>
+                    setOpenFilter(
+                      openFilter === "tenant" ? null : "tenant"
+                    )
+                  }
+                  onSelect={(value) => {
+                    setTenant(value);
+                    setRole("All Roles");
+                    setOrganization("All Organizations");
+                    setStatus("All Status");
+                    setDepartment("All Departments");
+                    setSelectedDepartmentDivision("");
+                    setOpenFilter(null);
+                  }}
+                />
+              ) : isTenantScopedRole ? (
+                <>
+                  <CheckboxFilterDropdown
+                    label="Division"
+                    value={selectedDepartmentDivision}
+                    options={availableDivisionOptions}
+                    open={openFilter === "division"}
+                    className="divisionFilterDropdown"
+                    onToggle={() =>
+                      setOpenFilter(
+                        openFilter === "division" ? null : "division"
+                      )
+                    }
+                    onSelect={(value) => {
+                      setSelectedDepartmentDivision(value);
+                      setDepartment("All Departments");
+                      setOpenFilter("department");
+                    }}
+                  />
+
+                  <CheckboxFilterDropdown
+                    label="Department"
+                    value={
+                      department === "All Departments"
+                        ? ""
+                        : department
+                    }
+                    options={availableDepartmentOptions}
+                    open={openFilter === "department"}
+                    disabled={!selectedDepartmentDivision}
+                    className="departmentFilterDropdown"
+                    onToggle={() =>
+                      setOpenFilter(
+                        openFilter === "department" ? null : "department"
+                      )
+                    }
+                    onSelect={(value) => {
+                      setDepartment(value);
+                      setOpenFilter(null);
+                    }}
+                  />
+                </>
+              ) : null}
+
+              {showPublishAudienceFilters && showAudienceOrganizationFilter && (
+                <FilterDropdown
+                  className="organizationFilterDropdown"
+                  label="Organization"
+                  value={organization}
+                  options={availableOrganizationOptions}
+                  open={openFilter === "organization"}
+                  onToggle={() =>
+                    setOpenFilter(
+                      openFilter === "organization"
+                        ? null
+                        : "organization"
+                    )
+                  }
+                  onSelect={(value) => {
+                    setOrganization(value);
+                    setOpenFilter(null);
+                  }}
+                />
+              )}
+
+              {(showPublishAudienceFilters ? showAudienceRoleFilter : true) && (
+                <FilterDropdown
+                  className="roleFilterDropdown"
+                  label="Role"
+                  value={role}
+                  options={availableRoleOptions}
+                  open={openFilter === "role"}
+                  onToggle={() =>
+                    setOpenFilter(
+                      openFilter === "role" ? null : "role"
+                    )
+                  }
+                  onSelect={(value) => {
+                    setRole(value);
+                    setOpenFilter(null);
+                  }}
+                />
+              )}
+
+              <FilterDropdown
+                className="statusFilterDropdown"
+                label="Status"
+                value={status}
+                options={availableStatusOptions}
+                open={openFilter === "status"}
+                onToggle={() =>
+                  setOpenFilter(
+                    openFilter === "status" ? null : "status"
+                  )
+                }
+                onSelect={(value) => {
+                  setStatus(value);
+                  setOpenFilter(null);
+                }}
+              />
+
+              <button
+                className="neoButton clearButton"
+                onClick={() => {
+                  clearFilters();
+                  setMobileFiltersOpen(false);
+                }}
+              >
+                Clear
+              </button>
+            </section>
+            )}
 
                 {showPublishAudienceFilters && (
                   <section className="calendarFilters listCalendarFilters allUsersCompactFilters">

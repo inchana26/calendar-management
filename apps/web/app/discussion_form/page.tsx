@@ -226,6 +226,11 @@ export default function DiscussionForumPage() {
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [replySort, setReplySort] = useState<"TOP" | "LATEST" | "OLDEST">("TOP");
   const [replyText, setReplyText] = useState("");
+  const [replyingToId, setReplyingToId] = useState<number | null>(null);
+  const [showReplyEmojiPicker, setShowReplyEmojiPicker] = useState(false);
+  const [replyAttachmentName, setReplyAttachmentName] = useState("");
+  const replyTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const replyAttachmentInputRef = useRef<HTMLInputElement | null>(null);
   const [notificationFilter, setNotificationFilter] = useState<"ALL" | "UNREAD" | "MENTIONS" | "REPLIES">("ALL");
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
   const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null);
@@ -649,10 +654,114 @@ export default function DiscussionForumPage() {
     setPosts(items=>[post,...items]); setCreateOpen(false); resetDraft(); setSelectedPostId(post.id); setScreen("DETAIL"); showToast("Post submitted successfully.");
   }
   function handleFile(e: ChangeEvent<HTMLInputElement>) { const file=e.target.files?.[0]; if(file) setDraft(d=>({...d,attachmentName:file.name})); }
-  function reactToPost(id:number,reaction:string){setPosts(items=>items.map(p=>p.id===id?{...p,reactions:{...p.reactions,[reaction]:(p.reactions[reaction]||0)+1}}:p));}
-  function toggleFollow(id:number){setPosts(items=>items.map(p=>p.id===id?{...p,following:!p.following}:p));}
-  function toggleBookmark(id:number){setPosts(items=>items.map(p=>p.id===id?{...p,bookmarked:!p.bookmarked}:p));}
-  function addReply(){if(!selectedPost||!replyText.trim())return;const r:Reply={id:Date.now(),author:"Current User",role:login.displayRole||actorLabel(role),body:replyText.trim(),time:"Just now",likes:0,comments:[]};setPosts(items=>items.map(p=>p.id===selectedPost.id?{...p,replies:[...p.replies,r],status:p.type==="QUESTION"&&p.status==="OPEN"?"ANSWERED":p.status}:p));setReplyText("");showToast("Reply posted.");}
+  function reactToPost(id:number,reaction:string){
+    setPosts(items=>items.map(p=>p.id===id?{...p,reactions:{...p.reactions,[reaction]:(p.reactions[reaction]||0)+1}}:p));
+    showToast(`${reaction} reaction added.`);
+  }
+  function toggleFollow(id:number){
+    setPosts(items=>items.map(p=>p.id===id?{...p,following:!p.following}:p));
+  }
+  function toggleBookmark(id:number){
+    setPosts(items=>items.map(p=>p.id===id?{...p,bookmarked:!p.bookmarked}:p));
+  }
+  function focusReply(replyId?:number){
+    setReplyingToId(replyId ?? null);
+    window.setTimeout(()=>replyTextareaRef.current?.focus(),0);
+  }
+  function likeReply(replyId:number){
+    if(!selectedPost)return;
+    setPosts(items=>items.map(p=>p.id===selectedPost.id?{
+      ...p,
+      replies:p.replies.map(r=>r.id===replyId?{...r,likes:r.likes+1}:r)
+    }:p));
+  }
+  function addReply(){
+    if(!selectedPost)return;
+    const body = replyText.trim();
+    if(!body && !replyAttachmentName)return;
+
+    const finalBody = `${body}${body&&replyAttachmentName?"\n":""}${replyAttachmentName?`📎 ${replyAttachmentName}`:""}`;
+
+    if(replyingToId){
+      const comment: ReplyComment = {
+        id:Date.now(),
+        author:"Current User",
+        body:finalBody,
+        time:"Just now"
+      };
+      setPosts(items=>items.map(p=>p.id===selectedPost.id?{
+        ...p,
+        replies:p.replies.map(r=>r.id===replyingToId?{...r,comments:[...r.comments,comment]}:r)
+      }:p));
+      showToast("Reply added to conversation.");
+    } else {
+      const r:Reply={
+        id:Date.now(),
+        author:"Current User",
+        role:login.displayRole||actorLabel(role),
+        body:finalBody,
+        time:"Just now",
+        likes:0,
+        comments:[]
+      };
+      setPosts(items=>items.map(p=>p.id===selectedPost.id?{
+        ...p,
+        replies:[...p.replies,r],
+        status:p.type==="QUESTION"&&p.status==="OPEN"?"ANSWERED":p.status
+      }:p));
+      showToast("Reply posted.");
+    }
+
+    setReplyText("");
+    setReplyAttachmentName("");
+    setReplyingToId(null);
+    setShowReplyEmojiPicker(false);
+    if(replyAttachmentInputRef.current) replyAttachmentInputRef.current.value="";
+  }
+  function insertReplyText(value:string){
+    const el=replyTextareaRef.current;
+    if(!el){setReplyText(current=>current+value);return;}
+    const start=el.selectionStart??replyText.length;
+    const end=el.selectionEnd??replyText.length;
+    setReplyText(replyText.slice(0,start)+value+replyText.slice(end));
+    window.setTimeout(()=>{
+      el.focus();
+      const caret=start+value.length;
+      el.setSelectionRange(caret,caret);
+    },0);
+  }
+  function insertReplyCode(){
+    const el=replyTextareaRef.current;
+    if(!el){insertReplyText("```\n\n```");return;}
+    const start=el.selectionStart??0;
+    const end=el.selectionEnd??0;
+    const selected=replyText.slice(start,end);
+    const value=selected?`\`${selected}\``:"```\ncode\n```";
+    setReplyText(replyText.slice(0,start)+value+replyText.slice(end));
+    window.setTimeout(()=>el.focus(),0);
+  }
+  function handleReplyAttachment(e:ChangeEvent<HTMLInputElement>){
+    const file=e.target.files?.[0];
+    if(file)setReplyAttachmentName(file.name);
+  }
+  async function shareSelectedPost(){
+    if(!selectedPost)return;
+    const title=selectedPost.title;
+    const url=window.location.href;
+    try{
+      if(navigator.share){
+        await navigator.share({title,text:title,url});
+        showToast("Post shared.");
+      }else if(navigator.clipboard){
+        await navigator.clipboard.writeText(url);
+        showToast("Post link copied.");
+      }else{
+        showToast("Sharing is not supported in this browser.");
+      }
+    }catch{
+      // User cancelling the native share sheet is not an error for the UI.
+    }
+  }
   function markAccepted(replyId:number){if(!selectedPost)return;setPosts(items=>items.map(p=>p.id===selectedPost.id?{...p,status:"SOLVED",replies:p.replies.map(r=>({...r,accepted:r.id===replyId}))}:p));showToast("Answer marked as accepted.");}
   function vote(postId:number,optionId:number){setPosts(items=>items.map(post=>{if(post.id!==postId||!post.poll)return post;const old=post.poll.votedOptionIds;let voted=post.poll.multiple?(old.includes(optionId)?old.filter(x=>x!==optionId):[...old,optionId]):[optionId];const options=post.poll.options.map(o=>({...o,votes:Math.max(0,o.votes+(old.includes(o.id)&&!voted.includes(o.id)?-1:0)+(!old.includes(o.id)&&voted.includes(o.id)?1:0))}));return{...post,poll:{...post.poll,votedOptionIds:voted,options}};}));}
   function submitReport(){setReportTarget(null);setReportDetails("");setReportReason("Spam");showToast("Report submitted for review.");}
@@ -728,10 +837,10 @@ export default function DiscussionForumPage() {
     </>}
 
     {screen==="DETAIL"&&selectedPost&&<section className="detailPage"><button className="backButton" onClick={()=>setScreen("HOME")}>← Back to Discussions</button><div className="breadcrumb">Discussion <span>›</span> {selectedPost.communityName} <span>›</span> {selectedPost.title}</div>
-      <article className="detailCard"><div className="detailHeader"><div><span className={`postType ${POST_LABELS[selectedPost.type].color}`}>{POST_LABELS[selectedPost.type].icon} {POST_LABELS[selectedPost.type].label}</span>{selectedPost.status==="SOLVED"&&<span className="solvedChip">✓ Solved</span>}</div><button className="menuButton" onClick={()=>setReportTarget({kind:"POST",id:selectedPost.id,title:selectedPost.title})}>⋯</button></div><h1>{selectedPost.title}</h1><div className="authorLine"><span className="avatar large">{selectedPost.author.split(" ").map(x=>x[0]).join("").slice(0,2)}</span><div><b>{selectedPost.author}</b><small>{selectedPost.authorRole} · {selectedPost.communityName} · {timeAgo(selectedPost.createdAt)}</small></div></div><div className="detailBodyText richTextOutput" dangerouslySetInnerHTML={{ __html: selectedPost.body }} /><div className="tagRow">{selectedPost.tags.map(t=><span key={t}>#{t}</span>)}</div>{selectedPost.attachmentName&&<button type="button" className="attachmentChip" onClick={()=>showToast(`Demo attachment: ${selectedPost.attachmentName}`)}>📎 {selectedPost.attachmentName}</button>}{selectedPost.resourceUrl&&<a className="resourceBox resourceLink" href={selectedPost.resourceUrl} target="_blank" rel="noopener noreferrer"><span>🔗</span><div><b>Shared Resource</b><small>{selectedPost.resourceUrl}</small></div></a>}
+      <article className="detailCard"><div className="detailHeader"><div><span className={`postType ${POST_LABELS[selectedPost.type].color}`}>{POST_LABELS[selectedPost.type].icon} {POST_LABELS[selectedPost.type].label}</span>{selectedPost.status==="SOLVED"&&<span className="solvedChip">✓ Solved</span>}</div></div><h1>{selectedPost.title}</h1><div className="authorLine"><span className="avatar large">{selectedPost.author.split(" ").map(x=>x[0]).join("").slice(0,2)}</span><div><b>{selectedPost.author}</b><small>{selectedPost.authorRole} · {selectedPost.communityName} · {timeAgo(selectedPost.createdAt)}</small></div></div><div className="detailBodyText richTextOutput" dangerouslySetInnerHTML={{ __html: selectedPost.body }} /><div className="tagRow">{selectedPost.tags.map(t=><span key={t}>#{t}</span>)}</div>{selectedPost.attachmentName&&<button type="button" className="attachmentChip" onClick={()=>showToast(`Demo attachment: ${selectedPost.attachmentName}`)}>📎 {selectedPost.attachmentName}</button>}{selectedPost.resourceUrl&&<a className="resourceBox resourceLink" href={selectedPost.resourceUrl} target="_blank" rel="noopener noreferrer"><span>🔗</span><div><b>Shared Resource</b><small>{selectedPost.resourceUrl}</small></div></a>}
       {selectedPost.poll&&<div className="pollCard">{selectedPost.poll.options.map(o=>{const total=selectedPost.poll!.options.reduce((s,x)=>s+x.votes,0)||1;const pct=Math.round(o.votes/total*100);const selected=selectedPost.poll!.votedOptionIds.includes(o.id);const show=!selectedPost.poll!.showResultsAfterVote||selectedPost.poll!.votedOptionIds.length>0;return <button key={o.id} className={selected?"selected":""} onClick={()=>vote(selectedPost.id,o.id)}><span className="pollRadio">{selected?"✓":""}</span><span className="pollLabel">{o.text}</span>{show&&<><span className="pollTrack"><i style={{width:`${pct}%`}}/></span><b>{pct}%</b></>}</button>})}<small>Total Votes: {selectedPost.poll.options.reduce((s,x)=>s+x.votes,0)}</small></div>}
-      <div className="detailActions"><div className="reactionBar">{REACTIONS.map(r=><button key={r} onClick={()=>reactToPost(selectedPost.id,r)}>{r} {selectedPost.reactions[r]||0}</button>)}</div><div className="utilityActions"><button className={selectedPost.following?"active":""} onClick={()=>toggleFollow(selectedPost.id)}>☆ {selectedPost.following?"Following":"Follow"}</button><button className={selectedPost.bookmarked?"active":""} onClick={()=>toggleBookmark(selectedPost.id)}>🔖 {selectedPost.bookmarked?"Saved":"Save"}</button><button>↗ Share</button><button onClick={()=>setReportTarget({kind:"POST",id:selectedPost.id,title:selectedPost.title})}>⚑ Report</button></div></div></article>
-      {(selectedPost.type!=="POLL"||selectedPost.poll?.allowComments)&&<section className="replySection"><div className="replySectionHeader"><h2>{selectedPost.replies.length} Replies</h2><div className="replySort"><button className={replySort==="TOP"?"active":""} onClick={()=>setReplySort("TOP")}>Top</button><button className={replySort==="LATEST"?"active":""} onClick={()=>setReplySort("LATEST")}>Latest</button><button className={replySort==="OLDEST"?"active":""} onClick={()=>setReplySort("OLDEST")}>Oldest</button></div></div><div className="replyList">{[...selectedPost.replies].sort((a,b)=>replySort==="TOP"?b.likes-a.likes:replySort==="LATEST"?b.id-a.id:a.id-b.id).map(r=><article className={`replyCard ${r.accepted?"accepted":""}`} key={r.id}><div className="authorLine"><span className="avatar">{r.author.split(" ").map(x=>x[0]).join("").slice(0,2)}</span><div><b>{r.author}</b><small>{r.role} · {r.time}</small></div>{r.accepted&&<span className="acceptedChip">✓ Accepted Answer</span>}</div><p>{r.body}</p><div className="replyActions"><button>👍 {r.likes}</button><button>💬 {r.comments.length}</button><button>↩ Reply</button>{selectedPost.type==="QUESTION"&&!r.accepted&&["TENANT_ADMIN","FACULTY","TRAINER","COORDINATOR"].includes(role)&&<button onClick={()=>markAccepted(r.id)}>✓ Accept Answer</button>}<button onClick={()=>setReportTarget({kind:"REPLY",id:r.id,title:`Reply by ${r.author}`})}>⚑ Report</button></div>{r.comments.map(c=><div className="nestedComment" key={c.id}><span className="avatar tiny">{c.author.split(" ").map(x=>x[0]).join("").slice(0,2)}</span><div><b>{c.author}</b><p>{c.body}</p><small>{c.time}</small></div></div>)}</article>)}</div><div className="replyComposer"><span className="avatar">CU</span><div><textarea value={replyText} onChange={e=>setReplyText(e.target.value)} placeholder="Write your reply..."/><div className="composerBottom"><div><button>☺</button><button>📎</button><button>&lt;/&gt;</button><button>@</button></div><button className="primaryButton" onClick={addReply}>Post Reply</button></div></div></div></section>}
+      <div className="detailActions"><div className="reactionBar">{REACTIONS.map(r=><button key={r} onClick={()=>reactToPost(selectedPost.id,r)}>{r} {selectedPost.reactions[r]||0}</button>)}</div><div className="utilityActions"><button className={selectedPost.following?"active":""} onClick={()=>toggleFollow(selectedPost.id)}>☆ {selectedPost.following?"Following":"Follow"}</button><button className={selectedPost.bookmarked?"active":""} onClick={()=>toggleBookmark(selectedPost.id)}>🔖 {selectedPost.bookmarked?"Saved":"Save"}</button><button onClick={shareSelectedPost}>↗ Share</button><button onClick={()=>setReportTarget({kind:"POST",id:selectedPost.id,title:selectedPost.title})}>⚑ Report</button></div></div></article>
+      {(selectedPost.type!=="POLL"||selectedPost.poll?.allowComments)&&<section className="replySection"><div className="replySectionHeader"><h2>{selectedPost.replies.length} Replies</h2><div className="replySort"><button className={replySort==="TOP"?"active":""} onClick={()=>setReplySort("TOP")}>Top</button><button className={replySort==="LATEST"?"active":""} onClick={()=>setReplySort("LATEST")}>Latest</button><button className={replySort==="OLDEST"?"active":""} onClick={()=>setReplySort("OLDEST")}>Oldest</button></div></div><div className="replyList">{[...selectedPost.replies].sort((a,b)=>replySort==="TOP"?b.likes-a.likes:replySort==="LATEST"?b.id-a.id:a.id-b.id).map(r=><article className={`replyCard ${r.accepted?"accepted":""}`} key={r.id}><div className="authorLine"><span className="avatar">{r.author.split(" ").map(x=>x[0]).join("").slice(0,2)}</span><div><b>{r.author}</b><small>{r.role} · {r.time}</small></div>{r.accepted&&<span className="acceptedChip">✓ Accepted Answer</span>}</div><p>{r.body}</p><div className="replyActions"><button onClick={()=>likeReply(r.id)}>👍 {r.likes}</button><button onClick={()=>focusReply(r.id)}>💬 {r.comments.length}</button><button onClick={()=>focusReply(r.id)}>↩ Reply</button>{selectedPost.type==="QUESTION"&&!r.accepted&&["TENANT_ADMIN","FACULTY","TRAINER","COORDINATOR"].includes(role)&&<button onClick={()=>markAccepted(r.id)}>✓ Accept Answer</button>}<button onClick={()=>setReportTarget({kind:"REPLY",id:r.id,title:`Reply by ${r.author}`})}>⚑ Report</button></div>{r.comments.map(c=><div className="nestedComment" key={c.id}><span className="avatar tiny">{c.author.split(" ").map(x=>x[0]).join("").slice(0,2)}</span><div><b>{c.author}</b><p>{c.body}</p><small>{c.time}</small></div></div>)}</article>)}</div><div className="replyComposer"><span className="avatar">CU</span><div>{replyingToId&&<div className="replyingToBanner"><span>Replying to this conversation</span><button type="button" onClick={()=>setReplyingToId(null)}>×</button></div>}<textarea ref={replyTextareaRef} value={replyText} onChange={e=>setReplyText(e.target.value)} placeholder={replyingToId?"Write your reply to this conversation...":"Write your reply..."}/>{replyAttachmentName&&<div className="replyAttachmentChip"><span>📎 {replyAttachmentName}</span><button type="button" onClick={()=>{setReplyAttachmentName("");if(replyAttachmentInputRef.current)replyAttachmentInputRef.current.value="";}}>×</button></div>}{showReplyEmojiPicker&&<div className="replyEmojiPicker">{["😀","🙂","😊","😂","😍","👍","👏","🎉","💡","✅"].map(emoji=><button type="button" key={emoji} onClick={()=>{insertReplyText(emoji);setShowReplyEmojiPicker(false);}}>{emoji}</button>)}</div>}<div className="composerBottom"><div><button type="button" title="Emoji" onClick={()=>setShowReplyEmojiPicker(v=>!v)}>☺</button><button type="button" title="Attach file" onClick={()=>replyAttachmentInputRef.current?.click()}>📎</button><button type="button" title="Code" onClick={insertReplyCode}>&lt;/&gt;</button><button type="button" title="Mention" onClick={()=>insertReplyText("@")}>@</button><input ref={replyAttachmentInputRef} className="replyAttachmentInput" type="file" onChange={handleReplyAttachment}/></div><button className="primaryButton" onClick={addReply}>{replyingToId?"Post Reply":"Post Reply"}</button></div></div></div></section>}
     </section>}
 
     {screen==="NOTIFICATIONS"&&<section className="notificationsPage"><button className="backButton" onClick={()=>setScreen("HOME")}>← Back to Discussions</button><div className="notificationHeader"><div><p className="eyebrow">Activity</p><h1>Notifications</h1></div><button className="softButton" onClick={()=>setNotifications(items=>items.map(n=>({...n,read:true})))}>Mark all as read</button></div><div className="notificationTabs"><button className={notificationFilter==="ALL"?"active":""} onClick={()=>setNotificationFilter("ALL")}>All</button><button className={notificationFilter==="UNREAD"?"active":""} onClick={()=>setNotificationFilter("UNREAD")}>Unread ({unreadCount})</button><button className={notificationFilter==="MENTIONS"?"active":""} onClick={()=>setNotificationFilter("MENTIONS")}>Mentions</button><button className={notificationFilter==="REPLIES"?"active":""} onClick={()=>setNotificationFilter("REPLIES")}>Replies</button></div><div className="notificationList">{visibleNotifications.map(n=><button key={n.id} className={`notificationItem ${!n.read?"unread":""}`} onClick={()=>{setNotifications(items=>items.map(x=>x.id===n.id?{...x,read:true}:x));if(n.postId)openDetail(n.postId);}}><span className={`notificationDot ${n.type.toLowerCase()}`}/><div><b>{n.title}</b><p>{n.message}</p><small>{n.time}</small></div>{!n.read&&<i/>}</button>)}</div></section>}

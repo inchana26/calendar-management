@@ -3178,3 +3178,453 @@
   z-index: 160;
   border-radius: 0 0 14px 14px !important;
 }
+
+
+/* =========================================================
+   FINAL REQUESTED FILTER DROPDOWN STYLE
+   Community / Target Audience / Status
+   Neumorphic color: #dfe6e9
+   ========================================================= */
+
+/* Top fields: always neumorphic */
+.filterPanel .filterDropdownTrigger {
+  position: relative;
+  z-index: 1;
+
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+
+  box-shadow:
+    4px 4px 8px #c4c4c4,
+    -4px -4px 8px #ffffff !important;
+}
+
+/* Opened field: stronger raised effect */
+.filterPanel .filterDropdown.open .filterDropdownTrigger {
+  z-index: 161;
+
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  border-radius: 12px 12px 0 0 !important;
+
+  box-shadow:
+    6px 6px 12px #c4c4c4,
+    -6px -6px 12px #ffffff !important;
+}
+
+/* Dropdown touches the top field with no gap */
+.filterPanel .filterDropdown.open .filterDropdownMenu,
+.filterPanel .filterDropdownMenu {
+  top: 100% !important;
+  margin-top: 0 !important;
+  z-index: 160;
+
+  padding: 7px !important;
+  border: 0 !important;
+  border-radius: 0 0 14px 14px !important;
+
+  background: #dfe6e9 !important;
+
+  box-shadow:
+    6px 6px 14px #c4c4c4,
+    -6px 6px 14px rgba(255, 255, 255, 0.96) !important;
+}
+
+/* No separate boxes for dropdown contents */
+.filterPanel .filterDropdownMenu button {
+  min-height: 38px !important;
+  margin: 0 !important;
+  padding: 7px 10px !important;
+
+  border: 0 !important;
+  border-radius: 8px !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+
+  color: #4d6880 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+
+  transform: none !important;
+}
+
+/* Simple hover state only */
+.filterPanel .filterDropdownMenu button:hover {
+  background: rgba(255, 255, 255, 0.28) !important;
+  color: #126df3 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Selected row stays clean */
+.filterPanel .filterDropdownMenu button.selected {
+  background: rgba(255, 255, 255, 0.36) !important;
+  color: #126df3 !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+/* Selection circle also uses #dfe6e9 */
+.filterPanel .filterOptionCheck {
+  background: #dfe6e9 !important;
+  box-shadow:
+    inset -2px -2px 2px #ffffff,
+    inset 2px 2px 2px #c4c4c4 !important;
+}
+
+
+/* =========================================================
+   FINAL VISUAL MATCH - CALENDAR STYLE NEUMORPHISM
+   Neutral gray surface, reduced blue tint, same functionality.
+   ========================================================= */
+
+:root {
+  --neu-bg: #dfe6e9 !important;
+  --neu-surface: #dfe6e9 !important;
+  --neu-surface-soft: #dfe6e9 !important;
+
+  --bg: #dfe6e9 !important;
+  --surface: #dfe6e9 !important;
+  --surface-2: #dfe6e9 !important;
+
+  --shadow-normal:
+    4px 4px 8px #c4c4c4,
+    -4px -4px 8px #ffffff !important;
+
+  --shadow-large:
+    8px 8px 26px #c4c4c4,
+    -8px -8px 16px #ffffff !important;
+
+  --shadow-inset:
+    inset 4px 4px 8px rgba(196, 196, 196, 0.82),
+    inset -4px -4px 8px #ffffff !important;
+
+  --shadow-inset-small:
+    inset 2px 2px 5px rgba(196, 196, 196, 0.82),
+    inset -2px -2px 5px #ffffff !important;
+}
+
+/* Whole page - remove blue gradient/tint */
+html,
+body {
+  background: #dfe6e9 !important;
+}
+
+.discussionPage {
+  background: #dfe6e9 !important;
+  color: #132b4d !important;
+}
+
+/* Top header like Calendar page */
+.discussionTopbar {
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  box-shadow: 0 4px 14px rgba(119, 132, 139, 0.18) !important;
+  backdrop-filter: none !important;
+}
+
+/* Main cards/surfaces */
+.overviewCard,
+.discoverPanel,
+.communityRail,
+.detailCard,
+.replySection,
+.notificationItem,
+.createModal,
+.reportModal,
+.previewPost,
+.replyCard,
+.audienceIntro,
+.toggleRow,
+.resourceBox,
+.attachmentChip {
+  background: #dfe6e9 !important;
+}
+
+/* Raised cards */
+.overviewCard,
+.discoverPanel,
+.communityRail,
+.detailCard,
+.replySection,
+.notificationItem,
+.createModal,
+.reportModal {
+  border: 0 !important;
+  box-shadow:
+    8px 8px 26px #c4c4c4,
+    -8px -8px 16px #ffffff !important;
+}
+
+/* Smaller raised elements */
+.postCard,
+.createTypeGrid button,
+.communityRail > button,
+.audienceCards button,
+.softButton,
+.notificationButton,
+.roleChip,
+.menuButton,
+.editorToolbar button,
+.replySort button,
+.reactionBar button,
+.utilityActions button,
+.replyActions button,
+.uploadButton,
+.composerBottom > div button {
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  box-shadow:
+    4px 4px 8px #c4c4c4,
+    -4px -4px 8px #ffffff !important;
+}
+
+/* Inputs / editor / search - pressed neumorphic */
+.searchBox,
+.formStack input,
+.formStack select,
+.replyComposer textarea,
+.reportDetails textarea,
+.editorBox,
+.createStepper,
+.filterPanel {
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  box-shadow:
+    inset 4px 4px 8px rgba(196, 196, 196, 0.82),
+    inset -4px -4px 8px #ffffff !important;
+}
+
+/* Keep cards from looking bluish */
+.postMain,
+.postFooter,
+.replyCard,
+.nestedComment,
+.previewAudience > span,
+.previewPollOptions div {
+  background: transparent !important;
+}
+
+/* Recent activity rows should blend with card */
+.recentMiniList button {
+  background: transparent !important;
+}
+
+/* Main blue action remains blue like Calendar Add button */
+.primaryButton,
+.createButton {
+  background: #2f5de1 !important;
+  color: #ffffff !important;
+  box-shadow:
+    4px 4px 8px #b4bcc2,
+    -4px -4px 8px #ffffff !important;
+}
+
+/* Tabs closer to Calendar pill buttons */
+.typeTabs button,
+.sortTabs button,
+.notificationTabs button {
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  color: #34455f !important;
+  box-shadow:
+    4px 4px 8px #c4c4c4,
+    -4px -4px 8px #ffffff !important;
+}
+
+.typeTabs button.active,
+.sortTabs button.active,
+.notificationTabs button.active {
+  background: #dfe6e9 !important;
+  color: #2f5de1 !important;
+  box-shadow:
+    inset 2px 2px 5px rgba(196, 196, 196, 0.82),
+    inset -2px -2px 5px #ffffff !important;
+}
+
+/* Filter top fields and dropdowns */
+.filterPanel .filterDropdownTrigger {
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  box-shadow:
+    4px 4px 8px #c4c4c4,
+    -4px -4px 8px #ffffff !important;
+}
+
+.filterPanel .filterDropdown.open .filterDropdownTrigger {
+  background: #dfe6e9 !important;
+  box-shadow:
+    6px 6px 12px #c4c4c4,
+    -6px -6px 12px #ffffff !important;
+}
+
+.filterPanel .filterDropdownMenu {
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  box-shadow:
+    6px 6px 14px #c4c4c4,
+    -6px 6px 14px rgba(255, 255, 255, 0.96) !important;
+}
+
+.filterPanel .filterDropdownMenu button {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.filterPanel .filterOptionCheck {
+  background: #dfe6e9 !important;
+}
+
+/* Poll cards and checkbox controls */
+.pollCard > button {
+  background: #dfe6e9 !important;
+  border: 0 !important;
+  box-shadow:
+    4px 4px 8px #c4c4c4,
+    -4px -4px 8px #ffffff !important;
+}
+
+.pollCard > button.selected {
+  box-shadow:
+    inset 2px 2px 5px rgba(196, 196, 196, 0.82),
+    inset -2px -2px 5px #ffffff !important;
+}
+
+.toggleRow input[type="checkbox"] {
+  background-color: #dfe6e9 !important;
+}
+
+/* Role/avatar/icon blocks */
+.brandIcon,
+.avatar,
+.communityIcon {
+  background: #dfe6e9 !important;
+  box-shadow:
+    4px 4px 8px #c4c4c4,
+    -4px -4px 8px #ffffff !important;
+}
+
+/* Remove any remaining pale-blue surface fills */
+.audienceCards button.selected,
+.utilityActions button.active,
+.replySort button.active {
+  background: #dfe6e9 !important;
+}
+
+/* Keep only accents blue, not whole surfaces */
+.eyebrow,
+.overviewCard > strong,
+.brandIcon,
+.typeTabs button.active,
+.sortTabs button.active,
+.notificationTabs button.active,
+.utilityActions button.active,
+.replySort button.active {
+  color: #2f5de1 !important;
+}
+
+/* Mobile should keep same neutral neumorphic appearance */
+@media (max-width: 760px) {
+  .discussionPage,
+  .discussionTopbar,
+  .createModal,
+  .reportModal,
+  .modalFooter {
+    background: #dfe6e9 !important;
+  }
+}
+
+
+/* =========================================================
+   FUNCTIONAL REPLY CONTROLS
+   ========================================================= */
+
+.replyingToBanner,
+.replyAttachmentChip {
+  margin-bottom: 8px;
+  min-height: 38px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: #dfe6e9;
+  box-shadow:
+    inset 2px 2px 5px rgba(196,196,196,.82),
+    inset -2px -2px 5px #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.replyingToBanner span,
+.replyAttachmentChip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px !important;
+}
+
+.replyingToBanner button,
+.replyAttachmentChip button {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 8px;
+  background: #dfe6e9;
+  box-shadow:
+    3px 3px 6px #c4c4c4,
+    -3px -3px 6px #ffffff;
+}
+
+.replyEmojiPicker {
+  width: fit-content;
+  max-width: 100%;
+  margin: 8px 0;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  border-radius: 12px;
+  background: #dfe6e9;
+  box-shadow:
+    4px 4px 8px #c4c4c4,
+    -4px -4px 8px #ffffff;
+}
+
+.replyEmojiPicker button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: #dfe6e9;
+  box-shadow:
+    2px 2px 5px #c4c4c4,
+    -2px -2px 5px #ffffff;
+  font-size: 17px !important;
+}
+
+.replyEmojiPicker button:active {
+  box-shadow:
+    inset 2px 2px 5px #c4c4c4,
+    inset -2px -2px 5px #ffffff;
+}
+
+.replyAttachmentInput {
+  position: fixed !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.replyActions button:active,
+.composerBottom > div button:active {
+  box-shadow:
+    inset 2px 2px 5px rgba(196,196,196,.82),
+    inset -2px -2px 5px #ffffff !important;
+}
