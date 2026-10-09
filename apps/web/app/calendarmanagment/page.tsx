@@ -3199,6 +3199,7 @@ export default function CalendarManagementPage() {
     left: 0,
   });
   const [exportOpen, setExportOpen] = useState(false);
+  const [studentResourcesOpen, setStudentResourcesOpen] = useState(false);
   const [exportMonth, setExportMonth] = useState("");
   const [exportYear, setExportYear] = useState(() =>
     String(getDynamicCalendarAnchorDate(initialEvents).getFullYear())
@@ -6970,28 +6971,63 @@ export default function CalendarManagementPage() {
 
               <div className={`calendarActions ${isStudentView ? "studentCalendarActions" : ""}`}>
                 {isStudentView ? (
-                  <button
-                    type="button"
-                    className="neoButton studentExportButton"
-                    onClick={() => {
-                      setExportMessage("");
-                      setExportDropdown(null);
-                      setExportOpen(true);
-                    }}
-                    aria-label="Export Calendar"
-                  >
-                    <span className="studentExportButtonContent">
-                      <Image
-                        src={studentExportIconSrc}
-                        alt=""
-                        width={18}
-                        height={18}
-                        className="studentExportIcon"
-                        aria-hidden="true"
-                      />
-                      <span className="studentExportButtonText">Export Calendar</span>
-                    </span>
-                  </button>
+                  <div className="studentResourcesWrap">
+                    <button
+                      type="button"
+                      className="neoButton studentExportButton studentResourcesButton"
+                      onClick={() =>
+                        setStudentResourcesOpen((previous) => !previous)
+                      }
+                      aria-label="Resources"
+                      aria-haspopup="menu"
+                      aria-expanded={studentResourcesOpen}
+                    >
+                      <span className="studentExportButtonContent">
+                        <span className="studentExportButtonText">Resources</span>
+                      </span>
+                    </button>
+
+                    {studentResourcesOpen && (
+                      <div
+                        className="studentResourcesMenu"
+                        role="menu"
+                        aria-label="Resources"
+                      >
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setStudentResourcesOpen(false);
+                            setExportMessage("");
+                            setExportDropdown(null);
+                            setExportOpen(true);
+                          }}
+                        >
+                          <Image
+                            src={studentExportIconSrc}
+                            alt=""
+                            width={17}
+                            height={17}
+                            className="studentResourcesMenuIcon"
+                            aria-hidden="true"
+                          />
+                          <span>Export Calendar</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setStudentResourcesOpen(false);
+                            router.push("/discussion_form");
+                          }}
+                        >
+                          <Icon src={icons.more} size={17} />
+                          <span>Discussion Forum</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <>
                     <div className="bulkUploadWrap">

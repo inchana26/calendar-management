@@ -20798,3 +20798,123 @@ body {
   }
 }
 
+
+/* =========================================================
+   STUDENT CALENDAR — RESOURCES DROPDOWN ONLY
+   Resources
+     - Export Calendar
+     - Discussion Forum
+   All existing calendar styles remain unchanged.
+   ========================================================= */
+
+.calendarPage .studentCalendarActions .studentResourcesWrap {
+  position: relative !important;
+  width: 198px !important;
+  min-width: 198px !important;
+  flex: 0 0 198px !important;
+}
+
+.calendarPage .studentCalendarActions
+.studentResourcesButton.studentExportButton.neoButton {
+  width: 198px !important;
+  min-width: 198px !important;
+  max-width: 198px !important;
+}
+
+.calendarPage .studentCalendarActions
+.studentResourcesButton .studentExportButtonContent {
+  justify-content: space-between !important;
+}
+
+.calendarPage .studentCalendarActions
+.studentResourcesButton .studentExportButtonContent > img,
+.calendarPage .studentCalendarActions
+.studentResourcesButton .studentExportButtonContent > span[aria-hidden="true"] {
+  flex: 0 0 auto !important;
+}
+
+.calendarPage .studentResourcesMenu {
+  position: absolute !important;
+  z-index: 500 !important;
+  top: calc(100% + 9px) !important;
+  right: 0 !important;
+
+  width: 198px !important;
+  min-width: 198px !important;
+  padding: 8px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+
+  background: #DFE6E9 !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  box-shadow:
+    -5px -5px 10px rgba(255,255,255,.92),
+     5px  5px 12px rgba(174,181,184,.62) !important;
+}
+
+.calendarPage .studentResourcesMenu button {
+  width: 100% !important;
+  min-height: 40px !important;
+  padding: 0 10px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+
+  border: 0 !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: #30394D !important;
+
+  font-family: "Segoe UI", Inter, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 18px !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+}
+
+.calendarPage .studentResourcesMenu button:hover,
+.calendarPage .studentResourcesMenu button:focus-visible {
+  outline: none !important;
+  box-shadow:
+    inset -2px -2px 4px rgba(255,255,255,.88),
+    inset  2px  2px 4px rgba(174,181,184,.48) !important;
+}
+
+.calendarPage .studentResourcesMenu button img,
+.calendarPage .studentResourcesMenuIcon {
+  width: 17px !important;
+  height: 17px !important;
+  flex: 0 0 17px !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarTopRow
+  .calendarActions.studentCalendarActions .studentResourcesWrap {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .calendarPage .calendarTopRow
+  .calendarActions.studentCalendarActions
+  .studentResourcesButton.studentExportButton.neoButton {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .calendarPage .studentResourcesMenu {
+    width: 100% !important;
+    min-width: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+  }
+}
+

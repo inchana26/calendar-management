@@ -110,3 +110,235 @@ model EventAudience {
   @@index([audienceId])
   @@index([publishedBy])
 }
+
+// ============================================================
+// DISCUSSION FORUM
+// ============================================================
+
+enum DiscussionPostType {
+  QUESTION
+  DISCUSSION
+  POLL
+  RESOURCE
+}
+
+enum DiscussionPostStatus {
+  OPEN
+  ANSWERED
+  SOLVED
+  CLOSED
+}
+
+enum DiscussionReportStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+// ============================================================
+// DISCUSSION POST
+// Stores Question / Discussion / Poll / Resource in one table.
+// Community, audience, tags and poll configuration are stored
+// directly on the post. No separate Community/Scope/Tag/Poll tables.
+// ============================================================
+
+model DiscussionPost {
+  id String @id @default(cuid())
+
+  tenantType String
+  authorId   String
+  authorRole String?
+
+  type    DiscussionPostType
+  title   String
+  content String
+
+  communityId   String
+  communityName String
+  scopeId       String
+  scopeLabel    String
+
+  tags String[] @default([])
+
+  status DiscussionPostStatus @default(OPEN)
+
+  attachment  String?
+  resourceUrl String?
+  viewCount   Int @default(0)
+
+  // Poll-only fields. For non-poll posts pollOptions is null.
+  // Stored as JSON array of option text, e.g. ["Python", "Java"].
+  pollOptions          Json?
+  pollMultiple         Boolean @default(false)
+  pollShowResults      Boolean @default(true)
+  pollAllowComments    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  replies   DiscussionReply[]
+  reactions DiscussionReaction[]
+  bookmarks DiscussionBookmark[]
+  follows   DiscussionFollow[]
+  votes     DiscussionPollVote[]
+  reports   DiscussionReport[]
+
+  @@index([tenantType])
+  @@index([communityId])
+  @@index([scopeId])
+  @@index([type])
+  @@index([status])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+// ============================================================
+// DISCUSSION REPLY / COMMENT
+// parentReplyId is used for nested comments.
+// accepted is used for Accept Answer.
+// ============================================================
+
+model DiscussionReply {
+  id String @id @default(cuid())
+
+  postId        String
+  parentReplyId String?
+
+  authorId   String
+  authorRole String?
+  content    String
+
+  accepted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post     DiscussionPost    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent   DiscussionReply?  @relation("DiscussionReplyTree", fields: [parentReplyId], references: [id], onDelete: Cascade)
+  children DiscussionReply[] @relation("DiscussionReplyTree")
+
+  reactions DiscussionReaction[]
+  reports   DiscussionReport[]
+
+  @@index([postId])
+  @@index([parentReplyId])
+  @@index([authorId])
+}
+
+// ============================================================
+// DISCUSSION REACTION
+// ============================================================
+
+model DiscussionReaction {
+  id String @id @default(cuid())
+
+  tenantType String
+  userId     String
+  reaction   String
+
+  postId  String?
+  replyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post  DiscussionPost?  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reply DiscussionReply? @relation(fields: [replyId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([replyId])
+  @@index([userId])
+}
+
+// ============================================================
+// DISCUSSION BOOKMARK
+// ============================================================
+
+model DiscussionBookmark {
+  id String @id @default(cuid())
+
+  tenantType String
+  userId     String
+  postId     String
+
+  createdAt DateTime @default(now())
+
+  post DiscussionPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+// ============================================================
+// DISCUSSION FOLLOW
+// ============================================================
+
+model DiscussionFollow {
+  id String @id @default(cuid())
+
+  tenantType String
+  userId     String
+  postId     String
+
+  createdAt DateTime @default(now())
+
+  post DiscussionPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+// ============================================================
+// DISCUSSION POLL VOTE
+// Poll options themselves live in DiscussionPost.pollOptions.
+// optionIndex is the zero-based index inside that JSON array.
+// ============================================================
+
+model DiscussionPollVote {
+  id String @id @default(cuid())
+
+  tenantType String
+  postId     String
+  optionIndex Int
+  userId     String
+
+  createdAt DateTime @default(now())
+
+  post DiscussionPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, optionIndex, userId])
+  @@index([postId])
+  @@index([userId])
+}
+
+// ============================================================
+// DISCUSSION REPORT
+// ============================================================
+
+model DiscussionReport {
+  id String @id @default(cuid())
+
+  tenantType String
+  reportedBy String
+
+  postId  String
+  replyId String?
+
+  reason  String
+  details String?
+
+  status DiscussionReportStatus @default(OPEN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post  DiscussionPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reply DiscussionReply? @relation(fields: [replyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantType])
+  @@index([postId])
+  @@index([replyId])
+  @@index([status])
+  @@index([reportedBy])
+}
