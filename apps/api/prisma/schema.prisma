@@ -165,14 +165,14 @@ model DiscussionPost {
 
   attachment  String?
   resourceUrl String?
-  viewCount   Int @default(0)
+  viewCount   Int     @default(0)
 
   // Poll-only fields. For non-poll posts pollOptions is null.
   // Stored as JSON array of option text, e.g. ["Python", "Java"].
-  pollOptions          Json?
-  pollMultiple         Boolean @default(false)
-  pollShowResults      Boolean @default(true)
-  pollAllowComments    Boolean @default(true)
+  pollOptions       Json?
+  pollMultiple      Boolean @default(false)
+  pollShowResults   Boolean @default(true)
+  pollAllowComments Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -298,10 +298,10 @@ model DiscussionFollow {
 model DiscussionPollVote {
   id String @id @default(cuid())
 
-  tenantType String
-  postId     String
+  tenantType  String
+  postId      String
   optionIndex Int
-  userId     String
+  userId      String
 
   createdAt DateTime @default(now())
 

@@ -17,6 +17,12 @@ export class DiscussionPollOptionDto {
 }
 
 export class DiscussionPollDto {
+  @IsArray()
+  @ArrayMinSize(2)
+  @ValidateNested({ each: true })
+  @Type(() => DiscussionPollOptionDto)
+  options!: DiscussionPollOptionDto[];
+
   @IsBoolean()
   multiple!: boolean;
 
@@ -25,12 +31,6 @@ export class DiscussionPollDto {
 
   @IsBoolean()
   allowComments!: boolean;
-
-  @IsArray()
-  @ArrayMinSize(2)
-  @ValidateNested({ each: true })
-  @Type(() => DiscussionPollOptionDto)
-  options!: DiscussionPollOptionDto[];
 }
 
 export class CreateDiscussionPostDto {
@@ -51,8 +51,6 @@ export class CreateDiscussionPostDto {
   @IsNotEmpty()
   content!: string;
 
-  // Stored directly in DiscussionPost.
-  // There is no DiscussionCommunity table lookup anymore.
   @IsString()
   @IsNotEmpty()
   communityId!: string;
@@ -61,8 +59,6 @@ export class CreateDiscussionPostDto {
   @IsNotEmpty()
   communityName!: string;
 
-  // Stored directly in DiscussionPost.
-  // There is no DiscussionScope table lookup anymore.
   @IsString()
   @IsNotEmpty()
   scopeId!: string;
@@ -71,7 +67,6 @@ export class CreateDiscussionPostDto {
   @IsNotEmpty()
   scopeLabel!: string;
 
-  // Stored directly as PostgreSQL String[] in DiscussionPost.
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
@@ -85,7 +80,6 @@ export class CreateDiscussionPostDto {
   @IsString()
   resourceUrl?: string;
 
-  // Poll options/config are stored directly in DiscussionPost.
   @IsOptional()
   @ValidateNested()
   @Type(() => DiscussionPollDto)

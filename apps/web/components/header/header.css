@@ -20,7 +20,6 @@
   font-weight: 400;
 }
 
-/* Shared breadcrumb typography for every current and future page using Header */
 .breadcrumbParent {
   color: #2F3547;
   font-size: 14px;
@@ -63,7 +62,7 @@
   cursor: pointer;
 }
 
-.notificationDot {
+.notificationButton .notificationDot {
   position: absolute;
   top: 5px;
   right: 6px;
@@ -114,8 +113,6 @@
   border-radius: 50%;
 }
 
-/* Hide any empty/default/broken header image.
-   Uploaded profile photos are stored as data:image URLs, so they remain visible. */
 .smallAvatar .avatarImage:not([src^="data:image/"]) {
   display: none !important;
 }
@@ -143,12 +140,6 @@
 .mobileMenuButton {
   display: none;
 }
-
-/* =========================================================
-   CALENDAR MANAGEMENT HEADER CONTENT
-   Only adds tenant/actor presentation used by Header.tsx.
-   Existing header design remains unchanged.
-========================================================= */
 
 .calendarTopHeader .desktopBreadcrumb {
   min-width: 0;
@@ -196,10 +187,6 @@
   line-height: 12px;
   font-weight: 500;
 }
-
-/* =========================================================
-   MOBILE
-========================================================= */
 
 @media (max-width: 700px) {
   .topHeader {
@@ -305,7 +292,6 @@
     border-radius: 2px;
   }
 
-  /* Calendar header remains responsive without changing other pages. */
   .calendarTopHeader {
     min-height: 64px;
     height: 64px;
@@ -375,5 +361,69 @@
 
   .mobileBreadcrumb .calendarHeaderIdentity h1 {
     font-size: 13px;
+  }
+}
+
+/* =========================================================
+   NOTIFICATION BUTTON — SAME ALIGNMENT ON WEB + MOBILE
+   Only notification icon/badge alignment is changed.
+   ========================================================= */
+
+.notificationButton {
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.notificationButton > img {
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  justify-self: center !important;
+  align-self: center !important;
+  object-fit: contain !important;
+  transform: none !important;
+}
+
+/* Discussion unread number: same top-right position on desktop and mobile. */
+.notificationButton > span:not(.notificationDot) {
+  position: absolute !important;
+  top: 2px !important;
+  right: 4px !important;
+
+  min-width: 14px !important;
+  height: 14px !important;
+  padding: 0 2px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  color: #ff2d2d !important;
+  background: transparent !important;
+
+  font-size: 11px !important;
+  line-height: 14px !important;
+  font-weight: 700 !important;
+
+  transform: none !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+/* Keep the original notification dot behavior unchanged. */
+.notificationButton > .notificationDot {
+  position: absolute !important;
+  top: 5px !important;
+  right: 6px !important;
+}
+
+@media (max-width: 420px) {
+  .calendarTopHeader .notificationButton {
+    width: 32px !important;
+    height: 31px !important;
   }
 }

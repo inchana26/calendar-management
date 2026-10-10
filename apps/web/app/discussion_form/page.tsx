@@ -34,6 +34,8 @@ import {
   Users,
   X,
 } from "lucide-react";
+import Sidebar from "../../components/sidebar/Sidebar";
+import Header from "../../components/header/Header";
 import "./discussions.css";
 
 type TenantType = "UNIVERSITY" | "SKILL_ACADEMY" | "CORPORATE" | "NGO" | "GOVERNMENT";
@@ -50,7 +52,7 @@ type ReplyComment = { id: number; author: string; body: string; time: string };
 type Reply = { id: number; author: string; role: string; body: string; time: string; likes: number; accepted?: boolean; comments: ReplyComment[] };
 type PollOption = { id: number; text: string; votes: number };
 type Post = {
-  id: number; tenant: TenantType; type: PostType; title: string; body: string; author: string; authorRole: string;
+  id: number; tenant: TenantType | "PLATFORM"; type: PostType; title: string; body: string; author: string; authorRole: string;
   communityId: string; communityName: string; scopeId: string; scopeLabel: string; tags: string[]; createdAt: number;
   views: number; reactions: Record<string, number>; replies: Reply[]; status: "OPEN" | "ANSWERED" | "SOLVED" | "CLOSED";
   attachmentName?: string; resourceUrl?: string; following?: boolean; bookmarked?: boolean;
@@ -63,6 +65,10 @@ type CreateDraft = {
   attachmentName: string; resourceUrl: string; pollQuestion: string; pollOptions: string[]; pollMultiple: boolean;
   pollShowResults: boolean; pollAllowComments: boolean;
 };
+
+const DISCUSSION_API_BASE = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"
+).replace(/\/+$/, "");
 
 const REACTIONS = ["👍", "❤️", "👏", "💡", "🎉", "😂"];
 const TYPE_OPTIONS = [
@@ -238,6 +244,69 @@ const TENANT_COMMUNITIES: Record<TenantType, Community[]> = {
       { id: "government-trainers", label: "Trainers / Facilitators", type: "ROLE" },
       { id: "training-coordinators", label: "Training Coordinators", type: "ROLE" },
     ]},
+  ],
+};
+
+
+const ADMIN_COMMUNITIES: Record<"SUPER_ADMIN" | "PLATFORM_ADMIN", Community[]> = {
+  SUPER_ADMIN: [
+    {
+      id: "platform-governance",
+      name: "Platform Governance",
+      icon: "🛡️",
+      scopes: [
+        { id: "super-admins", label: "Super Admins", type: "ROLE" },
+        { id: "platform-admins", label: "Platform Admins", type: "ROLE" },
+      ],
+    },
+    {
+      id: "tenant-administration",
+      name: "Tenant Administration",
+      icon: "🏢",
+      scopes: [
+        { id: "platform-admin-team", label: "Platform Admins", type: "ROLE" },
+        { id: "institute-admins", label: "Institute Admins", type: "ROLE" },
+      ],
+    },
+    {
+      id: "platform-announcements",
+      name: "Platform Announcements",
+      icon: "📢",
+      scopes: [
+        { id: "platform-leadership", label: "Super Admins & Platform Admins", type: "GROUP" },
+        { id: "tenant-admin-audience", label: "Institute Admins", type: "ROLE" },
+      ],
+    },
+  ],
+
+  PLATFORM_ADMIN: [
+    {
+      id: "tenant-operations",
+      name: "Tenant Operations",
+      icon: "🏢",
+      scopes: [
+        { id: "platform-operations-team", label: "Platform Admins", type: "ROLE" },
+        { id: "tenant-admins", label: "Institute Admins", type: "ROLE" },
+      ],
+    },
+    {
+      id: "moderation-support",
+      name: "Moderation & Support",
+      icon: "🛡️",
+      scopes: [
+        { id: "platform-moderators", label: "Platform Admins", type: "ROLE" },
+        { id: "tenant-support-admins", label: "Institute Admins", type: "ROLE" },
+      ],
+    },
+    {
+      id: "platform-admin-announcements",
+      name: "Platform Announcements",
+      icon: "📢",
+      scopes: [
+        { id: "platform-admin-audience", label: "Platform Admins", type: "ROLE" },
+        { id: "institute-admin-audience", label: "Institute Admins", type: "ROLE" },
+      ],
+    },
   ],
 };
 
@@ -919,6 +988,210 @@ function seedPosts(tenant: TenantType, communities: Community[]): Post[] {
   ];
 }
 
+
+function seedAdminPosts(
+  role: "SUPER_ADMIN" | "PLATFORM_ADMIN",
+  communities: Community[]
+): Post[] {
+  const c1 = communities[0];
+  const c2 = communities[Math.min(1, communities.length - 1)];
+  const c3 = communities[Math.min(2, communities.length - 1)];
+
+  if (role === "SUPER_ADMIN") {
+    return [
+      {
+        id: 601,
+        tenant: "PLATFORM",
+        type: "DISCUSSION",
+        title: "Platform governance standards for tenant communities",
+        body: "Review the common governance standards that should apply across tenant discussion spaces, including ownership, moderation boundaries and escalation visibility.",
+        author: "Platform Admin",
+        authorRole: "Platform Admin",
+        communityId: c1.id,
+        communityName: c1.name,
+        scopeId: c1.scopes[1].id,
+        scopeLabel: c1.scopes[1].label,
+        tags: ["Governance", "Platform", "Moderation"],
+        createdAt: nowMinus(35),
+        views: 188,
+        reactions: { "👍": 24, "💡": 8 },
+        replies: [],
+        status: "OPEN",
+        following: true,
+        bookmarked: false,
+      },
+      {
+        id: 602,
+        tenant: "PLATFORM",
+        type: "QUESTION",
+        title: "How should tenant-level discussion issues be escalated?",
+        body: "Define the correct platform-level escalation path when an Institute Admin needs support for a discussion moderation or access issue.",
+        author: "Platform Admin",
+        authorRole: "Platform Admin",
+        communityId: c2.id,
+        communityName: c2.name,
+        scopeId: c2.scopes[0].id,
+        scopeLabel: c2.scopes[0].label,
+        tags: ["Tenants", "Escalation", "Support"],
+        createdAt: nowMinus(80),
+        views: 146,
+        reactions: { "👍": 19, "💡": 6 },
+        replies: [],
+        status: "ANSWERED",
+        following: false,
+        bookmarked: true,
+      },
+      {
+        id: 603,
+        tenant: "PLATFORM",
+        type: "RESOURCE",
+        title: "Platform discussion governance guidelines",
+        body: "Reference guidance for platform-level discussion governance, tenant administration and moderation responsibilities.",
+        author: "Super Admin",
+        authorRole: "Super Admin",
+        communityId: c1.id,
+        communityName: c1.name,
+        scopeId: c1.scopes[0].id,
+        scopeLabel: c1.scopes[0].label,
+        tags: ["Guidelines", "Governance", "Platform"],
+        createdAt: nowMinus(210),
+        views: 264,
+        reactions: { "👍": 31, "💡": 12 },
+        replies: [],
+        status: "OPEN",
+        resourceUrl: "https://example.com/platform/discussion-governance",
+        attachmentName: "platform-discussion-governance.pdf",
+      },
+      {
+        id: 604,
+        tenant: "PLATFORM",
+        type: "POLL",
+        title: "Which platform discussion improvement should be prioritized next?",
+        body: "Vote on the next platform-level improvement for tenant discussion management.",
+        author: "Super Admin",
+        authorRole: "Super Admin",
+        communityId: c3.id,
+        communityName: c3.name,
+        scopeId: c3.scopes[0].id,
+        scopeLabel: c3.scopes[0].label,
+        tags: ["Platform", "Planning", "Poll"],
+        createdAt: nowMinus(260),
+        views: 319,
+        reactions: { "👍": 28, "❤️": 7 },
+        replies: [],
+        status: "OPEN",
+        poll: {
+          options: [
+            { id: 1, text: "Moderation visibility", votes: 42 },
+            { id: 2, text: "Tenant admin controls", votes: 36 },
+            { id: 3, text: "Notification improvements", votes: 29 },
+          ],
+          votedOptionIds: [],
+          multiple: false,
+          showResultsAfterVote: true,
+          allowComments: true,
+        },
+      },
+    ];
+  }
+
+  return [
+    {
+      id: 701,
+      tenant: "PLATFORM",
+      type: "QUESTION",
+      title: "What information should Institute Admins include in a platform support request?",
+      body: "Create a consistent support request format so tenant-level issues can be reviewed quickly without exposing unrelated tenant information.",
+      author: "Institute Admin",
+      authorRole: "Institute Admin",
+      communityId: c1.id,
+      communityName: c1.name,
+      scopeId: c1.scopes[0].id,
+      scopeLabel: c1.scopes[0].label,
+      tags: ["TenantSupport", "Operations", "Admins"],
+      createdAt: nowMinus(25),
+      views: 172,
+      reactions: { "👍": 22, "💡": 7 },
+      replies: [],
+      status: "ANSWERED",
+      following: true,
+      bookmarked: false,
+    },
+    {
+      id: 702,
+      tenant: "PLATFORM",
+      type: "DISCUSSION",
+      title: "Common moderation issues reported across tenant discussion spaces",
+      body: "Share platform-level patterns that help improve moderation support without changing tenant-owned academic or operational workflows.",
+      author: "Platform Admin",
+      authorRole: "Platform Admin",
+      communityId: c2.id,
+      communityName: c2.name,
+      scopeId: c2.scopes[0].id,
+      scopeLabel: c2.scopes[0].label,
+      tags: ["Moderation", "Support", "Tenants"],
+      createdAt: nowMinus(105),
+      views: 238,
+      reactions: { "👍": 34, "👏": 10 },
+      replies: [],
+      status: "OPEN",
+      following: false,
+      bookmarked: true,
+    },
+    {
+      id: 703,
+      tenant: "PLATFORM",
+      type: "RESOURCE",
+      title: "Tenant discussion support checklist",
+      body: "A platform-admin checklist for handling tenant discussion access, moderation and configuration support requests.",
+      author: "Platform Admin",
+      authorRole: "Platform Admin",
+      communityId: c1.id,
+      communityName: c1.name,
+      scopeId: c1.scopes[1].id,
+      scopeLabel: c1.scopes[1].label,
+      tags: ["Support", "Checklist", "Tenants"],
+      createdAt: nowMinus(190),
+      views: 281,
+      reactions: { "👍": 29, "💡": 11 },
+      replies: [],
+      status: "OPEN",
+      resourceUrl: "https://example.com/platform/tenant-support-checklist",
+      attachmentName: "tenant-discussion-support-checklist.pdf",
+    },
+    {
+      id: 704,
+      tenant: "PLATFORM",
+      type: "POLL",
+      title: "Which tenant discussion support area needs clearer guidance?",
+      body: "Vote for the platform support topic that should receive the next guidance update.",
+      author: "Platform Admin",
+      authorRole: "Platform Admin",
+      communityId: c3.id,
+      communityName: c3.name,
+      scopeId: c3.scopes[0].id,
+      scopeLabel: c3.scopes[0].label,
+      tags: ["Support", "Guidance", "Poll"],
+      createdAt: nowMinus(245),
+      views: 304,
+      reactions: { "👍": 26, "❤️": 6 },
+      replies: [],
+      status: "OPEN",
+      poll: {
+        options: [
+          { id: 1, text: "Moderation support", votes: 39 },
+          { id: 2, text: "Tenant access", votes: 33 },
+          { id: 3, text: "Notification setup", votes: 24 },
+        ],
+        votedOptionIds: [],
+        multiple: false,
+        showResultsAfterVote: true,
+        allowComments: true,
+      },
+    },
+  ];
+}
+
 export default function DiscussionForumPage() {
   const [login, setLogin] = useState<LoginContext>({ role: "STUDENT", displayRole: "Student", tenantType: "UNIVERSITY", displayTenant: "University & College" });
   const [screen, setScreen] = useState<Screen>("HOME");
@@ -950,6 +1223,7 @@ export default function DiscussionForumPage() {
   const [reportDetails, setReportDetails] = useState("");
   const [toast, setToast] = useState("");
   const [postSuccessOpen, setPostSuccessOpen] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [deleteConfirmPostId, setDeleteConfirmPostId] = useState<number | null>(null);
   const [editPostOpen, setEditPostOpen] = useState(false);
   const [editPostId, setEditPostId] = useState<number | null>(null);
@@ -970,6 +1244,51 @@ export default function DiscussionForumPage() {
     quote: false,
     code: false,
   });
+
+  // Close all open dropdowns when the user clicks/taps elsewhere,
+  // scrolls to another part of the page/modal, resizes the window,
+  // or presses Escape. Selection handlers already close immediately.
+  useEffect(() => {
+    const closeOpenDropdowns = () => {
+      setOpenFilterDropdown(null);
+      setCreateDropdownOpen(null);
+      setCreateMenuOpen(false);
+      setSortDropdownOpen(false);
+    };
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+
+      const clickedInsideDropdown =
+        target.closest(".filterDropdown") ||
+        target.closest(".singleCreateDropdown") ||
+        target.closest(".createMenuWrap") ||
+        target.closest(".sortDropdown");
+
+      if (!clickedInsideDropdown) {
+        closeOpenDropdowns();
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeOpenDropdowns();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("scroll", closeOpenDropdowns, true);
+    window.addEventListener("resize", closeOpenDropdowns);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("scroll", closeOpenDropdowns, true);
+      window.removeEventListener("resize", closeOpenDropdowns);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   function syncDescriptionFromEditor() {
     const editor = descriptionRef.current;
@@ -1344,15 +1663,23 @@ export default function DiscussionForumPage() {
     }
   }, [createOpen, draft.type]);
 
-  const tenant = useMemo(() => normalizeTenant(login.tenantType || login.displayTenant), [login.tenantType, login.displayTenant]);
   const role = useMemo(() => normalizeRole(login.role || login.displayRole), [login.role, login.displayRole]);
-  const communities = TENANT_COMMUNITIES[tenant];
+  const isGlobalAdmin = role === "SUPER_ADMIN" || role === "PLATFORM_ADMIN";
+  const tenant = useMemo(() => normalizeTenant(login.tenantType || login.displayTenant), [login.tenantType, login.displayTenant]);
+
+  const communities = isGlobalAdmin
+    ? ADMIN_COMMUNITIES[role as "SUPER_ADMIN" | "PLATFORM_ADMIN"]
+    : TENANT_COMMUNITIES[tenant];
+
+  const discussionContextKey = isGlobalAdmin ? `PLATFORM_${role}` : tenant;
 
   useEffect(() => {
     try {
-      const key = `discussion_demo_posts_${tenant}`;
+      const key = `discussion_demo_posts_${discussionContextKey}`;
       const stored = localStorage.getItem(key);
-      const seeded = seedPosts(tenant, communities);
+      const seeded = isGlobalAdmin
+        ? seedAdminPosts(role as "SUPER_ADMIN" | "PLATFORM_ADMIN", communities)
+        : seedPosts(tenant, communities);
 
       if (!stored) {
         setPosts(seeded);
@@ -1362,8 +1689,7 @@ export default function DiscussionForumPage() {
       const savedPosts: Post[] = JSON.parse(stored);
 
       // Keep manually-created posts, but refresh demo posts from the latest
-      // tenant-specific seed data. This prevents older cached demo data from
-      // breaking Community / Target Audience filtering after code updates.
+      // role/tenant-specific seed data.
       const manualPosts = savedPosts.filter(
         (post) =>
           post.author === "Current User" ||
@@ -1372,13 +1698,27 @@ export default function DiscussionForumPage() {
 
       setPosts([...manualPosts, ...seeded]);
     } catch {
-      setPosts(seedPosts(tenant, communities));
+      setPosts(
+        isGlobalAdmin
+          ? seedAdminPosts(role as "SUPER_ADMIN" | "PLATFORM_ADMIN", communities)
+          : seedPosts(tenant, communities)
+      );
     }
-  }, [tenant, communities]);
-  useEffect(() => { if (posts.length) try { localStorage.setItem(`discussion_demo_posts_${tenant}`, JSON.stringify(posts)); } catch {} }, [posts, tenant]);
+  }, [discussionContextKey, isGlobalAdmin, role, tenant, communities]);
 
-  // A filter selected in one tenant must never remain active after logging
-  // into another tenant, because community/audience IDs are tenant-specific.
+  useEffect(() => {
+    if (posts.length) {
+      try {
+        localStorage.setItem(
+          `discussion_demo_posts_${discussionContextKey}`,
+          JSON.stringify(posts)
+        );
+      } catch {}
+    }
+  }, [posts, discussionContextKey]);
+
+  // A filter selected in one role/tenant context must never remain active
+  // after the discussion context changes.
   useEffect(() => {
     setCommunityFilter("ALL");
     setScopeFilter("ALL");
@@ -1387,7 +1727,7 @@ export default function DiscussionForumPage() {
     setSort("LATEST");
     setSearch("");
     setOpenFilterDropdown(null);
-  }, [tenant]);
+  }, [discussionContextKey]);
 
   const selectedPost = posts.find(p => p.id === selectedPostId) || null;
   const draftCommunity = communities.find(c => c.id === draft.communityId) || null;
@@ -1554,7 +1894,7 @@ export default function DiscussionForumPage() {
     showToast("Post deleted successfully.");
   }
 
-  function publishPost() {
+  async function publishPost() {
     if (!draft.type) return;
     if (draft.type === "POLL") {
       if (!draft.pollQuestion.trim()) return showToast("Enter the poll question.");
@@ -1565,10 +1905,110 @@ export default function DiscussionForumPage() {
     if (!draft.communityId || !draft.scopeId || !draftCommunity) {
       return showToast("Select community and target audience.");
     }
+
     const scope = draftCommunity.scopes.find(s=>s.id===draft.scopeId);
     if (!scope) return showToast("Select a valid target audience.");
+
+    setIsPublishing(true);
+
+    try {
+      // Get a fresh backend JWT for the currently selected LMS role/tenant.
+      // This uses the same backend route that was verified directly in PowerShell.
+      const authResponse = await fetch(`${DISCUSSION_API_BASE}/auth/calendar-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          role: login.role || role,
+          tenantType: isGlobalAdmin ? undefined : (login.tenantType || tenant),
+        }),
+      });
+
+      const authResult = await authResponse.json().catch(() => null);
+
+      if (!authResponse.ok) {
+        const authMessage =
+          authResult?.message ||
+          `Calendar login failed (${authResponse.status}).`;
+        throw new Error(
+          Array.isArray(authMessage) ? authMessage.join(", ") : String(authMessage)
+        );
+      }
+
+      const accessToken = authResult?.accessToken;
+
+      if (!accessToken) {
+        throw new Error("Backend login succeeded but no access token was returned.");
+      }
+
+      // Save the post in PostgreSQL FIRST.
+      const saveResponse = await fetch(`${DISCUSSION_API_BASE}/discussion/posts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          type: draft.type,
+          title: draft.type === "POLL" ? draft.pollQuestion.trim() : draft.title.trim(),
+          content:
+            draft.description ||
+            (draft.type === "POLL" ? "Vote below and share your opinion." : ""),
+          communityId: draftCommunity.id,
+          communityName: draftCommunity.name,
+          scopeId: scope.id,
+          scopeLabel: scope.label,
+          tags: draft.tags
+            .split(",")
+            .map(x=>x.trim())
+            .filter(Boolean),
+          attachment: draft.attachmentName || undefined,
+          resourceUrl:
+            draft.type === "RESOURCE"
+              ? (draft.resourceUrl || undefined)
+              : undefined,
+          poll:
+            draft.type === "POLL"
+              ? {
+                  options: draft.pollOptions
+                    .filter(Boolean)
+                    .map(text => ({ text: text.trim() })),
+                  multiple: draft.pollMultiple,
+                  showResultsAfterVote: draft.pollShowResults,
+                  allowComments: draft.pollAllowComments,
+                }
+              : undefined,
+        }),
+      });
+
+      const savedPost = await saveResponse.json().catch(() => null);
+
+      if (!saveResponse.ok) {
+        const saveMessage =
+          savedPost?.message ||
+          `Unable to save post to database (${saveResponse.status}).`;
+        throw new Error(
+          Array.isArray(saveMessage) ? saveMessage.join(", ") : String(saveMessage)
+        );
+      }
+
+      if (!savedPost?.id) {
+        throw new Error("Backend did not return the saved DiscussionPost id.");
+      }
+    } catch (error) {
+      setIsPublishing(false);
+      showToast(
+        error instanceof Error
+          ? error.message
+          : "Unable to save post to database."
+      );
+      return;
+    }
+
+    // Existing frontend logic below is intentionally unchanged.
     const post: Post = {
-      id: Date.now(), tenant, type: draft.type, title: draft.type === "POLL" ? draft.pollQuestion : draft.title,
+      id: Date.now(), tenant: isGlobalAdmin ? "PLATFORM" : tenant, type: draft.type, title: draft.type === "POLL" ? draft.pollQuestion : draft.title,
       body: draft.description || (draft.type === "POLL" ? "Vote below and share your opinion." : ""), author: "Current User", authorRole: login.displayRole || actorLabel(role),
       communityId:draftCommunity.id,communityName:draftCommunity.name,scopeId:scope.id,scopeLabel:scope.label,tags:draft.tags.split(",").map(x=>x.trim()).filter(Boolean),createdAt:Date.now(),views:0,reactions:{},replies:[],status:"OPEN",
       attachmentName:draft.attachmentName||undefined,resourceUrl:draft.type==="RESOURCE"?(draft.resourceUrl||undefined):undefined,
@@ -1579,6 +2019,7 @@ export default function DiscussionForumPage() {
     resetDraft();
     setSelectedPostId(post.id);
     setScreen("HOME");
+    setIsPublishing(false);
     setPostSuccessOpen(true);
   }
   function handleFile(e: ChangeEvent<HTMLInputElement>) { const file=e.target.files?.[0]; if(file) setDraft(d=>({...d,attachmentName:file.name})); }
@@ -1695,12 +2136,59 @@ export default function DiscussionForumPage() {
   function submitReport(){setReportTarget(null);setReportDetails("");setReportReason("Spam");showToast("Report submitted for review.");}
   function clearFilters(){setSearch("");setTypeFilter("ALL");setSort("LATEST");setStatusFilter("ALL");setCommunityFilter("ALL");setScopeFilter("ALL");}
 
-  return <main className="discussionPage">
-    <header className="discussionTopbar">
-      <button className="brandButton" onClick={()=>setScreen("HOME")}><span className="brandIcon">D</span><span><b>Discussions</b><small>{login.displayTenant||tenant.replaceAll("_"," ")}</small></span></button>
-      <div className="topbarActions"><button className="notificationButton" onClick={()=>setScreen("NOTIFICATIONS")}><img src= "/assets/superadminicons/notification.svg" alt="" />{unreadCount>0&&<span>{unreadCount}</span>}</button><div className="roleChip"><span>{(login.displayRole||actorLabel(role)).slice(0,1)}</span><div><b>{login.displayRole||actorLabel(role)}</b><small>{tenant.replaceAll("_"," ")}</small></div></div></div>
-    </header>
+  return (
+    <div
+      className="superAdminPage"
+      style={{
+        width: "100%",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        className="dashboardLayout"
+        style={{
+          display: "flex",
+          width: "100%",
+          height: "100vh",
+          minHeight: 0,
+          overflow: "hidden",
+        }}
+      >
+        <Sidebar />
 
+        <div
+          className="mainContent"
+          style={{
+            flex: "1 1 auto",
+            minWidth: 0,
+            height: "100vh",
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            position: "relative",
+          }}
+        >
+          <Header
+            onNotificationClick={() => {
+              setScreen("NOTIFICATIONS");
+              window.requestAnimationFrame(() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              });
+            }}
+            notificationCount={unreadCount}
+          />
+
+          <main
+            className="discussionPage"
+            style={{
+              flex: "1 1 auto",
+              minHeight: 0,
+              overflowX: "hidden",
+              overflowY: "auto",
+            }}
+          >
     {screen === "HOME" && <>
       <section className="heroSection"><div><p className="eyebrow">Community learning</p><h1>Discussions</h1><p>Ask questions, share knowledge, exchange ideas and learn together.</p></div>
       <div className={`createMenuWrap ${createMenuOpen?"open":""}`}>
@@ -1717,15 +2205,15 @@ export default function DiscussionForumPage() {
     </section>
 
       <section className="discoverPanel">
-        <div className="searchRow"><label className="searchBox"><Search size={17} strokeWidth={1.8} aria-hidden="true" /><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search posts, replies, tags, people or communities..."/></label><button className={`softButton filterButton ${showFilters?"active":""}`} onClick={()=>setShowFilters(v=>!v)}><Filter size={16} strokeWidth={1.8} aria-hidden="true" />Filters</button></div>
+        <div className="searchRow"><label className="searchBox"><Search size={17} strokeWidth={1.8} aria-hidden="true" /><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search posts, replies, tags, people or communities..."/></label><button className={`softButton filterButton ${showFilters?"active":""}`} onClick={()=>{setShowFilters(v=>!v);setOpenFilterDropdown(null);}}><Filter size={16} strokeWidth={1.8} aria-hidden="true" />Filters</button></div>
         {showFilters&&<div className="filterPanel">
           <label>Community
             <div className={`filterDropdown ${openFilterDropdown === "COMMUNITY" ? "open" : ""}`}>
               <button type="button" className="filterDropdownTrigger" onClick={()=>setOpenFilterDropdown(openFilterDropdown === "COMMUNITY" ? null : "COMMUNITY")}>
-                <span>{communityFilter === "ALL" ? "All Communities" : communities.find(c=>c.id===communityFilter)?.name || "All Communities"}</span><span className="filterDropdownArrow"><ChevronDown size={15} strokeWidth={1.8} aria-hidden="true" /></span>
+                <span>{communityFilter === "ALL" ? (isGlobalAdmin ? "Platform Communities" : "All Communities") : communities.find(c=>c.id===communityFilter)?.name || (isGlobalAdmin ? "Platform Communities" : "All Communities")}</span><span className="filterDropdownArrow"><ChevronDown size={15} strokeWidth={1.8} aria-hidden="true" /></span>
               </button>
               {openFilterDropdown === "COMMUNITY"&&<div className="filterDropdownMenu">
-                <button type="button" className={communityFilter === "ALL" ? "selected" : ""} onClick={()=>{setCommunityFilter("ALL");setScopeFilter("ALL");setOpenFilterDropdown(null);}}><span className={`discussionCheck ${communityFilter === "ALL" ? "checked" : ""}`} aria-hidden="true"></span><span>All Communities</span></button>
+                <button type="button" className={communityFilter === "ALL" ? "selected" : ""} onClick={()=>{setCommunityFilter("ALL");setScopeFilter("ALL");setOpenFilterDropdown(null);}}><span className={`discussionCheck ${communityFilter === "ALL" ? "checked" : ""}`} aria-hidden="true"></span><span>{isGlobalAdmin ? "Platform Communities" : "All Communities"}</span></button>
                 {communities.map(c=><button type="button" key={c.id} className={communityFilter === c.id ? "selected" : ""} onClick={()=>{setCommunityFilter(c.id);setScopeFilter("ALL");setOpenFilterDropdown(null);}}><span className={`discussionCheck ${communityFilter === c.id ? "checked" : ""}`} aria-hidden="true"></span><span>{c.name}</span></button>)}
               </div>}
             </div>
@@ -1766,7 +2254,7 @@ export default function DiscussionForumPage() {
           <div className="railHeading"><div><h3>My Communities</h3><small>Accessible</small></div><span>{communities.length}</span></div>
           <button className={communityFilter==="ALL"?"active":""} onClick={()=>{setCommunityFilter("ALL");setScopeFilter("ALL");}}>
             <span className="communityIcon"><Users size={18} strokeWidth={1.8} aria-hidden="true" /></span>
-            <div><b>All Communities</b><small>Everything available to you</small></div>
+            <div><b>{isGlobalAdmin ? "Platform Communities" : "All Communities"}</b><small>{isGlobalAdmin ? "Admin-level communities only" : "Everything available to you"}</small></div>
           </button>
           {communities.map(c=><button key={c.id} className={communityFilter===c.id?"active":""} onClick={()=>{setCommunityFilter(c.id);setScopeFilter("ALL");}}>
             <span className="communityIcon">{c.id.includes("general") ? <Building2 size={18} strokeWidth={1.8} aria-hidden="true" /> : c.id.includes("data") || c.id.includes("cloud") || c.id.includes("learning") ? <BookOpen size={18} strokeWidth={1.8} aria-hidden="true" /> : c.id.includes("placement") ? <BarChart3 size={18} strokeWidth={1.8} aria-hidden="true" /> : <Users size={18} strokeWidth={1.8} aria-hidden="true" />}</span>
@@ -1808,25 +2296,40 @@ export default function DiscussionForumPage() {
               <span className="postMetricIconButton"><ThumbsUp size={16} strokeWidth={1.8} aria-hidden="true" /></span>
               <small>Likes</small>
             </span>
-            <b className="postMetricCountBox">{rc}</b>
+            <b className="postMetricCountBox"><span className="postMetricNumber">{rc}</span></b>
           </span>
           <span className="postMetricItem">
             <span className="postMetricTop">
               <span className="postMetricIconButton"><MessageCircle size={16} strokeWidth={1.8} aria-hidden="true" /></span>
               <small>Replies</small>
             </span>
-            <b className="postMetricCountBox">{post.replies.length}</b>
+            <b className="postMetricCountBox"><span className="postMetricNumber">{post.replies.length}</span></b>
           </span>
           <span className="postMetricItem">
             <span className="postMetricTop">
               <span className="postMetricIconButton"><Eye size={16} strokeWidth={1.8} aria-hidden="true" /></span>
               <small>Views</small>
             </span>
-            <b className="postMetricCountBox">{post.views}</b>
+            <b className="postMetricCountBox"><span className="postMetricNumber">{post.views}</span></b>
           </span>
         </aside>
         <div className="postContentColumn">
-          <button className="postMain" onClick={()=>openDetail(post.id)}><div className="postTop"><span className={`postType ${POST_LABELS[post.type].color}`}><img src={POST_ICON_SRC[post.type]} alt="" />{POST_LABELS[post.type].label}</span><div className="postTopRight">{post.status==="SOLVED"&&<span className="solvedChip"><CheckCircle2 size={14} strokeWidth={1.8} aria-hidden="true" />Solved</span>}<span className="postTime">{timeAgo(post.createdAt)}</span></div></div><h3>{post.title}</h3><div className="postExcerpt richTextOutput" dangerouslySetInnerHTML={{ __html: post.body }} /><div className="tagRow">{post.tags.map(t=><span key={t}>#{t}</span>)}</div></button>
+          <button className="postMain" onClick={()=>openDetail(post.id)}><div className="postTop">
+            {post.status==="SOLVED"?(
+              <div className="mobilePostStatusGroup">
+                <div className="mobilePostStatusRow">
+                  <span className={`postType ${POST_LABELS[post.type].color}`}><img src={POST_ICON_SRC[post.type]} alt="" />{POST_LABELS[post.type].label}</span>
+                  <span className="solvedChip"><CheckCircle2 size={14} strokeWidth={1.8} aria-hidden="true" />Solved</span>
+                </div>
+                <span className="postTime mobilePostTimeBelow">{timeAgo(post.createdAt)}</span>
+              </div>
+            ):(
+              <div className="mobilePostSimpleRow">
+                <span className={`postType ${POST_LABELS[post.type].color}`}><img src={POST_ICON_SRC[post.type]} alt="" />{POST_LABELS[post.type].label}</span>
+                <span className="postTime">{timeAgo(post.createdAt)}</span>
+              </div>
+            )}
+          </div><h3>{post.title}</h3><div className="postExcerpt richTextOutput" dangerouslySetInnerHTML={{ __html: post.body }} /><div className="tagRow">{post.tags.map(t=><span key={t}>#{t}</span>)}</div></button>
           {post.poll&&<div className="miniPoll">{post.poll.options.slice(0,3).map(o=>{const total=post.poll!.options.reduce((s,x)=>s+x.votes,0)||1;const pct=Math.round(o.votes/total*100);const pollColor=pollResultColor(pct);return <div key={o.id}><span>{o.text}</span><i><em style={{width:`${pct}%`,backgroundColor:pollColor}}/></i><b style={{color:pollColor}}>{pct}%</b></div>})}</div>}
           <footer className="postFooter"><div className="authorMini"><span className="avatar">{post.author.split(" ").map(x=>x[0]).join("").slice(0,2)}</span><div><b>{post.author}</b><small>{post.authorRole} · {post.communityName} · {post.scopeLabel}</small></div></div></footer>
         </div>
@@ -1835,7 +2338,10 @@ export default function DiscussionForumPage() {
       </div>
     </>}
 
-    {screen==="DETAIL"&&selectedPost&&<section className="detailPage"><button className="backButton" onClick={()=>setScreen("HOME")}><img src="/assets/calendar-icons/arrowleft.svg" alt="" />Back to Discussions</button><div className="breadcrumb">Discussion <span>›</span> {selectedPost.communityName} <span>›</span> {selectedPost.title}</div>
+    {screen==="DETAIL"&&selectedPost&&<section className="detailPage"><button className="backButton" onClick={()=>{
+      setScreen("HOME");
+      window.requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));
+    }}><img src="/assets/calendar-icons/arrowleft.svg" alt="" />Back to Discussions</button><div className="breadcrumb">Discussion <span>›</span> {selectedPost.communityName} <span>›</span> {selectedPost.title}</div>
       <article className="detailCard"><div className="detailHeader"><div><span className={`postType ${POST_LABELS[selectedPost.type].color}`}><img src={POST_ICON_SRC[selectedPost.type]} alt="" />{POST_LABELS[selectedPost.type].label}</span>{selectedPost.status==="SOLVED"&&<span className="solvedChip"><CheckCircle2 size={14} strokeWidth={1.8} aria-hidden="true" />Solved</span>}</div></div><h1>{selectedPost.title}</h1><div className="authorLine"><span className="avatar large">{selectedPost.author.split(" ").map(x=>x[0]).join("").slice(0,2)}</span><div><b>{selectedPost.author}</b><small>{selectedPost.authorRole} · {selectedPost.communityName} · {timeAgo(selectedPost.createdAt)}</small></div></div><div className="detailBodyText richTextOutput" dangerouslySetInnerHTML={{ __html: selectedPost.body }} /><div className="tagRow">{selectedPost.tags.map(t=><span key={t}>#{t}</span>)}</div>{selectedPost.attachmentName&&<button type="button" className="attachmentChip" onClick={()=>showToast(`Demo attachment: ${selectedPost.attachmentName}`)}>📎 {selectedPost.attachmentName}</button>}{selectedPost.resourceUrl&&<a className="resourceBox resourceLink" href={selectedPost.resourceUrl} target="_blank" rel="noopener noreferrer"><span>🔗</span><div><b>Shared Resource</b><small>{selectedPost.resourceUrl}</small></div></a>}
       {selectedPost.poll&&<div className="pollCard">{selectedPost.poll.options.map(o=>{const total=selectedPost.poll!.options.reduce((s,x)=>s+x.votes,0)||1;const pct=Math.round(o.votes/total*100);const pollColor=pollResultColor(pct);const selected=selectedPost.poll!.votedOptionIds.includes(o.id);const show=!selectedPost.poll!.showResultsAfterVote||selectedPost.poll!.votedOptionIds.length>0;return <button key={o.id} className={selected?"selected":""} onClick={()=>vote(selectedPost.id,o.id)}><span className={`discussionCheck pollVoteCheck ${selected?"checked":""}`} aria-hidden="true">{selected&&<Check size={10} strokeWidth={2.2}/>}</span><span className="pollLabel">{o.text}</span>{show&&<><span className="pollTrack"><i style={{width:`${pct}%`,backgroundColor:pollColor}}/></span><b style={{color:pollColor}}>{pct}%</b></>}</button>})}<small>Total Votes: {selectedPost.poll.options.reduce((s,x)=>s+x.votes,0)}</small></div>}
       <div className="detailActions"><div className="reactionBar">{REACTIONS.map(r=><button key={r} onClick={()=>reactToPost(selectedPost.id,r)}>{r} {selectedPost.reactions[r]||0}</button>)}</div><div className="utilityActions"><button className={selectedPost.following?"active":""} onClick={()=>toggleFollow(selectedPost.id)}>☆ {selectedPost.following?"Following":"Follow"}</button><button className={selectedPost.bookmarked?"active":""} onClick={()=>toggleBookmark(selectedPost.id)}>🔖 {selectedPost.bookmarked?"Saved":"Save"}</button><button onClick={shareSelectedPost}>↗ Share</button><button onClick={()=>setReportTarget({kind:"POST",id:selectedPost.id,title:selectedPost.title})}>⚑ Report</button>{canEditOrDeletePost(selectedPost)&&<><button className="editPostButton" onClick={()=>openEditPost(selectedPost)}>✎ Edit</button><button className="deletePostButton" onClick={()=>deletePost(selectedPost)}>🗑 Delete</button></>}</div></div></article>
@@ -1851,7 +2357,28 @@ export default function DiscussionForumPage() {
 ].map(emoji=><button type="button" key={emoji} onClick={()=>{insertReplyText(emoji);setShowReplyEmojiPicker(false);}}>{emoji}</button>)}</div>}<div className="composerBottom"><div><button type="button" title="Emoji" onClick={()=>setShowReplyEmojiPicker(v=>!v)}>☺</button><button type="button" title="Attach file" onClick={()=>replyAttachmentInputRef.current?.click()}>📎</button><button type="button" title="Code" onClick={insertReplyCode}>&lt;/&gt;</button><button type="button" title="Mention" onClick={()=>insertReplyText("@")}>@</button><input ref={replyAttachmentInputRef} className="replyAttachmentInput" type="file" onChange={handleReplyAttachment}/></div><button className="primaryButton" onClick={addReply}>{replyingToId?"Post Reply":"Post Reply"}</button></div></div></div></section>}
     </section>}
 
-    {screen==="NOTIFICATIONS"&&<section className="notificationsPage"><button className="backButton" onClick={()=>setScreen("HOME")}><img src={UI_ICON_SRC.back} alt="" />Back to Discussions</button><div className="notificationHeader"><div><p className="eyebrow">Activity</p><h1>Notifications</h1></div><button className="softButton" onClick={()=>setNotifications(items=>items.map(n=>({...n,read:true})))}>Mark all as read</button></div><div className="notificationTabs"><button className={notificationFilter==="ALL"?"active":""} onClick={()=>setNotificationFilter("ALL")}>All</button><button className={notificationFilter==="UNREAD"?"active":""} onClick={()=>setNotificationFilter("UNREAD")}>Unread ({unreadCount})</button><button className={notificationFilter==="MENTIONS"?"active":""} onClick={()=>setNotificationFilter("MENTIONS")}>Mentions</button><button className={notificationFilter==="REPLIES"?"active":""} onClick={()=>setNotificationFilter("REPLIES")}>Replies</button></div><div className="notificationList">{visibleNotifications.map(n=><button key={n.id} className={`notificationItem ${!n.read?"unread":""}`} onClick={()=>{setNotifications(items=>items.map(x=>x.id===n.id?{...x,read:true}:x));if(n.postId)openDetail(n.postId);}}><span className={`notificationDot ${n.type.toLowerCase()}`}/><div><b>{n.title}</b><p>{n.message}</p><small>{n.time}</small></div>{!n.read&&<i/>}</button>)}</div></section>}
+    {screen==="NOTIFICATIONS"&&<section className="notificationsPage"><button className="backButton" onClick={()=>setScreen("HOME")}><img src="/assets/calendar-icons/arrowleft.svg" alt="" />Back to Discussions</button><div className="notificationHeader"><div><p className="eyebrow">Activity</p><h1>Notifications</h1></div><button className="softButton" onClick={()=>setNotifications(items=>items.map(n=>({...n,read:true})))}>Mark all as read</button></div><div className="notificationTabs"><button className={notificationFilter==="ALL"?"active":""} onClick={()=>setNotificationFilter("ALL")}>All</button><button className={notificationFilter==="UNREAD"?"active":""} onClick={()=>setNotificationFilter("UNREAD")}>Unread ({unreadCount})</button><button className={notificationFilter==="MENTIONS"?"active":""} onClick={()=>setNotificationFilter("MENTIONS")}>Mentions</button><button className={notificationFilter==="REPLIES"?"active":""} onClick={()=>setNotificationFilter("REPLIES")}>Replies</button></div><div className="notificationList">{visibleNotifications.map(n=><button key={n.id} className={`notificationItem ${!n.read?"unread":""}`} onClick={()=>{
+  setNotifications(items=>items.map(x=>x.id===n.id?{...x,read:true}:x));
+
+  const directPost = n.postId
+    ? posts.find(post=>post.id===n.postId)
+    : null;
+
+  const fallbackPost =
+    n.type==="REPLY"
+      ? posts.find(post=>post.type==="QUESTION")
+      : n.type==="POLL"
+        ? posts.find(post=>post.type==="POLL")
+        : n.type==="MENTION"
+          ? posts.find(post=>post.type==="DISCUSSION")
+          : posts.find(post=>post.following) || posts[0];
+
+  const targetPost = directPost || fallbackPost;
+
+  if(targetPost){
+    openDetail(targetPost.id);
+  }
+}}><span className={`notificationDot ${n.type.toLowerCase()}`}/><div><b>{n.title}</b><p>{n.message}</p><small>{n.time}</small></div>{!n.read&&<i/>}</button>)}</div></section>}
 
     {createOpen&&draft.type&&<div className="modalBackdrop"><section className="createModal singleCreateModal">
       <header className="modalHeader">
@@ -2013,7 +2540,7 @@ export default function DiscussionForumPage() {
 
       <footer className="modalFooter singleCreateFooter">
         <button className="softButton" onClick={()=>{setCreateOpen(false);setCreateDropdownOpen(null);setCreateMenuOpen(true);}}>Back</button>
-        <button className="primaryButton" onClick={publishPost}><Send aria-hidden="true" />Publish Post</button>
+        <button className="primaryButton" onClick={publishPost} disabled={isPublishing}><Send aria-hidden="true" />Publish Post</button>
       </footer>
     </section></div>}
 
@@ -2075,5 +2602,9 @@ export default function DiscussionForumPage() {
 </label>)}</div><label className="reportDetails">Additional details<textarea value={reportDetails} onChange={e=>setReportDetails(e.target.value)} placeholder="Please provide more information..."/></label></div><footer className="modalFooter"><button className="softButton" onClick={()=>setReportTarget(null)}>Cancel</button><button className="primaryButton" onClick={submitReport}>Submit Report</button></footer></section></div>}
 
     {toast&&<div className="toast">{toast}</div>}
-  </main>;
+          </main>
+        </div>
+      </div>
+    </div>
+  );
 }

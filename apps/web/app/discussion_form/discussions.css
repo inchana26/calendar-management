@@ -3716,14 +3716,16 @@ body:has(.discussionPage)::-webkit-scrollbar-corner, .discussionPage::-webkit-sc
 
 .communityRail{
   position: sticky !important;
-  top: 88px !important;
+  top: 64px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
   padding: 0 !important;
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 
-.railHeading{ margin-bottom: 10px !important; }
+.railHeading{ margin-bottom: 6px !important; }
 .railHeading h3{ margin: 0 !important; }
 .railHeading small{ color: var(--text-soft) !important; }
 
@@ -3738,7 +3740,7 @@ body:has(.discussionPage)::-webkit-scrollbar-corner, .discussionPage::-webkit-sc
 
 .communityRail > button{
   min-height: 58px !important;
-  margin-top: 8px !important;
+  margin-top: 5px !important;
   padding: 8px 10px !important;
   grid-template-columns: 38px 1fr !important;
   gap: 9px !important;
@@ -8992,22 +8994,18 @@ body:has(.discussionPage)::-webkit-scrollbar-corner, .discussionPage::-webkit-sc
 
 
 /* =========================================================
-   FINAL COUNT NUMBER POSITION — SLIGHTLY LOWER
+   FINAL COUNT NUMBER POSITION — NUMBER ONLY
    ========================================================= */
 
-.postMetricRail .postMetricCountBox {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
+.postMetricRail .postMetricNumber {
+  display: inline-block !important;
   line-height: 1 !important;
-  padding-top: 3px !important;
-  padding-bottom: 0 !important;
+  transform: translateY(5px) !important;
 }
 
 @media (max-width: 760px) {
-  .postMetricRail .postMetricCountBox {
-    padding-top: 2px !important;
+  .postMetricRail .postMetricNumber {
+    transform: translateY(1px) !important;
   }
 }
 
@@ -9321,5 +9319,1924 @@ body:has(.discussionPage)::-webkit-scrollbar-corner, .discussionPage::-webkit-sc
 
   .emojiPicker::-webkit-scrollbar {
     width: 7px !important;
+  }
+}
+
+
+/* =========================================================
+   DROPDOWN AUTO-CLOSE / STICKY HEADER SCROLL FIX
+   Functionality is handled in page.tsx.
+   These rules only keep page/dropdown content from drawing
+   above the sticky header while scrolling.
+   ========================================================= */
+
+.discussionTopbar{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 300 !important;
+  isolation: isolate !important;
+  background: #dfe6e9 !important;
+}
+
+/* Normal page dropdowns must remain below the sticky header. */
+.createMenuWrap,
+.filterDropdown,
+.singleCreateDropdown{
+  position: relative;
+}
+
+.createQuickMenu,
+.filterPanel .filterDropdownMenu{
+  z-index: 180 !important;
+}
+
+/* Create form is inside a modal, so its dropdown can stay above modal content. */
+.singleCreateDropdownMenu{
+  z-index: 40 !important;
+}
+
+/* Modals must remain above the page header. */
+.modalBackdrop{
+  z-index: 1000 !important;
+}
+
+/* Prevent sticky/raised page content from visually painting over the header. */
+.heroSection,
+.discoverPanel,
+.homeLayout,
+.detailPage,
+.notificationsPage{
+  position: relative;
+  z-index: 1;
+}
+
+
+/* =========================================================
+   FINAL DROPDOWN VISIBILITY FIX
+   - Keep every dropdown fully visible above page content.
+   - Keep the sticky header above normal page content.
+   - Do not change button sizes, typography or page design.
+   ========================================================= */
+
+/* Do not clip dropdown menus inside their parent sections. */
+.discussionPage .heroSection,
+.discussionPage .discoverPanel,
+.discussionPage .filterPanel,
+.discussionPage .filterPanel label,
+.discussionPage .filterDropdown,
+.discussionPage .createMenuWrap{
+  overflow: visible !important;
+}
+
+/* Establish the correct page stacking order.
+   Header remains highest, then Create menu, then Filter menus,
+   then normal feed/community content. */
+.discussionTopbar{
+  z-index: 1000 !important;
+}
+
+.heroSection{
+  position: relative !important;
+  z-index: 300 !important;
+}
+
+.discoverPanel{
+  position: relative !important;
+  z-index: 250 !important;
+}
+
+.homeLayout,
+.detailPage,
+.notificationsPage{
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Create dropdown must sit above Filters and the discussion feed. */
+.createMenuWrap{
+  z-index: 320 !important;
+}
+
+.createMenuWrap.open{
+  z-index: 350 !important;
+}
+
+.createQuickMenu{
+  z-index: 360 !important;
+}
+
+/* Filter dropdowns must sit above tabs/community/feed below them. */
+.filterPanel{
+  position: relative !important;
+  z-index: 260 !important;
+}
+
+.filterPanel .filterDropdown{
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.filterPanel .filterDropdown.open{
+  z-index: 280 !important;
+}
+
+.filterPanel .filterDropdown.open .filterDropdownTrigger{
+  z-index: 282 !important;
+}
+
+.filterPanel .filterDropdownMenu,
+.filterPanel .filterDropdown.open .filterDropdownMenu{
+  z-index: 281 !important;
+}
+
+/* Create-form dropdowns are inside a modal; keep them above all modal fields. */
+.modalBackdrop{
+  z-index: 2000 !important;
+}
+
+.singleCreateModal,
+.createModal{
+  overflow: visible !important;
+}
+
+.singleCreateBody{
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.createFormSection{
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.singleCreateDropdown{
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.singleCreateDropdown.open{
+  z-index: 500 !important;
+}
+
+.singleCreateDropdownMenu{
+  z-index: 510 !important;
+}
+
+/* Desktop/tablet: menus stay inside the available page width. */
+.createQuickMenu,
+.filterDropdownMenu,
+.singleCreateDropdownMenu{
+  max-width: calc(100vw - 24px) !important;
+}
+
+/* Mobile dropdown corrections: no clipping on either side. */
+@media (max-width: 760px){
+  .heroSection{
+    z-index: 300 !important;
+  }
+
+  .discoverPanel{
+    z-index: 250 !important;
+  }
+
+  .createMenuWrap{
+    z-index: 350 !important;
+  }
+
+  .createQuickMenu{
+    right: 0 !important;
+    left: auto !important;
+    width: min(250px, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+    z-index: 360 !important;
+  }
+
+  .filterPanel{
+    z-index: 260 !important;
+  }
+
+  .filterPanel .filterDropdown.open{
+    z-index: 280 !important;
+  }
+
+  .filterPanel .filterDropdownMenu{
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    z-index: 281 !important;
+  }
+
+  /* Create modal keeps its own vertical scroll.
+     Only the open dropdown itself floats over neighbouring fields. */
+  .singleCreateModal,
+  .createModal{
+    overflow: hidden !important;
+  }
+
+  .singleCreateBody{
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  .createFormSection{
+    overflow: visible !important;
+  }
+
+  .singleCreateDropdown.open{
+    z-index: 500 !important;
+  }
+
+  .singleCreateDropdownMenu{
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    z-index: 510 !important;
+  }
+}
+
+
+/* =========================================================
+   SORT DROPDOWN + RESPONSIVE NEUMORPHIC LOADER
+   ========================================================= */
+
+/* Keep the Latest / Trending / Unanswered / Most Discussed menu
+   above the discussion cards while it is open. */
+.feedHeader,
+.feedHeaderTools,
+.sortControl,
+.sortDropdown{
+  overflow: visible !important;
+}
+
+.feedHeader{
+  position: relative !important;
+  z-index: 220 !important;
+}
+
+.sortControl,
+.sortDropdown{
+  position: relative !important;
+}
+
+.sortDropdown.open{
+  z-index: 290 !important;
+}
+
+.sortDropdownMenu{
+  z-index: 300 !important;
+}
+
+/* Full-screen loader shown only while Publish Post is saving. */
+.discussionLoaderBackdrop{
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(223, 230, 233, 0.68);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.discussionNeuLoaderCard{
+  width: min(320px, calc(100vw - 32px));
+  min-height: 190px;
+  padding: 26px 22px;
+  border-radius: 22px;
+  background: #dfe6e9;
+  box-shadow:
+    10px 10px 22px rgba(151, 163, 169, 0.72),
+    -10px -10px 22px rgba(255, 255, 255, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  color: #17213a;
+}
+
+.discussionNeuLoader{
+  width: 68px;
+  height: 68px;
+  padding: 9px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #dfe6e9;
+  box-shadow:
+    6px 6px 12px #c4c4c4,
+    -6px -6px 12px #ffffff,
+    inset 2px 2px 5px rgba(196, 196, 196, 0.45),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+}
+
+.discussionNeuLoader i{
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+  border: 5px solid rgba(18, 109, 243, 0.16);
+  border-top-color: #126df3;
+  animation: discussionNeuSpin .8s linear infinite;
+}
+
+.discussionNeuLoaderCard b{
+  margin-top: 2px;
+  font-size: 16px !important;
+  font-weight: 700;
+}
+
+.discussionNeuLoaderCard small{
+  max-width: 240px;
+  color: #667085;
+  font-size: 12px !important;
+  line-height: 1.45;
+}
+
+@keyframes discussionNeuSpin{
+  to{ transform: rotate(360deg); }
+}
+
+@media (max-width: 700px){
+  .discussionLoaderBackdrop{
+    padding: 16px;
+  }
+
+  .discussionNeuLoaderCard{
+    width: min(290px, calc(100vw - 28px));
+    min-height: 168px;
+    padding: 22px 18px;
+    border-radius: 19px;
+  }
+
+  .discussionNeuLoader{
+    width: 58px;
+    height: 58px;
+    padding: 8px;
+  }
+
+  .discussionNeuLoader i{
+    border-width: 4px;
+  }
+
+  .discussionNeuLoaderCard b{
+    font-size: 14px !important;
+  }
+
+  .discussionNeuLoaderCard small{
+    font-size: 11px !important;
+  }
+
+  .sortDropdownMenu{
+    right: 0 !important;
+    left: auto !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .discussionNeuLoader i{
+    animation-duration: 1.6s;
+  }
+}
+
+
+/* =========================================================
+   FINAL NEUMORPHIC PUBLISH LOADER
+   Visual-only correction. Existing page/design stays unchanged.
+   ========================================================= */
+
+.discussionLoaderBackdrop{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 20px !important;
+  background: rgba(190, 202, 209, 0.58) !important;
+  backdrop-filter: blur(7px) saturate(.9) !important;
+  -webkit-backdrop-filter: blur(7px) saturate(.9) !important;
+}
+
+.discussionNeuLoaderCard{
+  width: min(360px, calc(100vw - 34px)) !important;
+  min-height: 250px !important;
+  padding: 30px 24px 26px !important;
+  border: 1px solid rgba(255,255,255,.72) !important;
+  border-radius: 24px !important;
+  background: #dfe6e9 !important;
+  box-shadow:
+    14px 14px 30px rgba(157, 170, 177, .72),
+    -14px -14px 30px rgba(255, 255, 255, .96),
+    inset 1px 1px 0 rgba(255,255,255,.72) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  text-align: center !important;
+  color: #17213a !important;
+}
+
+.discussionNeuLoader{
+  width: 92px !important;
+  height: 92px !important;
+  padding: 16px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  background: #dfe6e9 !important;
+  box-shadow:
+    10px 10px 20px #bcc7cc,
+    -10px -10px 20px #ffffff,
+    inset 2px 2px 4px rgba(188,199,204,.34),
+    inset -2px -2px 4px rgba(255,255,255,.86) !important;
+}
+
+.discussionNeuLoader i{
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  border-radius: 50% !important;
+  border: 7px solid rgba(18,109,243,.16) !important;
+  border-top-color: #2d4cc8 !important;
+  border-right-color: #126df3 !important;
+  box-shadow:
+    inset 2px 2px 5px rgba(196,196,196,.45),
+    inset -2px -2px 5px rgba(255,255,255,.78) !important;
+  animation: discussionNeuSpin .85s linear infinite !important;
+}
+
+.discussionNeuLoaderCard b{
+  margin-top: 5px !important;
+  font-size: 18px !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+  color: #17213a !important;
+}
+
+.discussionNeuLoaderCard small{
+  max-width: 285px !important;
+  color: #5f7893 !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+  font-weight: 400 !important;
+}
+
+.discussionLoaderDots{
+  margin-top: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+.discussionLoaderDots i{
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: #9eb6f7 !important;
+  box-shadow:
+    2px 2px 4px rgba(156,168,175,.55),
+    -2px -2px 4px rgba(255,255,255,.92) !important;
+  animation: discussionDotPulse 1.05s ease-in-out infinite !important;
+}
+
+.discussionLoaderDots i:nth-child(1){
+  background: #126df3 !important;
+}
+
+.discussionLoaderDots i:nth-child(2){
+  animation-delay: .14s !important;
+}
+
+.discussionLoaderDots i:nth-child(3){
+  animation-delay: .28s !important;
+}
+
+@keyframes discussionDotPulse{
+  0%, 100%{
+    transform: translateY(0) scale(.9);
+    opacity: .55;
+  }
+  50%{
+    transform: translateY(-3px) scale(1.08);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 700px){
+  .discussionLoaderBackdrop{
+    padding: 14px !important;
+  }
+
+  .discussionNeuLoaderCard{
+    width: min(310px, calc(100vw - 28px)) !important;
+    min-height: 220px !important;
+    padding: 25px 18px 22px !important;
+    border-radius: 21px !important;
+  }
+
+  .discussionNeuLoader{
+    width: 78px !important;
+    height: 78px !important;
+    padding: 13px !important;
+  }
+
+  .discussionNeuLoader i{
+    border-width: 6px !important;
+  }
+
+  .discussionNeuLoaderCard b{
+    font-size: 16px !important;
+  }
+
+  .discussionNeuLoaderCard small{
+    max-width: 245px !important;
+    font-size: 12px !important;
+  }
+
+  .discussionLoaderDots i{
+    width: 9px !important;
+    height: 9px !important;
+  }
+}
+
+@media (max-width: 420px){
+  .discussionNeuLoaderCard{
+    width: calc(100vw - 24px) !important;
+    min-height: 205px !important;
+  }
+
+  .discussionNeuLoader{
+    width: 72px !important;
+    height: 72px !important;
+  }
+}
+
+
+/* =========================================================
+   FINAL NEUMORPHIC PROGRESS / LOADER BARS
+   Applies to the existing Python / Java / Go poll result bars
+   and every progress-style loader inside Discussion Forum.
+   No layout/content/logic changes.
+   ========================================================= */
+
+/* Existing compact poll result tracks */
+.discussionPage .miniPoll i{
+  position: relative !important;
+  height: 12px !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #dfe6e9 !important;
+  box-shadow:
+    inset 3px 3px 6px #c4c4c4,
+    inset -3px -3px 6px #ffffff !important;
+}
+
+/* Existing filled result bar */
+.discussionPage .miniPoll i > em{
+  display: block !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  border-radius: 999px !important;
+  box-shadow:
+    2px 2px 4px rgba(118, 132, 142, .34),
+    inset 1px 1px 2px rgba(255,255,255,.34),
+    inset -1px -1px 2px rgba(70,86,99,.18) !important;
+  transition: width .35s ease !important;
+}
+
+/* Detailed poll result track */
+.discussionPage .pollTrack{
+  position: relative !important;
+  height: 12px !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #dfe6e9 !important;
+  box-shadow:
+    inset 3px 3px 6px #c4c4c4,
+    inset -3px -3px 6px #ffffff !important;
+}
+
+.discussionPage .pollTrack > i{
+  display: block !important;
+  height: 100% !important;
+  border-radius: 999px !important;
+  box-shadow:
+    2px 2px 4px rgba(118, 132, 142, .34),
+    inset 1px 1px 2px rgba(255,255,255,.34),
+    inset -1px -1px 2px rgba(70,86,99,.18) !important;
+  transition: width .35s ease !important;
+}
+
+/* Any native progress element added anywhere on this Discussion page */
+.discussionPage progress{
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: #dfe6e9;
+  box-shadow:
+    inset 3px 3px 6px #c4c4c4,
+    inset -3px -3px 6px #ffffff;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.discussionPage progress::-webkit-progress-bar{
+  border-radius: 999px;
+  background: #dfe6e9;
+  box-shadow:
+    inset 3px 3px 6px #c4c4c4,
+    inset -3px -3px 6px #ffffff;
+}
+
+.discussionPage progress::-webkit-progress-value{
+  border-radius: 999px;
+  background: #126df3;
+  box-shadow:
+    2px 2px 4px rgba(118, 132, 142, .34),
+    inset 1px 1px 2px rgba(255,255,255,.34);
+}
+
+.discussionPage progress::-moz-progress-bar{
+  border-radius: 999px;
+  background: #126df3;
+  box-shadow:
+    2px 2px 4px rgba(118, 132, 142, .34),
+    inset 1px 1px 2px rgba(255,255,255,.34);
+}
+
+/* Reusable class for any future loading/progress bar on this page */
+.discussionPage .neuProgress,
+.discussionPage .loadingBar,
+.discussionPage .progressBar{
+  height: 12px !important;
+  overflow: hidden !important;
+  border-radius: 999px !important;
+  background: #dfe6e9 !important;
+  box-shadow:
+    inset 3px 3px 6px #c4c4c4,
+    inset -3px -3px 6px #ffffff !important;
+}
+
+.discussionPage .neuProgress > span,
+.discussionPage .loadingBar > span,
+.discussionPage .progressBar > span{
+  display: block !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+  background: #126df3;
+  box-shadow:
+    2px 2px 4px rgba(118, 132, 142, .34),
+    inset 1px 1px 2px rgba(255,255,255,.34) !important;
+}
+
+/* Responsive size only; existing layout remains the same */
+@media (max-width: 700px){
+  .discussionPage .miniPoll i,
+  .discussionPage .pollTrack,
+  .discussionPage progress,
+  .discussionPage .neuProgress,
+  .discussionPage .loadingBar,
+  .discussionPage .progressBar{
+    height: 10px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE POST CARD ALIGNMENT ONLY
+   Desktop / tablet / page logic unchanged.
+   ========================================================= */
+@media (max-width: 760px) {
+
+  /* Keep the 3 metric blocks evenly centered in every card */
+  .postMetricRail{
+    width: 100% !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    align-items: start !important;
+    justify-items: center !important;
+    column-gap: 6px !important;
+  }
+
+  .postMetricRail > .postMetricItem{
+    width: 100% !important;
+    min-width: 0 !important;
+    display: grid !important;
+    justify-items: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 7px !important;
+  }
+
+  .postMetricTop{
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    text-align: center !important;
+  }
+
+  .postMetricTop small{
+    margin: 0 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  .postMetricCountBox{
+    margin-left: auto !important;
+    margin-right: auto !important;
+    justify-self: center !important;
+    text-align: center !important;
+  }
+
+  .postMetricNumber{
+    display: inline-block !important;
+    text-align: center !important;
+  }
+
+  /* Keep type/status/time aligned cleanly at the top of every card */
+  .postTop{
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .postTopRight{
+    margin-left: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
+    gap: 7px !important;
+  }
+
+  .postType,
+  .solvedChip,
+  .postTime{
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  /* Keep body/footer content aligned within the same card width */
+  .postContentColumn,
+  .postMain,
+  .postFooter{
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .postFooter{
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .authorMini{
+    min-width: 0 !important;
+    align-items: center !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .postMetricRail{
+    column-gap: 4px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .postMetricTop{
+    gap: 4px !important;
+  }
+
+  .postTop{
+    align-items: center !important;
+  }
+
+  .postFooter{
+    display: flex !important;
+    align-items: center !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE POST CARD HEADER / CONTENT ALIGNMENT — FINAL
+   Mobile only. Desktop/tablet styles and page logic untouched.
+   ========================================================= */
+@media (max-width: 760px) {
+
+  /* 1) Post type badge on its own centered row */
+  .feedList .postCard .postMain .postTop{
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+    align-items: center !important;
+    gap: 9px !important;
+    text-align: center !important;
+  }
+
+  .feedList .postCard .postMain .postTop > .postType{
+    grid-column: 1 !important;
+    justify-self: center !important;
+    margin: 0 auto !important;
+  }
+
+  /* 2) Status + time stay together on the line below.
+        If there is no status, the time remains centered by itself. */
+  .feedList .postCard .postMain .postTopRight{
+    grid-column: 1 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    text-align: center !important;
+  }
+
+  .feedList .postCard .postMain .postTopRight .solvedChip,
+  .feedList .postCard .postMain .postTopRight .postTime{
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+
+  /* 3) Title and description centered in the card */
+  .feedList .postCard .postMain h3{
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
+  }
+
+  .feedList .postCard .postMain .postExcerpt,
+  .feedList .postCard .postMain .richTextOutput{
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
+  }
+
+  .feedList .postCard .postMain .postExcerpt p,
+  .feedList .postCard .postMain .richTextOutput p{
+    text-align: center !important;
+  }
+
+  /* Keep tags visually centered with the centered title/description */
+  .feedList .postCard .postMain .tagRow{
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  /* Keep the three metric groups evenly centered above card content */
+  .feedList .postCard .postMetricRail{
+    width: 100% !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    justify-items: center !important;
+    align-items: start !important;
+  }
+
+  .feedList .postCard .postMetricRail > .postMetricItem,
+  .feedList .postCard .postMetricTop{
+    width: 100% !important;
+    justify-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .feedList .postCard .postMetricCountBox{
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .feedList .postCard .postMain .postTopRight{
+    gap: 9px !important;
+  }
+
+  .feedList .postCard .postMain h3,
+  .feedList .postCard .postMain .postExcerpt,
+  .feedList .postCard .postMain .richTextOutput{
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE FEED CARD TOP ALIGNMENT ONLY
+   Desktop/web layout is preserved.
+   ========================================================= */
+
+/* On desktop these wrappers have no visual layout box. */
+.mobilePostSimpleRow,
+.mobilePostStatusGroup,
+.mobilePostStatusRow{
+  display: contents;
+}
+
+@media (max-width: 760px){
+
+  /* Center the complete card header area on mobile only. */
+  .feedList .postCard .postMain .postTop{
+    width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+  }
+
+  /* No status badge:
+     Discussion / Poll / Resource etc. + time = SAME LINE */
+  .feedList .postCard .postMain .mobilePostSimpleRow{
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: nowrap !important;
+    gap: 14px !important;
+    margin: 0 auto !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostSimpleRow .postType,
+  .feedList .postCard .postMain .mobilePostSimpleRow .postTime{
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Status badge present:
+     first line = Question + Solved
+     second line = time directly below that badge row */
+  .feedList .postCard .postMain .mobilePostStatusGroup{
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    margin: 0 auto !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusRow{
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusRow .postType,
+  .feedList .postCard .postMain .mobilePostStatusRow .solvedChip{
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostTimeBelow{
+    display: block !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  /* Mobile card title / description / tags stay centered. */
+  .feedList .postCard .postMain h3{
+    text-align: center !important;
+  }
+
+  .feedList .postCard .postMain .postExcerpt,
+  .feedList .postCard .postMain .richTextOutput,
+  .feedList .postCard .postMain .postExcerpt p,
+  .feedList .postCard .postMain .richTextOutput p{
+    text-align: center !important;
+  }
+
+  .feedList .postCard .postMain .tagRow{
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 420px){
+  .feedList .postCard .postMain .mobilePostSimpleRow{
+    gap: 10px !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusRow{
+    gap: 8px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE CARD HEADER — LEFT TYPE / RIGHT STATUS + TIME
+   MOBILE ONLY. Desktop/web remains unchanged.
+   ========================================================= */
+@media (max-width: 760px){
+
+  .feedList .postCard .postMain .postTop{
+    width: 100% !important;
+    display: block !important;
+    text-align: initial !important;
+  }
+
+  /* ---------------------------------------------------------
+     NO STATUS BADGE
+     LEFT  = Question / Discussion / Poll / Resource
+     RIGHT = time
+     --------------------------------------------------------- */
+  .feedList .postCard .postMain .mobilePostSimpleRow{
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    margin: 0 !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostSimpleRow .postType{
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+    justify-self: start !important;
+    white-space: nowrap !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostSimpleRow .postTime{
+    margin: 0 0 0 auto !important;
+    flex: 0 0 auto !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+
+  /* ---------------------------------------------------------
+     STATUS BADGE PRESENT
+     LEFT  = Question / etc.
+     RIGHT TOP    = Solved
+     RIGHT BELOW  = time
+     --------------------------------------------------------- */
+  .feedList .postCard .postMain .mobilePostStatusGroup{
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) max-content !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 12px !important;
+    row-gap: 5px !important;
+    align-items: center !important;
+    margin: 0 !important;
+  }
+
+  /* Let Type + Solved become direct children of the grid */
+  .feedList .postCard .postMain .mobilePostStatusRow{
+    display: contents !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusRow .postType{
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-self: start !important;
+    align-self: center !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusRow .solvedChip{
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: end !important;
+    align-self: center !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusGroup > .mobilePostTimeBelow{
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+    align-self: start !important;
+    margin: 0 !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 420px){
+  .feedList .postCard .postMain .mobilePostSimpleRow,
+  .feedList .postCard .postMain .mobilePostStatusGroup{
+    column-gap: 8px !important;
+  }
+}
+
+
+/* =========================================================
+   DESKTOP POST HEADER RESTORE + MOBILE LATEST RIGHT
+   - Restores desktop post header to the original left/right layout.
+   - Moves Latest sort control to the right only on mobile.
+   ========================================================= */
+
+/* DESKTOP / WEB: restore original post header alignment */
+@media (min-width: 761px){
+
+  .feedList .postCard .postMain .postTop{
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  /* No status: type left, time right */
+  .feedList .postCard .postMain .mobilePostSimpleRow{
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  /* Status: type left, Solved + time remain on the right */
+  .feedList .postCard .postMain .mobilePostStatusGroup{
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto auto !important;
+    align-items: center !important;
+    column-gap: 12px !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusRow{
+    display: contents !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusRow .postType{
+    grid-column: 1 !important;
+    justify-self: start !important;
+    margin: 0 !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusRow .solvedChip{
+    grid-column: 2 !important;
+    justify-self: end !important;
+    margin: 0 !important;
+  }
+
+  .feedList .postCard .postMain .mobilePostStatusGroup > .postTime{
+    grid-column: 3 !important;
+    justify-self: end !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* MOBILE ONLY: keep Latest sort control on the right */
+@media (max-width: 760px){
+
+  .feedHeader{
+    width: 100% !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+  }
+
+  .feedHeader > div:first-child{
+    min-width: 0 !important;
+  }
+
+  .feedHeaderTools{
+    margin-left: auto !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    flex: 0 0 auto !important;
+  }
+
+  .sortControl{
+    margin-left: auto !important;
+  }
+
+  .sortDropdown{
+    margin-left: auto !important;
+  }
+
+  .sortDropdownTrigger{
+    margin-left: auto !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE FEED HEADER RESPONSIVE FIX
+   Keeps COMMUNITY FEED and Latest Discussions on one line,
+   and keeps the Latest dropdown aligned on the right.
+   Mobile only. Desktop/web remains unchanged.
+   ========================================================= */
+@media (max-width: 760px){
+
+  .feedHeader{
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: end !important;
+    column-gap: 12px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .feedHeader > div:first-child{
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .feedHeader > div:first-child small{
+    display: block !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    line-height: 1.2 !important;
+  }
+
+  .feedHeader > div:first-child h2{
+    display: block !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin-top: 5px !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    line-height: 1.2 !important;
+  }
+
+  .feedHeaderTools{
+    width: auto !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: flex-end !important;
+  }
+
+  .sortControl,
+  .sortDropdown{
+    width: auto !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+  }
+
+  .sortDropdownTrigger{
+    width: 150px !important;
+    max-width: 42vw !important;
+    min-width: 118px !important;
+    margin-left: auto !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    white-space: nowrap !important;
+  }
+
+  .sortDropdownTrigger > span{
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+@media (max-width: 480px){
+
+  .feedHeader{
+    column-gap: 8px !important;
+  }
+
+  .feedHeader > div:first-child small{
+    font-size: 12px !important;
+  }
+
+  .feedHeader > div:first-child h2{
+    font-size: 16px !important;
+  }
+
+  .sortDropdownTrigger{
+    width: 132px !important;
+    min-width: 110px !important;
+    max-width: 40vw !important;
+  }
+}
+
+@media (max-width: 380px){
+
+  .feedHeader > div:first-child small{
+    font-size: 11px !important;
+  }
+
+  .feedHeader > div:first-child h2{
+    font-size: 15px !important;
+  }
+
+  .sortDropdownTrigger{
+    width: 118px !important;
+    min-width: 104px !important;
+    padding-left: 11px !important;
+    padding-right: 11px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE NOTIFICATION ICON CENTERING ONLY
+   Keeps the notification badge in its existing top-right position.
+   Desktop/web remains unchanged.
+   ========================================================= */
+@media (max-width: 760px){
+
+  .notificationButton{
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+  }
+
+  .notificationButton > svg,
+  .notificationButton > img{
+    display: block !important;
+    margin: 0 !important;
+    position: static !important;
+    transform: none !important;
+    justify-self: center !important;
+    align-self: center !important;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE DETAIL / REPLIES / COMPOSER ALIGNMENT FIX
+   Mobile only. Desktop/web remains unchanged.
+   ========================================================= */
+@media (max-width: 760px){
+
+  /* ---------- detail card ---------- */
+
+  .detailPage{
+    width: calc(100% - 20px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .detailCard{
+    width: 100% !important;
+    padding: 16px !important;
+    overflow: hidden !important;
+  }
+
+  .detailHeader{
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+
+  .detailHeader > div{
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .detailCard h1{
+    width: 100% !important;
+    margin: 16px 0 14px !important;
+    text-align: left !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .detailCard .authorLine{
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .detailCard .authorLine > div{
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .detailCard .authorLine b,
+  .detailCard .authorLine small{
+    display: block !important;
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .detailBodyText{
+    width: 100% !important;
+    margin-top: 16px !important;
+    text-align: left !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .detailBodyText p{
+    text-align: left !important;
+  }
+
+  .detailCard .tagRow{
+    width: 100% !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .attachmentChip{
+    max-width: 100% !important;
+    min-height: 44px !important;
+    padding: 0 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Reactions / action buttons wrap evenly instead of overflowing */
+  .detailActions{
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .reactionBar,
+  .utilityActions{
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .utilityActions{
+    margin-top: 12px !important;
+  }
+
+  .reactionBar button,
+  .utilityActions button{
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+  }
+
+  /* ---------- replies section ---------- */
+
+  .replySection{
+    width: 100% !important;
+    padding: 16px !important;
+    overflow: hidden !important;
+  }
+
+  .replySectionHeader{
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .replySectionHeader h2{
+    margin: 0 !important;
+  }
+
+  .replySort{
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .replySort button{
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 44px !important;
+    padding: 0 8px !important;
+    text-align: center !important;
+  }
+
+  .replyList{
+    width: 100% !important;
+    gap: 12px !important;
+  }
+
+  .replyCard{
+    width: 100% !important;
+    padding: 14px !important;
+    overflow: hidden !important;
+  }
+
+  .replyCard .authorLine{
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .replyCard .authorLine > div{
+    min-width: 0 !important;
+  }
+
+  .replyCard .authorLine b,
+  .replyCard .authorLine small{
+    overflow-wrap: anywhere !important;
+  }
+
+  .replyCard .acceptedChip{
+    margin-left: 0 !important;
+    justify-self: end !important;
+    max-width: 145px !important;
+    text-align: center !important;
+    line-height: 1.25 !important;
+  }
+
+  .replyCard > p{
+    width: 100% !important;
+    margin: 14px 0 !important;
+    text-align: left !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .replyActions{
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .replyActions button{
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 6px !important;
+    white-space: nowrap !important;
+  }
+
+  .nestedComment{
+    width: calc(100% - 18px) !important;
+    margin: 14px 0 0 18px !important;
+    padding: 12px !important;
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: 10px !important;
+  }
+
+  .nestedComment > div{
+    min-width: 0 !important;
+  }
+
+  .nestedComment p{
+    overflow-wrap: anywhere !important;
+  }
+
+  /* ---------- reply composer / toolbar ---------- */
+
+  .replyComposer{
+    width: 100% !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .replyComposer > .avatar{
+    display: none !important;
+  }
+
+  .replyComposer textarea{
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .composerBottom{
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+
+  .composerBottom > div{
+    min-width: 0 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .composerBottom > div button{
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 11px !important;
+    background: #dfe6e9 !important;
+    box-shadow:
+      4px 4px 8px #c4c4c4,
+      -4px -4px 8px #ffffff !important;
+  }
+
+  .composerBottom > div button:active{
+    box-shadow:
+      inset 3px 3px 6px #c4c4c4,
+      inset -3px -3px 6px #ffffff !important;
+  }
+}
+
+@media (max-width: 480px){
+
+  .detailCard,
+  .replySection{
+    padding: 14px !important;
+  }
+
+  .replyCard .authorLine{
+    grid-template-columns: auto minmax(0, 1fr) !important;
+  }
+
+  .replyCard .acceptedChip{
+    grid-column: 1 / -1 !important;
+    justify-self: start !important;
+    margin-left: 44px !important;
+    max-width: 160px !important;
+  }
+
+  .replyActions{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .nestedComment{
+    width: calc(100% - 12px) !important;
+    margin-left: 12px !important;
+  }
+
+  .composerBottom{
+    align-items: flex-start !important;
+  }
+
+  .composerBottom > div{
+    gap: 7px !important;
+  }
+}
+
+@media (max-width: 380px){
+
+  .replySort{
+    gap: 6px !important;
+  }
+
+  .replySort button{
+    min-height: 40px !important;
+    padding: 0 5px !important;
+  }
+
+  .composerBottom > div button{
+    flex-basis: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE BUTTON SHADOW FIX ONLY
+   Top / Latest / Oldest + composer icon buttons
+   Desktop/web remains unchanged.
+   ========================================================= */
+@media (max-width: 760px){
+
+  /* Keep enough space so neighbouring neumorphic shadows
+     do not create the white crescent shapes. */
+  .replySort{
+    gap: 12px !important;
+    padding: 4px !important;
+    overflow: visible !important;
+  }
+
+  .replySort button{
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+
+    border: 0 !important;
+    border-radius: 12px !important;
+
+    background: #dfe6e9 !important;
+
+    box-shadow:
+      3px 3px 7px rgba(196,196,196,.88),
+      -3px -3px 7px rgba(255,255,255,.96) !important;
+  }
+
+  .replySort button.active{
+    color: #126df3 !important;
+    background: #dfe6e9 !important;
+
+    box-shadow:
+      inset 2px 2px 5px rgba(196,196,196,.90),
+      inset -2px -2px 5px rgba(255,255,255,.96) !important;
+  }
+
+  .replySort button:active{
+    box-shadow:
+      inset 2px 2px 5px rgba(196,196,196,.90),
+      inset -2px -2px 5px rgba(255,255,255,.96) !important;
+  }
+
+  /* Composer icon row */
+  .composerBottom > div{
+    gap: 12px !important;
+    padding: 4px !important;
+    overflow: visible !important;
+  }
+
+  .composerBottom > div button{
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+
+    border: 0 !important;
+    border-radius: 12px !important;
+
+    background: #dfe6e9 !important;
+
+    box-shadow:
+      3px 3px 7px rgba(196,196,196,.88),
+      -3px -3px 7px rgba(255,255,255,.96) !important;
+  }
+
+  .composerBottom > div button:active{
+    box-shadow:
+      inset 2px 2px 5px rgba(196,196,196,.90),
+      inset -2px -2px 5px rgba(255,255,255,.96) !important;
+  }
+}
+
+@media (max-width: 420px){
+  .replySort,
+  .composerBottom > div{
+    gap: 10px !important;
+  }
+}
+
+/* =========================================================
+   CREATE MODAL — TOP EDGE ONLY WHILE INNER BODY SCROLLS
+   No full-frame overlay. No functionality/layout changes.
+   ========================================================= */
+
+.singleCreateModal,
+.createModal.singleCreateModal{
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  overflow: hidden !important;
+}
+
+/* Keep the heading area fixed above the inner scroller.
+   Add ONLY a separator under "Ask your question" so the
+   header and scrolling form are clearly separated. */
+.singleCreateModal .modalHeader,
+.createModal.singleCreateModal .modalHeader{
+  position: relative !important;
+  z-index: 5 !important;
+  flex-shrink: 0 !important;
+
+  background: #dfe6e9 !important;
+
+  border-top: 0 !important;
+  border-bottom: 1px solid rgba(166, 184, 196, .58) !important;
+
+  box-shadow:
+    0 5px 9px rgba(196,196,196,.24),
+    0 -2px 5px rgba(255,255,255,.42) !important;
+}
+
+/* Only the form content scrolls. */
+.singleCreateModal .singleCreateBody,
+.createModal.singleCreateModal .singleCreateBody{
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Footer remains outside the inner scroller. */
+.singleCreateModal .singleCreateFooter,
+.createModal.singleCreateModal .singleCreateFooter{
+  position: relative !important;
+  z-index: 5 !important;
+  flex-shrink: 0 !important;
+  background: #dfe6e9 !important;
+}
+
+
+/* =========================================================
+   DESKTOP FEED TABS — REMOVE ONLY THE LONG SEPARATOR LINE
+   Keep the horizontal scroller and active-tab blue underline.
+   Mobile/tablet styling remains unchanged.
+   ========================================================= */
+@media (min-width: 761px) {
+  .feedTypeRow .typeTabs {
+    border-bottom: 0 !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE ONLY — AUTHOR DETAILS WRAP CORRECTION
+   Desktop/web remains exactly unchanged.
+   Forces the bottom author metadata to use the available card
+   width and wrap onto the next line instead of being clipped.
+   ========================================================= */
+@media (max-width: 760px) {
+
+  .feedList .postCard .postFooter{
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .feedList .postCard .postFooter .authorMini{
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    display: grid !important;
+    grid-template-columns: 52px minmax(0, 1fr) !important;
+    column-gap: 10px !important;
+    align-items: start !important;
+  }
+
+  .feedList .postCard .postFooter .authorMini .avatar{
+    grid-column: 1 !important;
+    flex: none !important;
+    margin: 0 !important;
+  }
+
+  .feedList .postCard .postFooter .authorMini > div{
+    grid-column: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .feedList .postCard .postFooter .authorMini b{
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .feedList .postCard .postFooter .authorMini small{
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin-top: 4px !important;
+
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    line-break: auto !important;
+
+    line-height: 1.45 !important;
   }
 }
