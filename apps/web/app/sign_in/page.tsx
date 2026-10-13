@@ -289,6 +289,48 @@ export default function LoginPage() {
         </p>
 
         <div className="loginForm">
+          {/* TENANT */}
+
+          {!isPlatformLevelRole && (
+            <div className="loginField">
+              <label htmlFor="tenant">
+                Tenant
+              </label>
+
+              <div className="loginSelectWrap">
+                <select
+                  id="tenant"
+                  value={tenantType}
+                  onChange={(event) =>
+                    setTenantType(
+                      event.target.value
+                    )
+                  }
+                >
+                  <option value="">
+                    Select Tenant
+                  </option>
+
+                  {TENANT_OPTIONS.map(
+                    (option) => (
+                      <option
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </option>
+                    )
+                  )}
+                </select>
+
+                <span
+                  className="loginSelectArrow"
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+          )}
+
           {/* ROLE */}
 
           <div className="loginField">
@@ -328,49 +370,6 @@ export default function LoginPage() {
               />
             </div>
           </div>
-
-          {/* TENANT */}
-
-          {role &&
-            !isPlatformLevelRole && (
-              <div className="loginField">
-                <label htmlFor="tenant">
-                  Tenant
-                </label>
-
-                <div className="loginSelectWrap">
-                  <select
-                    id="tenant"
-                    value={tenantType}
-                    onChange={(event) =>
-                      setTenantType(
-                        event.target.value
-                      )
-                    }
-                  >
-                    <option value="">
-                      Select Tenant
-                    </option>
-
-                    {TENANT_OPTIONS.map(
-                      (option) => (
-                        <option
-                          key={option.value}
-                          value={option.value}
-                        >
-                          {option.label}
-                        </option>
-                      )
-                    )}
-                  </select>
-
-                  <span
-                    className="loginSelectArrow"
-                    aria-hidden="true"
-                  />
-                </div>
-              </div>
-            )}
 
           {/* PLATFORM ROLE INFORMATION */}
 

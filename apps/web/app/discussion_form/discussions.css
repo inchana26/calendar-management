@@ -11240,3 +11240,482 @@ body:has(.discussionPage)::-webkit-scrollbar-corner, .discussionPage::-webkit-sc
     line-height: 1.45 !important;
   }
 }
+
+/* =========================================================
+   CREATE FORM — COMMUNITY DROPDOWN VISIBILITY FIX
+   Applies only inside the Create modal.
+   Keeps the menu inside the modal scroll flow so it cannot be
+   clipped/disappear near the bottom. Responsive on mobile too.
+   ========================================================= */
+.singleCreateModal .singleCreateDropdown.open,
+.createModal.singleCreateModal .singleCreateDropdown.open{
+  z-index: 20 !important;
+}
+
+.singleCreateModal .singleCreateDropdownMenu,
+.createModal.singleCreateModal .singleCreateDropdownMenu{
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: 230px !important;
+  margin-top: 7px !important;
+  transform: translateY(-5);
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  z-index: auto !important;
+}
+
+@media (max-width: 760px){
+  .singleCreateModal .singleCreateDropdownMenu,
+  .createModal.singleCreateModal .singleCreateDropdownMenu{
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 210px !important;
+    margin-top: 6px !important;
+  }
+}
+
+/* =========================================================
+   POST METRICS — MOVE LIKES / REPLIES / VIEWS BELOW CARD
+   Only changes the metric position.
+   Existing post content, author details, colors, icons and
+   functionality remain unchanged.
+   ========================================================= */
+
+.feedList .postCard{
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.feedList .postCard .postContentColumn{
+  order: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.feedList .postCard .postMetricRail{
+  order: 2 !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 82px !important;
+  height: auto !important;
+
+  padding: 9px 14px !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-template-rows: 1fr !important;
+  align-items: stretch !important;
+  justify-items: stretch !important;
+
+  gap: 8px !important;
+
+  border-top: 1px solid rgba(118, 128, 144, 0.18) !important;
+}
+
+.feedList .postCard .postMetricRail > .postMetricItem{
+  width: 100% !important;
+  min-width: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 4px !important;
+  text-align: center !important;
+}
+
+/* Mobile: keep all three metrics below in one responsive row. */
+@media (max-width: 760px){
+  .feedList .postCard .postMetricRail{
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 78px !important;
+    height: auto !important;
+
+    padding: 8px 9px !important;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .feedList .postCard .postMetricRail > .postMetricItem{
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 380px){
+  .feedList .postCard .postMetricRail{
+    min-height: 74px !important;
+    padding: 7px 6px !important;
+    gap: 4px !important;
+  }
+}
+
+
+/* =========================================================
+   POST METRICS — COUNT ON TOP / LABELS BELOW / LESS SPACING
+   Only changes the Likes / Replies / Views block.
+   ========================================================= */
+
+/* Desktop/tablet: keep the 3 metric groups closer together */
+@media (min-width: 761px){
+  .feedList .postCard .postMetricRail{
+    grid-template-columns: repeat(3, 150px) !important;
+    justify-content: center !important;
+    justify-items: center !important;
+    column-gap: 26px !important;
+  }
+
+  .feedList .postCard .postMetricRail > .postMetricItem{
+    width: 150px !important;
+  }
+}
+
+/* Put the count box on top, then icon + Likes/Replies/Views below */
+.feedList .postCard .postMetricRail > .postMetricItem{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+.feedList .postCard .postMetricCountBox{
+  order: 1 !important;
+  margin: 0 auto !important;
+}
+
+.feedList .postCard .postMetricTop{
+  order: 2 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+}
+
+/* Mobile: keep all 3 below the card without overflow */
+@media (max-width: 760px){
+  .feedList .postCard .postMetricRail{
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    justify-content: stretch !important;
+    column-gap: 5px !important;
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+  }
+
+  .feedList .postCard .postMetricRail > .postMetricItem{
+    width: 100% !important;
+    min-width: 0 !important;
+    gap: 5px !important;
+  }
+
+  .feedList .postCard .postMetricTop{
+    gap: 4px !important;
+  }
+}
+
+
+/* =========================================================
+   POST METRICS — ICON TOP / NAME BELOW / COUNT ON RIGHT
+   Only changes the Likes / Replies / Views layout.
+   ========================================================= */
+
+/* Keep all three metric groups below the post, compact and centered. */
+.feedList .postCard .postMetricRail{
+  grid-template-columns: repeat(3, max-content) !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: center !important;
+  column-gap: 80px !important;
+  min-height: 72px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+/* Each group:
+   icon        count
+   label       count
+*/
+.feedList .postCard .postMetricRail > .postMetricItem{
+  width: auto !important;
+  min-width: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 36px 82px !important;
+  grid-template-rows: 36px auto !important;
+  column-gap: 13px !important;
+  row-gap: 3px !important;
+  align-items: center !important;
+  justify-items: center !important;
+
+  text-align: center !important;
+}
+
+/* Let icon + label become direct grid items. */
+.feedList .postCard .postMetricTop{
+  display: contents !important;
+}
+
+/* Icon stays on top-left. */
+.feedList .postCard .postMetricIconButton{
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  margin: 0 !important;
+}
+
+/* Likes / Replies / Views sits directly below its icon. */
+.feedList .postCard .postMetricTop small{
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+
+  margin: 0 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+/* Count box sits to the right and is vertically centered. */
+.feedList .postCard .postMetricCountBox{
+  grid-column: 2 !important;
+  grid-row: 1 / span 2 !important;
+
+  width: 82px !important;
+  min-width: 82px !important;
+  max-width: 82px !important;
+
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+
+  margin: 0 !important;
+  align-self: center !important;
+  justify-self: center !important;
+  order: initial !important;
+}
+
+/* Mobile — same arrangement, only tightened so nothing overlaps. */
+@media (max-width: 760px){
+  .feedList .postCard .postMetricRail{
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    justify-content: stretch !important;
+    justify-items: stretch !important;
+    column-gap: 4px !important;
+    min-height: 68px !important;
+    padding: 7px 6px !important;
+  }
+
+  .feedList .postCard .postMetricRail > .postMetricItem{
+    width: 100% !important;
+    grid-template-columns: 30px minmax(52px, 64px) !important;
+    grid-template-rows: 31px auto !important;
+    column-gap: 5px !important;
+    row-gap: 2px !important;
+    justify-content: center !important;
+  }
+
+  .feedList .postCard .postMetricCountBox{
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+  }
+}
+
+@media (max-width: 380px){
+  .feedList .postCard .postMetricRail{
+    column-gap: 2px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+
+  .feedList .postCard .postMetricRail > .postMetricItem{
+    grid-template-columns: 28px minmax(46px, 56px) !important;
+    column-gap: 3px !important;
+  }
+
+  .feedList .postCard .postMetricCountBox{
+    width: 56px !important;
+    min-width: 56px !important;
+    max-width: 56px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE ONLY — RESTORE ORIGINAL METRIC DESIGN AT BOTTOM
+   Keep the original mobile Likes / Replies / Views design.
+   Only its position stays moved from the TOP of the card
+   to the BOTTOM of the card.
+   Desktop/web remains unchanged.
+   ========================================================= */
+@media (max-width: 760px){
+
+  /* Keep the metric rail below the post content. */
+  .feedList .postCard{
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .feedList .postCard .postContentColumn{
+    order: 1 !important;
+  }
+
+  .feedList .postCard .postMetricRail{
+    order: 2 !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 82px !important;
+    height: auto !important;
+
+    padding: 9px !important;
+
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows: 1fr !important;
+
+    align-items: stretch !important;
+    justify-items: stretch !important;
+    justify-content: stretch !important;
+
+    gap: 8px !important;
+    column-gap: 8px !important;
+  }
+
+  /* Restore the original mobile metric item layout:
+     icon + label on first row, count box below. */
+  .feedList .postCard .postMetricRail > .postMetricItem{
+    width: 100% !important;
+    min-width: 0 !important;
+
+    display: grid !important;
+    grid-template-columns: none !important;
+    grid-template-rows: none !important;
+
+    align-items: initial !important;
+    justify-items: stretch !important;
+    justify-content: initial !important;
+
+    column-gap: 0 !important;
+    row-gap: 0 !important;
+    gap: 6px !important;
+
+    text-align: center !important;
+  }
+
+  .feedList .postCard .postMetricTop{
+    order: initial !important;
+
+    min-width: 0 !important;
+    width: 100% !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 5px !important;
+    margin: 0 !important;
+  }
+
+  .feedList .postCard .postMetricIconButton{
+    grid-column: auto !important;
+    grid-row: auto !important;
+
+    width: 30px !important;
+    height: 30px !important;
+    flex: 0 0 30px !important;
+
+    margin: 0 !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    border-radius: 50% !important;
+  }
+
+  .feedList .postCard .postMetricTop small{
+    grid-column: auto !important;
+    grid-row: auto !important;
+
+    margin: 0 !important;
+
+    font-size: 10px !important;
+    line-height: 1 !important;
+    font-weight: 600 !important;
+
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+  }
+
+  .feedList .postCard .postMetricCountBox{
+    order: initial !important;
+
+    grid-column: auto !important;
+    grid-row: auto !important;
+
+    width: 76% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    height: auto !important;
+    min-height: 30px !important;
+    max-height: none !important;
+
+    margin: 0 auto !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    align-self: auto !important;
+    justify-self: auto !important;
+
+    font-size: 13px !important;
+  }
+}
+
+@media (max-width: 380px){
+
+  .feedList .postCard .postMetricRail{
+    min-height: 76px !important;
+    padding: 8px 6px !important;
+    gap: 6px !important;
+    column-gap: 6px !important;
+  }
+
+  .feedList .postCard .postMetricRail > .postMetricItem{
+    gap: 6px !important;
+  }
+
+  .feedList .postCard .postMetricTop{
+    gap: 4px !important;
+  }
+
+  .feedList .postCard .postMetricIconButton{
+    width: 28px !important;
+    height: 28px !important;
+    flex: 0 0 28px !important;
+  }
+
+  .feedList .postCard .postMetricTop small{
+    font-size: 9px !important;
+  }
+
+  .feedList .postCard .postMetricCountBox{
+    width: 74% !important;
+    min-height: 28px !important;
+    font-size: 12px !important;
+  }
+}
+

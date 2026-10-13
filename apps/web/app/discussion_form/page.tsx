@@ -362,9 +362,7 @@ function scoreTrending(post: Post) {
   const ageHours = Math.max(1, (Date.now() - post.createdAt) / 3600000);
   return post.views * .08 + post.replies.length * 12 + reactions * 3 + (post.bookmarked ? 20 : 0) + (post.following ? 16 : 0) + 120 / ageHours;
 }
-function canCreateType(role: RoleKey, type: PostType) {
-  if (["SUPER_ADMIN","PLATFORM_ADMIN","TENANT_ADMIN","COORDINATOR","MANAGER","FACULTY","TRAINER"].includes(role)) return true;
-  if (type === "POLL" && ["STUDENT","LEARNER","VOLUNTEER","MEMBER"].includes(role)) return false;
+function canCreateType(_role: RoleKey, _type: PostType) {
   return true;
 }
 function seedPosts(tenant: TenantType, communities: Community[]): Post[] {
@@ -1245,13 +1243,19 @@ export default function DiscussionForumPage() {
     code: false,
   });
 
-  // Close all open dropdowns when the user clicks/taps elsewhere,
-  // scrolls to another part of the page/modal, resizes the window,
-  // or presses Escape. Selection handlers already close immediately.
+  // Close dropdowns on outside click / Escape.
+  // Page-level menus still close on scroll, but the Create-form Community
+  // dropdown stays open while the modal body is scrolled.
   useEffect(() => {
     const closeOpenDropdowns = () => {
       setOpenFilterDropdown(null);
       setCreateDropdownOpen(null);
+      setCreateMenuOpen(false);
+      setSortDropdownOpen(false);
+    };
+
+    const closePageDropdownsOnScroll = () => {
+      setOpenFilterDropdown(null);
       setCreateMenuOpen(false);
       setSortDropdownOpen(false);
     };
@@ -1278,13 +1282,13 @@ export default function DiscussionForumPage() {
     };
 
     document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("scroll", closeOpenDropdowns, true);
+    document.addEventListener("scroll", closePageDropdownsOnScroll, true);
     window.addEventListener("resize", closeOpenDropdowns);
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("scroll", closeOpenDropdowns, true);
+      document.removeEventListener("scroll", closePageDropdownsOnScroll, true);
       window.removeEventListener("resize", closeOpenDropdowns);
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -1902,12 +1906,17 @@ export default function DiscussionForumPage() {
     } else if (!draft.title.trim() || !plainTextFromHtml(draft.description)) {
       return showToast("Enter title and description.");
     }
-    if (!draft.communityId || !draft.scopeId || !draftCommunity) {
-      return showToast("Select community and target audience.");
+    if (!draft.communityId || !draftCommunity) {
+      return showToast("Select community.");
     }
 
-    const scope = draftCommunity.scopes.find(s=>s.id===draft.scopeId);
-    if (!scope) return showToast("Select a valid target audience.");
+    // Posts are visible to everyone who already has access to the selected
+    // LMS community. Keep scope fields internally for the existing backend
+    // contract without asking the author to choose a separate audience.
+    const scope = {
+      id: `${draftCommunity.id}-all-members`,
+      label: "All Community Members",
+    };
 
     setIsPublishing(true);
 
@@ -2501,8 +2510,8 @@ export default function DiscussionForumPage() {
 
           <section className="createFormSection">
             <div className="createSectionHeading">
-              <b>Community & audience</b>
-              <small>Choose where this post should be visible.</small>
+              <b>Community</b>
+              <small>Choose the community where this post should appear.</small>
             </div>
 
             <label>Community *
@@ -2515,21 +2524,6 @@ export default function DiscussionForumPage() {
                   {communities.map(c=><button type="button" key={c.id} onClick={()=>{setDraft(d=>({...d,communityId:c.id,scopeId:""}));setCreateDropdownOpen(null);}}>
                     <span className={`discussionCheck ${draft.communityId===c.id?"checked":""}`} aria-hidden="true">{draft.communityId===c.id&&<Check size={10} strokeWidth={2.2}/>}</span>
                     <span>{c.name}</span>
-                  </button>)}
-                </div>}
-              </div>
-            </label>
-
-            <label>Target Audience *
-              <div className={`singleCreateDropdown ${!draft.communityId?"disabled":""} ${createDropdownOpen==="AUDIENCE"?"open":""}`}>
-                <button type="button" className="singleCreateDropdownTrigger" disabled={!draft.communityId} onClick={()=>setCreateDropdownOpen(v=>v==="AUDIENCE"?null:"AUDIENCE")}>
-                  <span>{draft.scopeId?availableScopes.find(s=>s.id===draft.scopeId)?.label:"Select audience"}</span>
-                  <ChevronDown aria-hidden="true" />
-                </button>
-                {createDropdownOpen==="AUDIENCE"&&draft.communityId&&<div className="singleCreateDropdownMenu">
-                  {availableScopes.map(s=><button type="button" key={s.id} onClick={()=>{setDraft(d=>({...d,scopeId:s.id}));setCreateDropdownOpen(null);}}>
-                    <span className={`discussionCheck ${draft.scopeId===s.id?"checked":""}`} aria-hidden="true">{draft.scopeId===s.id&&<Check size={10} strokeWidth={2.2}/>}</span>
-                    <span><b>{s.label}</b><small>{s.type}</small></span>
                   </button>)}
                 </div>}
               </div>
