@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import "../calendarmanagment/calendarmanagment.css";
@@ -23,7 +23,7 @@ const icons = {
   alarm: "/assets/calendar-icons/alarm-clock.svg",
   location: "/assets/calendar-icons/pin.svg",
   attendees: "/assets/calendar-icons/usergroup.svg",
-  more: "/assets/calendar-icons/more.svg",
+  more: "/assets/calendar-icons/message.svg",
   download: "/assets/calendar-icons/download.svg",
   uploadFile: "/assets/calendar-icons/upload.svg",
 };
@@ -73,6 +73,7 @@ type CalendarEvent = {
   scheduledPublishAt?: string;
   reminderSentAt?: string;
   createdBy?: string;
+  publisherName?: string;
   localOwner?: string;
 };
 
@@ -105,6 +106,13 @@ type BackendEvent = {
   status: BackendEventStatus;
   scheduledPublishAt?: string | null;
   createdBy?: string | null;
+  // Optional publisher-name fields from event APIs that include user details.
+  publisherName?: string | null;
+  publishedByName?: string | null;
+  createdByName?: string | null;
+  publishedBy?: string | null;
+  creator?: { name?: string | null } | null;
+  createdByUser?: { name?: string | null } | null;
   audiences?: Array<{
     id: string;
     audienceId: string;
@@ -163,6 +171,67 @@ function eventCreatorLabel(createdBy?: string) {
   }
 
   return (createdBy || "").trim();
+}
+
+// Only display an actual person's name as publisher, never a role or synthetic ID.
+function actualCalendarPublisherName(value: unknown): string {
+  if (typeof value !== "string") return "";
+  const name = value.trim().replace(/\s+/g, " ");
+  if (!name || name.includes("@")) return "";
+
+  const normalized = name.replace(/[-_]+/g, " ").toUpperCase();
+  const roleOrPlaceholder = new Set([
+    "SUPER ADMIN", "PLATFORM ADMIN", "TENANT ADMIN", "INSTITUTE ADMIN",
+    "COORDINATOR", "FACULTY", "STUDENT", "LEARNER", "USER ROLE",
+    "ADMIN", "USER", "UNKNOWN", "NOT RECORDED", "NAME UNAVAILABLE",
+    "ACADEMY ADMIN", "BOOTCAMP ADMIN", "CORPORATE ADMIN",
+    "DEPARTMENT ADMIN", "PROGRAM COORDINATOR", "COHORT COORDINATOR",
+    "TRAINER", "INSTRUCTOR", "EMPLOYEE", "VOLUNTEER",
+  ]);
+  if (
+    roleOrPlaceholder.has(normalized) ||
+    /^calendar[-_]/i.test(name) ||
+    /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(name)
+  ) return "";
+
+  return name;
+}
+
+function backendCalendarPublisherName(event: BackendEvent): string {
+  return [
+    event.publisherName,
+    event.publishedByName,
+    event.createdByName,
+    event.creator?.name,
+    event.createdByUser?.name,
+    event.publishedBy,
+    event.createdBy,
+  ].map(actualCalendarPublisherName).find(Boolean) || "";
+}
+
+// For an event being created in this browser, retain the authenticated
+// user's name if it is available and the login role matches.
+function getSignedInCalendarPublisherName(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const auth = JSON.parse(window.localStorage.getItem("calendar_auth_user") || "null") as
+      | { name?: unknown; role?: string }
+      | null;
+    const session = JSON.parse(window.localStorage.getItem("calendar_dummy_login") || "null") as
+      | { role?: string }
+      | null;
+    if (!auth || !session?.role || !auth.role ||
+        auth.role.toUpperCase() !== session.role.toUpperCase()) return "";
+    return actualCalendarPublisherName(auth.name);
+  } catch {
+    return "";
+  }
+}
+
+function getCalendarEventPublisherLabel(event: CalendarEvent): string {
+  return actualCalendarPublisherName(event.publisherName) ||
+    actualCalendarPublisherName(event.createdBy) ||
+    "Name unavailable";
 }
 
 function formatAudienceTenantLabel(value: string) {
@@ -463,6 +532,7 @@ function backendEventToCalendarEvent(
     scheduledPublishAt: event.scheduledPublishAt || undefined,
     description: event.description || "",
     createdBy: event.createdBy || undefined,
+    publisherName: backendCalendarPublisherName(event) || undefined,
   };
 }
 
@@ -2557,6 +2627,7 @@ type FilterDropdownProps = {
   options: string[];
   open: boolean;
   className?: string;
+  searchable?: boolean;
   onToggle: () => void;
   onSelect: (value: string) => void;
 };
@@ -2567,9 +2638,56 @@ function FilterDropdown({
   options,
   open,
   className = "",
+  searchable = false,
   onToggle,
   onSelect,
 }: FilterDropdownProps) {
+  const [optionSearch, setOptionSearch] = useState("");
+
+  useEffect(() => {
+    if (!open) setOptionSearch("");
+  }, [open]);
+
+  const displayedOptions = searchable
+    ? options.filter((option) =>
+        option.toLowerCase().includes(optionSearch.trim().toLowerCase())
+      )
+    : options;
+
+  // Searchable year lists keep the search field outside the scrolling options.
+  // All other filter dropdowns retain their original option markup and layout.
+  const menuOptions = (
+    <>
+      {displayedOptions.length === 0 && (
+        <p className="filterDropdownSearchEmpty">No matching years</p>
+      )}
+      {displayedOptions.map((option) => {
+        const selected = option === value;
+        return (
+          <button
+            type="button"
+            role="option"
+            aria-selected={selected}
+            className={`filterDropdownOption ${selected ? "selected" : ""}`}
+            key={option}
+            onClick={() => onSelect(option)}
+          >
+            <span className="filterRadio" aria-hidden="true">
+              <span className="filterRadioOuter" />
+              {!selected && <span className="filterRadioInner" />}
+              {selected && (
+                <span className="filterRadioCheck">
+                  <span className="filterTick" />
+                </span>
+              )}
+            </span>
+            <span>{option}</span>
+          </button>
+        );
+      })}
+    </>
+  );
+
   return (
     <div className={`filterDropdown ${className} ${open ? "open" : ""}`}>
       <button
@@ -2582,7 +2700,7 @@ function FilterDropdown({
         <span className="filterDropdownText">
           <span className="filterDropdownLabel">{label}</span>
           <span className="filterDropdownValue">
-            {className.includes("monthFilterDropdown")
+            {(className.includes("monthFilterDropdown") || className.includes("yearFilterDropdown"))
               ? value
               : value.startsWith("All ")
                 ? label
@@ -2594,30 +2712,26 @@ function FilterDropdown({
 
       {open && (
         <div className="filterDropdownMenu" role="listbox" aria-label={label}>
-          {options.map((option) => {
-            const selected = option === value;
-            return (
-              <button
-                type="button"
-                role="option"
-                aria-selected={selected}
-                className={`filterDropdownOption ${selected ? "selected" : ""}`}
-                key={option}
-                onClick={() => onSelect(option)}
-              >
-                <span className="filterRadio" aria-hidden="true">
-                  <span className="filterRadioOuter" />
-                  {!selected && <span className="filterRadioInner" />}
-                  {selected && (
-                    <span className="filterRadioCheck">
-                      <span className="filterTick" />
-                    </span>
-                  )}
-                </span>
-                <span>{option}</span>
-              </button>
-            );
-          })}
+          {searchable && (
+            <div className="filterDropdownSearchWrap">
+              <input
+                type="search"
+                className="filterDropdownSearchInput"
+                aria-label={`Search ${label.toLowerCase()} options`}
+                placeholder="Search years..."
+                value={optionSearch}
+                onChange={(event) => setOptionSearch(event.target.value)}
+                onKeyDown={(event) => event.stopPropagation()}
+              />
+            </div>
+          )}
+          {searchable ? (
+            <div className="filterDropdownOptionsScroll" aria-label="Year options">
+              {menuOptions}
+            </div>
+          ) : (
+            menuOptions
+          )}
         </div>
       )}
     </div>
@@ -2649,23 +2763,20 @@ const calendarMonthFilterOptions = [
 ];
 
 function getCalendarFilterYears(events: CalendarEvent[]) {
-  const startYear = 2016;
-
   const eventYears = events
     .map((event) => Number(event.year))
-    .filter((year) => Number.isFinite(year) && year > 0);
+    .filter((year) => Number.isInteger(year) && year >= 1 && year <= 9999);
 
-  const latestEventYear =
-    eventYears.length > 0
-      ? Math.max(...eventYears)
-      : new Date().getFullYear();
+  const startYear = Math.min(2016, ...eventYears);
+  const endYear = Math.max(new Date().getFullYear(), 2016, ...eventYears);
 
-  const endYear = Math.max(startYear, latestEventYear);
-
-  return Array.from(
-    { length: endYear - startYear + 1 },
-    (_, index) => String(startYear + index)
-  );
+  return [
+    "All Years",
+    ...Array.from(
+      { length: endYear - startYear + 1 },
+      (_, index) => String(startYear + index)
+    ),
+  ];
 }
 
 type AllUsersFilterDropdownProps = {
@@ -2963,7 +3074,7 @@ function CheckboxFilterDropdown({
       {open && !disabled && (
         <div
           className="filterDropdownMenu departmentCheckMenu"
-          role="listbox"
+          role="radiogroup"
           aria-label={label}
         >
           {options.map((option) => {
@@ -2977,7 +3088,8 @@ function CheckboxFilterDropdown({
                 key={option}
               >
                 <input
-                  type="checkbox"
+                  type="radio"
+                  name={label === "Division" ? "calendar-division-filter" : "calendar-department-filter"}
                   checked={checked}
                   onChange={() => onSelect(option)}
                 />
@@ -2997,6 +3109,16 @@ function CheckboxFilterDropdown({
       )}
     </div>
   );
+}
+
+// Calendar dates are compared in the user's local timezone, not UTC.
+// The key is sortable, so past dates work across months and years.
+function calendarLocalDayKey(date: Date): string {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
 }
 
 function daysForMonth(date: Date) {
@@ -3071,6 +3193,12 @@ function getCalendarEventDateRange(event: CalendarEvent) {
     : { start: end, end: actualStart };
 }
 
+function isCalendarEventOnDate(event: CalendarEvent, date: Date) {
+  const { start, end } = getCalendarEventDateRange(event);
+  const day = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  return day >= start.getTime() && day <= end.getTime();
+}
+
 function getDynamicCalendarAnchorDate(events: CalendarEvent[]) {
   const today = new Date();
   const todayStart = new Date(
@@ -3115,10 +3243,32 @@ export default function CalendarManagementPage() {
   const router = useRouter();
   const [login, setLogin] = useState<CalendarLogin | null>(null);
   const [currentDate, setCurrentDate] = useState(() => {
-    const anchorDate = getDynamicCalendarAnchorDate(initialEvents);
-    return new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
   });
   const [view, setView] = useState<CalendarView>("month");
+  const [todayLocalDayKey, setTodayLocalDayKey] = useState(() =>
+    calendarLocalDayKey(new Date())
+  );
+
+  // Recheck the real local date when the page is opened or stays open at midnight.
+  // This is dynamic for every day, month, year and tenant (never hard-coded).
+  useEffect(() => {
+    const refreshToday = () => {
+      const nextKey = calendarLocalDayKey(new Date());
+      setTodayLocalDayKey((previous) => previous === nextKey ? previous : nextKey);
+    };
+
+    refreshToday();
+    const intervalId = window.setInterval(refreshToday, 30000);
+    window.addEventListener("focus", refreshToday);
+    document.addEventListener("visibilitychange", refreshToday);
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshToday);
+      document.removeEventListener("visibilitychange", refreshToday);
+    };
+  }, []);
   const [calendarPickerOpen, setCalendarPickerOpen] = useState<
     "month" | "year" | null
   >(null);
@@ -3179,6 +3329,54 @@ export default function CalendarManagementPage() {
   const [listMonthFilterTouched, setListMonthFilterTouched] = useState(false);
   const [listYearFilter, setListYearFilter] = useState("All Years");
   const [listYearFilterTouched, setListYearFilterTouched] = useState(false);
+
+  // Close the Year filter when the user scrolls or interacts elsewhere.
+  // Scrolling within the Year options themselves must remain possible.
+  useEffect(() => {
+    if (openFilter !== "listYear") return;
+
+    const insideYearMenu = (target: EventTarget | null) =>
+      target instanceof Element &&
+      Boolean(target.closest(".calendarPage .yearFilterDropdown.open .filterDropdownMenu"));
+
+    const insideYearDropdown = (target: EventTarget | null) =>
+      target instanceof Element &&
+      Boolean(target.closest(".calendarPage .yearFilterDropdown.open"));
+
+    const closeOnOutsideScroll = (event: Event) => {
+      if (!insideYearMenu(event.target)) setOpenFilter(null);
+    };
+
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (!insideYearDropdown(event.target)) setOpenFilter(null);
+    };
+
+    const closeOnOutsideFocus = (event: FocusEvent) => {
+      if (!insideYearDropdown(event.target)) setOpenFilter(null);
+    };
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenFilter(null);
+    };
+
+    document.addEventListener("scroll", closeOnOutsideScroll, true);
+    window.addEventListener("wheel", closeOnOutsideScroll, { capture: true, passive: true });
+    window.addEventListener("touchmove", closeOnOutsideScroll, { capture: true, passive: true });
+    window.addEventListener("resize", closeOnOutsideScroll);
+    document.addEventListener("pointerdown", closeOnOutsidePointer, true);
+    document.addEventListener("focusin", closeOnOutsideFocus, true);
+    document.addEventListener("keydown", closeOnEscape, true);
+
+    return () => {
+      document.removeEventListener("scroll", closeOnOutsideScroll, true);
+      window.removeEventListener("wheel", closeOnOutsideScroll, true);
+      window.removeEventListener("touchmove", closeOnOutsideScroll, true);
+      window.removeEventListener("resize", closeOnOutsideScroll);
+      document.removeEventListener("pointerdown", closeOnOutsidePointer, true);
+      document.removeEventListener("focusin", closeOnOutsideFocus, true);
+      document.removeEventListener("keydown", closeOnEscape, true);
+    };
+  }, [openFilter]);
                                                                              
                                                                                       
   const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
@@ -3188,6 +3386,11 @@ export default function CalendarManagementPage() {
   const [eventFormOpen, setEventFormOpen] = useState(false);
   const mobileEventTouchStartX = useRef<number | null>(null);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkFeedback, setBulkFeedback] = useState<{
+    kind: "error" | "success" | "info";
+    title: string;
+    messages: string[];
+  } | null>(null);
 
   const [addMenuOpen, setAddMenuOpen] = useState<"desktop" | "mobile" | null>(
     null
@@ -3207,15 +3410,20 @@ export default function CalendarManagementPage() {
   const [exportDropdown, setExportDropdown] = useState<"month" | "year" | null>(null);
   const [exportMessage, setExportMessage] = useState("");
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [scheduleDate, setScheduleDate] = useState(() =>
-    getDynamicCalendarAnchorDate(initialEvents)
-  );
-  const [weekDate, setWeekDate] = useState(() =>
-    getDynamicCalendarAnchorDate(initialEvents)
-  );
-  const [dayDate, setDayDate] = useState(() =>
-    getDynamicCalendarAnchorDate(initialEvents)
-  );
+
+  // A selected date becomes unavailable when midnight turns it into a past day.
+  useEffect(() => {
+    if (selectedDay === null) return;
+    const chosenKey = calendarLocalDayKey(
+      new Date(currentDate.getFullYear(), currentDate.getMonth(), selectedDay)
+    );
+    if (chosenKey < todayLocalDayKey) setSelectedDay(null);
+  }, [selectedDay, currentDate, todayLocalDayKey]);
+  const [scheduleDate, setScheduleDate] = useState(() => new Date());
+  const [weekDate, setWeekDate] = useState(() => new Date());
+  const [dayDate, setDayDate] = useState(() => new Date());
+  const weekScrollRef = useRef<HTMLDivElement>(null);
+  const dayScrollRef = useRef<HTMLDivElement>(null);
   const [dayPopup, setDayPopup] = useState<{ day: number; event: CalendarEvent } | null>(null);
   const [dayEventList, setDayEventList] = useState<{ day: number; events: CalendarEvent[] } | null>(null);
   const [reminderEvent, setReminderEvent] = useState<CalendarEvent | null>(null);
@@ -3252,6 +3460,7 @@ export default function CalendarManagementPage() {
   const [autoPublishError, setAutoPublishError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bulkUploadInProgressRef = useRef(false);
 
   useEffect(() => {
     const storedLogin = window.localStorage.getItem("calendar_dummy_login");
@@ -3837,7 +4046,7 @@ export default function CalendarManagementPage() {
 
       return authResult.accessToken;
     } catch {
-      window.localStorage.removeItem("calendar_access_token");
+      // Keep the login token through a temporary network outage.
       return null;
     }
   };
@@ -3850,10 +4059,27 @@ export default function CalendarManagementPage() {
       const headers = new Headers(init.headers || {});
       headers.set("Authorization", `Bearer ${token}`);
 
-      return fetch(input, {
-        ...init,
-        headers,
-      });
+      try {
+        return await fetch(input, {
+          ...init,
+          headers,
+        });
+      } catch {
+        // The backend may be stopped, unreachable, or blocked by CORS.
+        // Do not let background polling produce unhandled TypeErrors.
+        return new Response(
+          JSON.stringify({
+            message: "Calendar API is unreachable. Check NEXT_PUBLIC_API_URL and the backend server.",
+          }),
+          {
+            status: 503,
+            headers: {
+              "Content-Type": "application/json",
+              "X-Calendar-Network-Error": "true",
+            },
+          }
+        );
+      }
     };
 
     let token = window.localStorage.getItem("calendar_access_token");
@@ -4009,12 +4235,19 @@ export default function CalendarManagementPage() {
                                              
 
   useEffect(() => {
+    let backendRetryAfter = 0;
+    let requestInProgress = false;
+    let isDisposed = false;
+
     const loadBackendEvents = async () => {
+      if (isDisposed || requestInProgress || Date.now() < backendRetryAfter) return;
+
       const token = window.localStorage.getItem("calendar_access_token");
 
                                                                                 
       if (!token) return;
 
+      requestInProgress = true;
       try {
         const apiUrl =
           process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -4025,6 +4258,12 @@ export default function CalendarManagementPage() {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        if (response.headers.get("X-Calendar-Network-Error") === "true") {
+          // Offline mode: preserve existing/local events; retry after a short pause.
+          backendRetryAfter = Date.now() + 30000;
+          return;
+        }
 
         if (!response.ok) {
           const errorText = await response.text().catch(() => "");
@@ -4100,6 +4339,7 @@ export default function CalendarManagementPage() {
                 existingEvent.reminderSentAt ||
                 backendEvent.reminderSentAt,
               localOwner: existingEvent.localOwner,
+              publisherName: backendEvent.publisherName || existingEvent.publisherName,
             };
           });
 
@@ -4130,7 +4370,11 @@ export default function CalendarManagementPage() {
           return nextEvents;
         });
       } catch (error) {
+        // Only unexpected parsing/programming errors are reported to console.
+        // Network errors are handled by calendarAuthenticatedFetch above.
         console.error("Failed to load backend calendar events:", error);
+      } finally {
+        requestInProgress = false;
       }
     };
 
@@ -4139,6 +4383,7 @@ export default function CalendarManagementPage() {
                                                                               
                                                                                  
     const handleFocus = () => {
+      backendRetryAfter = 0;
       void loadBackendEvents();
     };
 
@@ -4149,6 +4394,7 @@ export default function CalendarManagementPage() {
     }, 5000);
 
     return () => {
+      isDisposed = true;
       window.removeEventListener("focus", handleFocus);
       window.clearInterval(refreshTimer);
     };
@@ -4305,8 +4551,20 @@ export default function CalendarManagementPage() {
 
     try {
       const parsedEvent = JSON.parse(savedEvent) as CalendarEvent;
+      const sessionValue = window.localStorage.getItem("calendar_dummy_login");
+      let savedLocalOwner = parsedEvent.localOwner;
+      if (!savedLocalOwner && sessionValue) {
+        try {
+          const session = JSON.parse(sessionValue) as CalendarLogin;
+          if (session.role) savedLocalOwner = `${session.role}::${session.tenantType || ""}`;
+        } catch {
+          // Keep creator unassigned when session metadata is unavailable.
+        }
+      }
       const eventWithDepartment: CalendarEvent = {
         ...parsedEvent,
+        publisherName: getSignedInCalendarPublisherName() || actualCalendarPublisherName(parsedEvent.publisherName) || undefined,
+        localOwner: savedLocalOwner,
         department:
           parsedEvent.department ||
           (department !== "All Departments" ? department : undefined),
@@ -4489,11 +4747,12 @@ export default function CalendarManagementPage() {
 
   const getWeekEventHour = (event: CalendarEvent) => {
     const value = (event.startTime || event.start || "").trim();
-    const match = value.match(/^(\d{1,2})(?::\d{2})?\s*(am|pm)?$/i);
+    const match = value.match(/^(\d{1,2})(?::\d{2})?(?::\d{2})?\s*(am|pm)?$/i);
 
     if (!match) return -1;
 
     let hour = Number(match[1]);
+    if (hour < 0 || hour > 23) return -1;
     const meridiem = match[2]?.toLowerCase();
 
     if (meridiem === "pm" && hour < 12) hour += 12;
@@ -4510,31 +4769,21 @@ export default function CalendarManagementPage() {
     });
   };
 
-  const dayTitle = useMemo(() => {
-    const start = new Date(dayDate);
-    start.setDate(start.getDate() - start.getDay());
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-
-    if (
-      start.getFullYear() === end.getFullYear() &&
-      start.getMonth() === end.getMonth()
-    ) {
-      return `${start.toLocaleString("en-US", { month: "long" })} ${start.getDate()}-${end.getDate()}, ${end.getFullYear()}`;
-    }
-
-    return `${start.toLocaleString("en-US", { month: "short" })} ${start.getDate()} - ${end.toLocaleString("en-US", { month: "short" })} ${end.getDate()}, ${end.getFullYear()}`;
-  }, [dayDate]);
+  const dayTitle = useMemo(
+    () => dayDate.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }),
+    [dayDate]
+  );
 
   const dayName = dayDate.toLocaleDateString("en-US", { weekday: "long" });
 
   const dayEventsForHour = (hour: number) =>
-    visibleEvents.filter(
-      (event) =>
-        event.year === dayDate.getFullYear() &&
-        event.month === dayDate.getMonth() &&
-        event.day === dayDate.getDate() &&
-        getWeekEventHour(event) === hour
+    events.filter(
+      (event) => isCalendarEventOnDate(event, dayDate) && getWeekEventHour(event) === hour
     );
 
   const moveDay = (amount: number) => {
@@ -5054,42 +5303,9 @@ export default function CalendarManagementPage() {
   ]);
 
   const getCalendarViewAnchorDate = () => {
-    if (selectedDay !== null) {
-      return new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        selectedDay
-      );
-    }
-
-    const eventsInDisplayedMonth = visibleEvents
-      .filter(
-        (event) =>
-          event.year === currentDate.getFullYear() &&
-          event.month === currentDate.getMonth()
-      )
-      .slice()
-      .sort((a, b) => {
-        const dateDifference =
-          new Date(a.year, a.month, a.day).getTime() -
-          new Date(b.year, b.month, b.day).getTime();
-
-        if (dateDifference !== 0) return dateDifference;
-
-        return getWeekEventHour(a) - getWeekEventHour(b);
-      });
-
-    if (eventsInDisplayedMonth.length > 0) {
-      const event = eventsInDisplayedMonth[0];
-
-      return new Date(event.year, event.month, event.day);
-    }
-
-    return new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    );
+    // Switching to Week or Day opens the current week or current date.
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
   };
 
   const changeCalendarView = (nextView: CalendarView) => {
@@ -5097,10 +5313,46 @@ export default function CalendarManagementPage() {
       setWeekDate(getCalendarViewAnchorDate());
     } else if (nextView === "day") {
       setDayDate(getCalendarViewAnchorDate());
+    } else if (view !== "month") {
+      const today = new Date();
+      setCurrentDate(new Date(today.getFullYear(), today.getMonth(), 1));
+      setSelectedDay(null);
     }
 
     setView(nextView);
   };
+
+  // The grid begins at midnight; reveal the first scheduled event automatically,
+  // while retaining normal scrolling and the correct hour/date columns.
+  useEffect(() => {
+    if (view !== "week" && view !== "day") return;
+
+    const scroller = view === "week" ? weekScrollRef.current : dayScrollRef.current;
+    if (!scroller) return;
+    const displayedDates = view === "week" ? weekDays : [dayDate];
+    const scheduledHours = events
+      .filter(event => displayedDates.some(date => isCalendarEventOnDate(event, date)))
+      .map(getWeekEventHour)
+      .filter(hour => hour >= 0);
+
+    if (!scheduledHours.length) {
+      scroller.scrollTop = 0;
+      return;
+    }
+
+    const earliestHour = Math.min(...scheduledHours);
+    const target = scroller.querySelector<HTMLElement>(
+      `[data-calendar-hour="${earliestHour}"]`
+    );
+    const heading = scroller.querySelector<HTMLElement>(
+      view === "week" ? ".weekCalendarHeader" : ".dayCalendarHeader"
+    );
+    if (target) {
+      const targetTop = target.getBoundingClientRect().top;
+      const scrollTop = scroller.getBoundingClientRect().top;
+      scroller.scrollTop += targetTop - scrollTop - (heading?.offsetHeight || 0) - 4;
+    }
+  }, [view, weekDays, dayDate, events]);
 
     
                      
@@ -5263,7 +5515,9 @@ export default function CalendarManagementPage() {
         event.description,
         attachmentName,
         event.createdBy,
+        event.publisherName,
         eventCreatorLabel(event.createdBy),
+        getCalendarEventPublisherLabel(event),
         ...(event.audienceIds || []),
         ...(event.audienceTypes || []),
       ]
@@ -5301,8 +5555,10 @@ export default function CalendarManagementPage() {
     role,
   ]);
 
-  const moveMonth = (amount: number) =>
+  const moveMonth = (amount: number) => {
     setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() + amount, 1));
+    setSelectedDay(null);
+  };
 
   const moveScheduleDate = (amount: number) => {
     setScheduleDate((prev) => {
@@ -5319,6 +5575,10 @@ export default function CalendarManagementPage() {
   });
 
   const clearFilters = () => {
+    setListMonthFilter("All Months");
+    setListMonthFilterTouched(false);
+    setListYearFilter("All Years");
+    setListYearFilterTouched(false);
     setAudienceFilter("All Audiences");
     setTenant(isTenantScopedRole ? signedInTenant : "All Tenants");
     setRole("All Roles");
@@ -5386,15 +5646,11 @@ export default function CalendarManagementPage() {
     closeCancelEventModal();
   };
 
-  const openAddDropdown = (
-    source: "desktop" | "mobile",
-    button: HTMLButtonElement | null
-  ) => {
-    if (!button) return;
-
+  const positionAddDropdown = useCallback((button: HTMLButtonElement) => {
     const rect = button.getBoundingClientRect();
     const menuWidth = 190;
     const viewportPadding = 10;
+    const menuHeight = 100;
 
     const left = Math.min(
       Math.max(rect.left, viewportPadding),
@@ -5404,17 +5660,56 @@ export default function CalendarManagementPage() {
       )
     );
 
-    setAddMenuPosition({
-      top: rect.bottom + 8,
-      left,
-    });
+    const below = rect.bottom + 8;
+    const top =
+      below + menuHeight > window.innerHeight - viewportPadding &&
+      rect.top >= menuHeight + viewportPadding
+        ? rect.top - menuHeight - 8
+        : below;
 
+    setAddMenuPosition((previous) =>
+      previous.top === top && previous.left === left
+        ? previous
+        : { top, left }
+    );
+  }, []);
+
+  const openAddDropdown = (
+    source: "desktop" | "mobile",
+    button: HTMLButtonElement | null
+  ) => {
+    if (!button) return;
+
+    positionAddDropdown(button);
     setAddMenuOpen((current) => (current === source ? null : source));
   };
+
+  useEffect(() => {
+    if (!addMenuOpen) return;
+
+    // The menu is rendered in a portal. Close on the very first scroll
+    // (including the calendar's nested scroll container), rather than
+    // leaving a fixed-position menu floating over unrelated content.
+    const closeOnScroll = () => setAddMenuOpen(null);
+
+    document.addEventListener("scroll", closeOnScroll, true);
+    window.addEventListener("wheel", closeOnScroll, { capture: true, passive: true });
+    window.addEventListener("touchmove", closeOnScroll, { capture: true, passive: true });
+    window.addEventListener("resize", closeOnScroll);
+
+    return () => {
+      document.removeEventListener("scroll", closeOnScroll, true);
+      window.removeEventListener("wheel", closeOnScroll, true);
+      window.removeEventListener("touchmove", closeOnScroll, true);
+      window.removeEventListener("resize", closeOnScroll);
+    };
+  }, [addMenuOpen]);
 
   const handleAddEvent = () => {
     setAddMenuOpen(null);
     setOpenMenu(null);
+    // The global Add button must not reuse a previously clicked calendar date.
+    window.localStorage.removeItem("calendar:add-event-date");
     window.localStorage.removeItem("calendar:event-action");
     window.localStorage.removeItem("calendar:selected-event");
     window.localStorage.removeItem("calendar:reuse-event");
@@ -5422,6 +5717,11 @@ export default function CalendarManagementPage() {
   };
 
   const handleAddEventForDate = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const requestedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    if (requestedDate.getTime() < today.getTime()) return;
+
     setOpenMenu(null);
     setDayPopup(null);
     setSelectedDay(date.getDate());
@@ -5557,6 +5857,7 @@ export default function CalendarManagementPage() {
         const parsedEvent = JSON.parse(storedNewEvent) as CalendarEvent;
         const eventWithDepartment: CalendarEvent = {
           ...parsedEvent,
+          publisherName: getSignedInCalendarPublisherName() || actualCalendarPublisherName(parsedEvent.publisherName) || undefined,
           localOwner: login?.role
             ? `${login.role}::${login.tenantType || ""}`
             : parsedEvent.localOwner,
@@ -5902,6 +6203,7 @@ export default function CalendarManagementPage() {
               ...mappedUpdatedEvent,
               id: event.id,
               createdBy: mappedUpdatedEvent.createdBy || event.createdBy,
+              publisherName: mappedUpdatedEvent.publisherName || event.publisherName,
               localOwner: login?.role
                 ? `${login.role}::${login.tenantType || ""}`
                 : event.localOwner,
@@ -6427,20 +6729,56 @@ export default function CalendarManagementPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-                                                                             
-                                                               
     e.target.value = "";
+    setBulkOpen(false);
+    setBulkFeedback(null);
 
+    if (!/\.csv$/i.test(file.name)) {
+      setBulkFeedback({
+        kind: "error",
+        title: "Invalid file type",
+        messages: ["Only .csv files are supported. Use Download Template to get the correct format."],
+      });
+      return;
+    }
+
+    if (file.size === 0 || file.size > 10 * 1024 * 1024) {
+      setBulkFeedback({
+        kind: "error",
+        title: "Invalid CSV file",
+        messages: [file.size === 0 ? "The selected file is empty." : "The CSV file must be 10 MB or smaller."],
+      });
+      return;
+    }
+
+    if (bulkUploadInProgressRef.current) {
+      setBulkFeedback({
+        kind: "info",
+        title: "Upload in progress",
+        messages: ["Another CSV is being processed. Please choose a file after it finishes."],
+      });
+      return;
+    }
+
+    bulkUploadInProgressRef.current = true;
+    setBulkFeedback({
+      kind: "info",
+      title: "Checking CSV file",
+      messages: ["Validating all rows before saving events…"],
+    });
     const reader = new FileReader();
 
+    reader.onerror = () => {
+      bulkUploadInProgressRef.current = false;
+      setBulkFeedback({
+        kind: "error",
+        title: "Unable to read file",
+        messages: ["The CSV could not be read. Please choose the file again."],
+      });
+    };
+
     reader.onload = async () => {
-        
-                                         
-        
-                                                                               
-                                                                            
-                                                                            
-         
+      try {
       const parseCsvDate = (value: string) => {
         const raw = (value || "").trim().replace(/^"|"$/g, "");
         if (!raw) return null;
@@ -6453,7 +6791,11 @@ export default function CalendarManagementPage() {
             Number(match[3])
           );
 
-          return Number.isNaN(parsed.getTime()) ? null : parsed;
+          return parsed.getFullYear() === Number(match[1]) &&
+            parsed.getMonth() === Number(match[2]) - 1 &&
+            parsed.getDate() === Number(match[3])
+            ? parsed
+            : null;
         }
 
         match = raw.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
@@ -6464,7 +6806,11 @@ export default function CalendarManagementPage() {
             Number(match[1])
           );
 
-          return Number.isNaN(parsed.getTime()) ? null : parsed;
+          return parsed.getFullYear() === Number(match[3]) &&
+            parsed.getMonth() === Number(match[2]) - 1 &&
+            parsed.getDate() === Number(match[1])
+            ? parsed
+            : null;
         }
 
         const fallback = new Date(raw);
@@ -6478,7 +6824,6 @@ export default function CalendarManagementPage() {
         const raw = (value || "")
           .trim()
           .replace(/^"|"$/g, "")
-          .replace(/\./g, ":")
           .replace(/\s+/g, " ");
 
         if (!raw) return fallback;
@@ -6500,7 +6845,7 @@ export default function CalendarManagementPage() {
         }
 
                                                 
-        let match = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+        let match = raw.replace(/\./g, ":").match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
         if (match) {
           const hour = Number(match[1]);
           const minute = Number(match[2]);
@@ -6523,7 +6868,7 @@ export default function CalendarManagementPage() {
         }
 
                                                               
-        match = raw.match(
+        match = raw.replace(/\./g, ":").match(
           /^(\d{1,2})(?::(\d{2}))?(?::\d{2})?\s*(am|pm)$/i
         );
 
@@ -6602,55 +6947,128 @@ export default function CalendarManagementPage() {
         return localDateTime.toISOString();
       };
 
-      const csvLines = String(reader.result || "")
-        .replace(/^\uFEFF/, "")
-        .trim()
-        .split(/\r?\n/)
-        .slice(1);
+      // Preserve commas, line breaks and escaped quotes within quoted CSV cells.
+      const parseCsvRows = (content: string): string[][] => {
+        const rows: string[][] = [];
+        let row: string[] = [];
+        let cell = "";
+        let insideQuotes = false;
 
+        for (let index = 0; index < content.length; index += 1) {
+          const char = content[index];
+
+          if (char === '"') {
+            if (insideQuotes && content[index + 1] === '"') {
+              cell += '"';
+              index += 1;
+            } else {
+              insideQuotes = !insideQuotes;
+            }
+          } else if (char === "," && !insideQuotes) {
+            row.push(cell.trim());
+            cell = "";
+          } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+            if (char === "\r" && content[index + 1] === "\n") index += 1;
+            row.push(cell.trim());
+            if (row.some((value) => value.length > 0)) rows.push(row);
+            row = [];
+            cell = "";
+          } else {
+            cell += char;
+          }
+        }
+
+        if (insideQuotes) throw new Error("The CSV file has an unclosed quoted value.");
+
+        row.push(cell.trim());
+        if (row.some((value) => value.length > 0)) rows.push(row);
+        return rows;
+      };
+
+      const csvRows = parseCsvRows(String(reader.result || "").replace(/^\uFEFF/, ""));
+      if (csvRows.length < 2) {
+        throw new Error("The CSV contains no event rows. Fill in the downloaded template and try again.");
+      }
+
+      const headers = csvRows[0].map((value) => value.toLowerCase().trim());
+      if (!headers.includes("title") || !headers.includes("date")) {
+        throw new Error("Invalid CSV columns: title and date are required. Use Download Template for the correct file format.");
+      }
+      if (headers.some((header) => !header) || new Set(headers).size !== headers.length) {
+        throw new Error("Invalid CSV header: columns must have non-empty, unique names.");
+      }
+
+      const getColumn = (row: string[], name: string) => {
+        const column = headers.indexOf(name);
+        return column >= 0 ? row[column] || "" : "";
+      };
+
+      const csvLines = csvRows.slice(1);
+      const validationErrors: string[] = [];
+      const seenFileEvents = new Map<string, number>();
       const parsed = csvLines
         .map((line, index) => {
-          const [
-            title,
-            rawDate,
-            rawStart,
-            rawEnd,
-            location,
-            attendees,
-            rawStatus,
-          ] = line
-            .split(",")
-            .map((x) => x.trim().replace(/^"|"$/g, ""));
+          const rowNumber = index + 2;
+          const issues: string[] = [];
+          const title = getColumn(line, "title").trim();
+          const rawDate = getColumn(line, "date");
+          const rawStart = getColumn(line, "start");
+          const rawEnd = getColumn(line, "end");
+          const location = getColumn(line, "location");
+          const attendees = getColumn(line, "attendees");
+          const rawStatus = getColumn(line, "status");
 
-          const dateObj = parseCsvDate(rawDate || "");
+          if (line.length !== headers.length) {
+            issues.push(`expected ${headers.length} columns, found ${line.length}`);
+          }
+          if (!title) issues.push("event title is missing");
+          const dateObj = parseCsvDate(rawDate);
+          if (!dateObj) issues.push("date is missing or invalid (use YYYY-MM-DD or DD/MM/YYYY)");
 
-          if (!title || !dateObj) {
+          // The time helper accepts a fallback for blank fields, but invalid
+          // NON-blank values must be rejected rather than silently replaced.
+          const start = normalizeCsvTime(rawStart, rawStart.trim() ? "" : "10:00");
+          const end = normalizeCsvTime(rawEnd, rawEnd.trim() ? "" : "11:00");
+          if (!start) issues.push(`invalid start time: ${rawStart}`);
+          if (!end) issues.push(`invalid end time: ${rawEnd}`);
+          if (start && end) {
+            const startMinutes = Number(start.slice(0, 2)) * 60 + Number(start.slice(3, 5));
+            const endMinutes = Number(end.slice(0, 2)) * 60 + Number(end.slice(3, 5));
+            if (endMinutes <= startMinutes) issues.push("end time must be after start time");
+          }
+
+          if (attendees.trim() &&
+              (!/^\d+$/.test(attendees.trim()) || !Number.isSafeInteger(Number(attendees.trim())))) {
+            issues.push("attendees must be a non-negative whole number");
+          }
+
+          const normalizedStatus = rawStatus.trim().toLowerCase();
+          const csvStatusMap: Record<string, EventStatus> = {
+            published: "Published",
+            saved: "Saved",
+            scheduled: "Scheduled",
+            paused: "Paused",
+            closed: "Closed",
+            cancelled: "Cancelled",
+            canceled: "Cancelled",
+          };
+          if (normalizedStatus && !csvStatusMap[normalizedStatus]) {
+            issues.push(`invalid status: ${rawStatus}`);
+          }
+
+          if (issues.length) {
+            validationErrors.push(`Row ${rowNumber}: ${issues.join("; ")}`);
             return null;
           }
 
-          const start = normalizeCsvTime(rawStart || "", "10:00");
-          let end = normalizeCsvTime(rawEnd || "", "11:00");
-
-                                                                            
-                                                                               
-          const startMinutes =
-            Number(start.slice(0, 2)) * 60 + Number(start.slice(3, 5));
-          let endMinutes =
-            Number(end.slice(0, 2)) * 60 + Number(end.slice(3, 5));
-
-          if (endMinutes <= startMinutes) {
-            const adjustedEndMinutes = Math.min(
-              startMinutes + 60,
-              23 * 60 + 59
-            );
-
-            end = `${String(Math.floor(adjustedEndMinutes / 60)).padStart(
-              2,
-              "0"
-            )}:${String(adjustedEndMinutes % 60).padStart(2, "0")}`;
-
-            endMinutes = adjustedEndMinutes;
+          // Invalid/missing date and time values have already been collected above.
+          if (!dateObj) return null;
+          const key = `${title}|${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}|${start}|${end}|${location || "TBA"}`.toLowerCase();
+          if (seenFileEvents.has(key)) {
+            validationErrors.push(`Row ${rowNumber}: duplicate event (same as row ${seenFileEvents.get(key)})`);
+            return null;
           }
+          seenFileEvents.set(key, rowNumber);
 
           return {
             id: Date.now() + index,
@@ -6675,41 +7093,36 @@ export default function CalendarManagementPage() {
             ).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`,
             location: location || "TBA",
             attendees: Number(attendees) || 0,
-            status: (() => {
-              const normalizedStatus = (rawStatus || "")
-                .trim()
-                .toLowerCase();
-
-              const csvStatusMap: Record<string, EventStatus> = {
-                published: "Published",
-                saved: "Saved",
-                scheduled: "Scheduled",
-                paused: "Paused",
-                closed: "Closed",
-                cancelled: "Cancelled",
-                canceled: "Cancelled",
-              };
-
-              return csvStatusMap[normalizedStatus] || "Saved";
-            })(),
+            status: csvStatusMap[normalizedStatus] || "Saved",
             color: "#2d4cc8",
           };
         })
         .filter((event): event is NonNullable<typeof event> => Boolean(event));
 
-                                                                           
-      const uniqueParsed = parsed.filter((event, index, allEvents) => {
-        const key =
-          `${event.title}|${event.year}-${event.month}-${event.day}|${event.start}|${event.end}|${event.location}`.toLowerCase();
+      // Validate the ENTIRE file before uploading even a single event.
+      // Display specific row/content errors in the small button-side popup.
+      if (validationErrors.length) {
+        setBulkFeedback({
+          kind: "error",
+          title: `Invalid CSV content (${validationErrors.length} issue${validationErrors.length === 1 ? "" : "s"})`,
+          messages: [...validationErrors.slice(0, 5),
+            ...(validationErrors.length > 5 ? [`+${validationErrors.length - 5} more invalid rows. Fix the CSV and upload again.`] : []),
+            "No events were uploaded. Correct the file and try again."],
+        });
+        return;
+      }
 
-        return (
-          allEvents.findIndex(
-            (candidate) =>
-              `${candidate.title}|${candidate.year}-${candidate.month}-${candidate.day}|${candidate.start}|${candidate.end}|${candidate.location}`.toLowerCase() ===
-              key
-          ) === index
-        );
-      });
+      const uniqueParsed = parsed;
+      const invalidRows = 0;
+      const duplicateFileRows = 0;
+      let existingRows = 0;
+      let failedRows = 0;
+      let invalidBackendRows = 0;
+      let addedRows = 0;
+
+      if (!uniqueParsed.length) {
+        throw new Error(`No valid events to upload. Invalid rows: ${invalidRows}; duplicate rows: ${duplicateFileRows}. Check the title and date values.`);
+      }
 
       const token = window.localStorage.getItem("calendar_access_token");
       const apiUrl =
@@ -6787,6 +7200,7 @@ export default function CalendarManagementPage() {
                                                          
                                                                              
           if (!startDateIso || !endDateIso) {
+            invalidBackendRows += 1;
             console.error(
               "Skipped invalid bulk upload row:",
               event.title,
@@ -6801,6 +7215,7 @@ export default function CalendarManagementPage() {
             `${event.title}|${dateValue}|${startTime}|${endTime}|${event.location}`.toLowerCase();
 
           if (existingKeys.has(eventKey)) {
+            existingRows += 1;
             continue;
           }
 
@@ -6832,6 +7247,7 @@ export default function CalendarManagementPage() {
             });
 
             if (!response.ok) {
+              failedRows += 1;
               console.error(
                 "Failed to bulk upload backend event:",
                 response.status,
@@ -6849,6 +7265,7 @@ export default function CalendarManagementPage() {
             savedBackendEvents.push(mappedSavedEvent);
             existingKeys.add(eventKey);
           } catch (error) {
+            failedRows += 1;
             console.error(
               "Failed to bulk upload backend event:",
               error
@@ -6856,6 +7273,7 @@ export default function CalendarManagementPage() {
           }
         }
 
+        addedRows = savedBackendEvents.length;
         if (savedBackendEvents.length) {
           setEvents((prev) =>
             saveEvents([...prev, ...savedBackendEvents])
@@ -6887,12 +7305,28 @@ export default function CalendarManagementPage() {
           }
         }
       } else {
-        setEvents((prev) =>
-          saveEvents([...prev, ...uniqueParsed])
+        const existingLocalKeys = new Set(
+          events.map((event) =>
+            `${event.title}|${event.year}-${event.month}-${event.day}|${event.start}|${event.end}|${event.location}`.toLowerCase()
+          )
         );
+        const newLocalEvents = uniqueParsed.filter((event) => {
+          const key = `${event.title}|${event.year}-${event.month}-${event.day}|${event.start}|${event.end}|${event.location}`.toLowerCase();
+          if (existingLocalKeys.has(key)) {
+            existingRows += 1;
+            return false;
+          }
+          return true;
+        });
+        addedRows = newLocalEvents.length;
+        if (newLocalEvents.length) {
+          setEvents((prev) =>
+            saveEvents([...prev, ...newLocalEvents])
+          );
+        }
 
         const latestUploadedEvent =
-          uniqueParsed[uniqueParsed.length - 1];
+          newLocalEvents[newLocalEvents.length - 1];
 
         if (latestUploadedEvent) {
           const uploadedDate = new Date(
@@ -6918,13 +7352,41 @@ export default function CalendarManagementPage() {
       }
 
       setBulkOpen(false);
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      const hadSaveErrors = failedRows > 0 || invalidBackendRows > 0;
+      setBulkFeedback({
+        kind: hadSaveErrors ? "error" : "success",
+        title: hadSaveErrors ? "Some events could not be saved" : addedRows > 0 ? "Upload successful" : "No new events added",
+        messages: [
+          `${addedRows} event${addedRows === 1 ? "" : "s"} added`,
+          ...(existingRows ? [`${existingRows} already exist${existingRows === 1 ? "s" : ""}`] : []),
+          ...(invalidBackendRows ? [`${invalidBackendRows} event${invalidBackendRows === 1 ? "" : "s"} have invalid date/time values`] : []),
+          ...(failedRows ? [`${failedRows} event${failedRows === 1 ? "" : "s"} rejected by the server`] : []),
+        ],
+      });
+      } catch (error) {
+        console.error("Calendar bulk upload failed:", error);
+        setBulkFeedback({
+          kind: "error",
+          title: "Invalid CSV / upload failed",
+          messages: [error instanceof Error ? error.message : "The file could not be uploaded. Check its content and try again."],
+        });
+      } finally {
+        bulkUploadInProgressRef.current = false;
+        if (fileInputRef.current) fileInputRef.current.value = "";
       }
     };
 
-    reader.readAsText(file);
+    try {
+      reader.readAsText(file);
+    } catch (error) {
+      bulkUploadInProgressRef.current = false;
+      console.error("Unable to read calendar CSV:", error);
+      setBulkFeedback({
+        kind: "error",
+        title: "Unable to read file",
+        messages: ["Unable to read this CSV. Please choose the file again."],
+      });
+    }
   };
 
   return (
@@ -7031,13 +7493,22 @@ export default function CalendarManagementPage() {
                 ) : (
                   <>
                     <div className="bulkUploadWrap">
-                      <button className="neoButton" onClick={() => setBulkOpen(v => !v)}>
+                      <button className="neoButton" onClick={() => { setBulkFeedback(null); setBulkOpen(v => !v); }}>
                         <Icon src={icons.bulkUpload} /> <span>Bulk Upload</span>
                       </button>
                       {bulkOpen && (
                         <div className="bulkMenu">
                           <button onClick={downloadTemplate}><Icon src={icons.download} /> Download Template</button>
                           <button onClick={() => fileInputRef.current?.click()}><Icon src={icons.uploadFile} /> Choose File</button>
+                        </div>
+                      )}
+                      {bulkFeedback && (
+                        <div className={`bulkUploadFeedback bulkUploadFeedback--${bulkFeedback.kind}`} role={bulkFeedback.kind === "error" ? "alert" : "status"}>
+                          <button className="bulkFeedbackClose" type="button" aria-label="Dismiss upload message" onClick={() => setBulkFeedback(null)}>×</button>
+                          <strong>{bulkFeedback.title}</strong>
+                          {bulkFeedback.messages.map((message, index) => (
+                            <p key={index}>{message}</p>
+                          ))}
                         </div>
                       )}
                       <input ref={fileInputRef} type="file" accept=".csv,text/csv" hidden onChange={uploadCsv} />
@@ -7153,11 +7624,13 @@ export default function CalendarManagementPage() {
                         }`}
                         aria-label="Select month"
                         aria-expanded={calendarPickerOpen === "month"}
-                        onClick={() =>
+                        onClick={() => {
+                          setDayPopup(null);
+                          setDayEventList(null);
                           setCalendarPickerOpen((previous) =>
                             previous === "month" ? null : "month"
-                          )
-                        }
+                          );
+                        }}
                       >
                         <span>{calendarMonthNames[currentDate.getMonth()]}</span>
                         <Icon src={icons.chevronDown} size={18} />
@@ -7171,6 +7644,8 @@ export default function CalendarManagementPage() {
                         aria-label="Select year"
                         aria-expanded={calendarPickerOpen === "year"}
                         onClick={() => {
+                          setDayPopup(null);
+                          setDayEventList(null);
                           setCalendarYearRangeStart(
                             currentDate.getFullYear() - 10
                           );
@@ -7185,46 +7660,10 @@ export default function CalendarManagementPage() {
 
                       {calendarPickerOpen === "month" && (
                         <div className="calendarMonthYearPopover calendarMonthPopover">
-                          <div className="calendarPickerHeader">
-                            <button
-                              type="button"
-                              className="calendarPickerHeaderArrow"
-                              aria-label="Previous month"
-                              onClick={() => {
-                                setCurrentDate(
-                                  new Date(
-                                    currentDate.getFullYear(),
-                                    currentDate.getMonth() - 1,
-                                    1
-                                  )
-                                );
-                                setSelectedDay(null);
-                              }}
-                            >
-                              <Icon src={icons.chevronLeft} size={24} />
-                            </button>
-
+                          <div className="calendarPickerHeader calendarMonthPickerHeader">
                             <strong>
                               {calendarMonthNames[currentDate.getMonth()]}
                             </strong>
-
-                            <button
-                              type="button"
-                              className="calendarPickerHeaderArrow"
-                              aria-label="Next month"
-                              onClick={() => {
-                                setCurrentDate(
-                                  new Date(
-                                    currentDate.getFullYear(),
-                                    currentDate.getMonth() + 1,
-                                    1
-                                  )
-                                );
-                                setSelectedDay(null);
-                              }}
-                            >
-                              <Icon src={icons.chevronRight} size={24} />
-                            </button>
                           </div>
 
                           <div className="calendarMonthOptionGrid">
@@ -7253,11 +7692,11 @@ export default function CalendarManagementPage() {
                               type="button"
                               className="calendarPickerHeaderArrow calendarPickerHeaderCircle"
                               aria-label="Previous years"
-                              onClick={() =>
-                                setCalendarYearRangeStart(
-                                  (previous) => previous - 12
-                                )
-                              }
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setCalendarYearRangeStart((previous) => previous - 12);
+                              }}
                             >
                               <Icon src={icons.chevronLeft} size={24} />
                             </button>
@@ -7271,11 +7710,11 @@ export default function CalendarManagementPage() {
                               type="button"
                               className="calendarPickerHeaderArrow calendarPickerHeaderCircle"
                               aria-label="Next years"
-                              onClick={() =>
-                                setCalendarYearRangeStart(
-                                  (previous) => previous + 12
-                                )
-                              }
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setCalendarYearRangeStart((previous) => previous + 12);
+                              }}
                             >
                               <Icon src={icons.chevronRight} size={24} />
                             </button>
@@ -7366,6 +7805,8 @@ export default function CalendarManagementPage() {
                       );
 
                       setScheduleDate(todayDate);
+                      setSelectedDay(null);
+                      setTodayLocalDayKey(calendarLocalDayKey(todayDate));
 
                       if (view === "week") {
                         setWeekDate(todayDate);
@@ -7421,6 +7862,15 @@ export default function CalendarManagementPage() {
                         cell.date.getMonth(),
                         cell.date.getDate()
                       );
+                      const cellKey = calendarLocalDayKey(cell.date);
+                      const isPastDate = cellKey < todayLocalDayKey;
+                      const isToday = cellKey === todayLocalDayKey;
+                      // A past date can never retain the active/create highlight.
+                      // On opening the current month, today is the active date;
+                      // choosing another available date moves the highlight.
+                      const isActiveDate = cell.current && !isPastDate && (
+                        selectedDay === null ? isToday : selectedDay === cell.day
+                      );
 
                       const isInOpenedEventRange =
                         !!openedEventRange &&
@@ -7430,18 +7880,20 @@ export default function CalendarManagementPage() {
 
                       return (
                         <div
-                          className={`dayCell ${!cell.current ? "outside" : ""} ${selectedDay === cell.day && cell.current ? "selected" : ""} ${isInOpenedEventRange ? "eventRangeHighlighted" : ""}`}
+                          className={`dayCell ${!cell.current ? "outside" : ""} ${isPastDate ? "pastDate" : ""} ${isToday ? "todayDate" : ""} ${isActiveDate ? "selected" : ""} ${isInOpenedEventRange ? "eventRangeHighlighted" : ""}`}
                           key={`${cell.date.toISOString()}-${index}`}
                           role={cell.current ? "button" : undefined}
-                          tabIndex={cell.current ? 0 : -1}
-                          onClick={() => { if (cell.current) { setDayPopup(null); setDayEventList(null); setSelectedDay(selectedDay === cell.day ? null : cell.day); } }}
+                          aria-disabled={cell.current && isPastDate ? true : undefined}
+                          aria-current={cell.current && isToday ? "date" : undefined}
+                          tabIndex={cell.current && !isPastDate ? 0 : -1}
+                          onClick={() => { if (cell.current && !isPastDate) { setDayPopup(null); setDayEventList(null); setSelectedDay(cell.day); } }}
                           onKeyDown={(ev) => {
-                            if (!cell.current) return;
+                            if (!cell.current || isPastDate) return;
                             if (ev.key === "Enter" || ev.key === " ") {
                               ev.preventDefault();
                               setDayPopup(null);
                               setDayEventList(null);
-                              setSelectedDay(selectedDay === cell.day ? null : cell.day);
+                              setSelectedDay(cell.day);
                             }
                           }}
                         >
@@ -7485,7 +7937,7 @@ export default function CalendarManagementPage() {
                             </span>
                           )}
 
-                          {cell.current && !isStudentView && (
+                          {cell.current && !isPastDate && !isStudentView && (
                             <span
                               className="dayPlus dayPlusHover"
                               role="button"
@@ -7735,7 +8187,7 @@ export default function CalendarManagementPage() {
                     })}
                   </div>
                 ) : view === "week" ? (
-                  <div className="weekCalendarView">
+                  <div className="weekCalendarView" ref={weekScrollRef}>
                     <div className="weekCalendarGrid">
                       <div className="weekCalendarHeader weekCalendarCorner">Week</div>
 
@@ -7751,31 +8203,39 @@ export default function CalendarManagementPage() {
 
                       <div className="weekCalendarTime">All- Day</div>
 
-                      {weekDays.map((date) => (
-                        <div
-                          className="weekCalendarCell"
-                          key={`week-all-day-${date.toISOString()}`}
-                        />
-                      ))}
+                      {weekDays.map((date) => {
+                        const allDayEvents = events.filter(
+                          event => isCalendarEventOnDate(event, date) && getWeekEventHour(event) < 0
+                        );
+                        return (
+                          <div
+                            className={`weekCalendarCell${allDayEvents.length ? " hasCalendarEvents" : ""}`}
+                            key={`week-all-day-${date.toISOString()}`}
+                          >
+                            {allDayEvents.map(event => (
+                              <div className="weekCalendarEvent" key={event.id} title={event.title}>
+                                <i style={{ background: event.color }} />
+                                <span>{event.title}</span>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
 
                       {weekHours.map((hour) => (
                         <div className="weekCalendarRow" key={`week-hour-${hour}`}>
-                          <div className="weekCalendarTime">
+                          <div className="weekCalendarTime" data-calendar-hour={hour}>
                             {formatWeekHour(hour)}
                           </div>
 
                           {weekDays.map((date) => {
-                            const cellEvents = visibleEvents.filter(
-                              (event) =>
-                                event.year === date.getFullYear() &&
-                                event.month === date.getMonth() &&
-                                event.day === date.getDate() &&
-                                getWeekEventHour(event) === hour
+                            const cellEvents = events.filter(
+                              (event) => isCalendarEventOnDate(event, date) && getWeekEventHour(event) === hour
                             );
 
                             return (
                               <div
-                                className="weekCalendarCell"
+                                className={`weekCalendarCell${cellEvents.length ? " hasCalendarEvents" : ""}`}
                                 key={`${date.toISOString()}-${hour}`}
                               >
                                 {cellEvents.map((event) => (
@@ -7796,16 +8256,25 @@ export default function CalendarManagementPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="dayCalendarView">
+                  <div className="dayCalendarView" ref={dayScrollRef}>
                     <div className="dayCalendarGrid">
                       <div className="dayCalendarHeader">{dayName}</div>
 
                       <div className="dayCalendarTime">All- Day</div>
-                      <div className="dayCalendarCell" />
+                      <div className="dayCalendarCell">
+                        {events
+                          .filter(event => isCalendarEventOnDate(event, dayDate) && getWeekEventHour(event) < 0)
+                          .map(event => (
+                            <div className="dayCalendarEvent" key={event.id} title={event.title}>
+                              <i style={{ background: event.color }} />
+                              <span>{event.title}</span>
+                            </div>
+                          ))}
+                      </div>
 
                       {weekHours.map((hour) => (
                         <div className="dayCalendarRow" key={`day-hour-${hour}`}>
-                          <div className="dayCalendarTime">{formatWeekHour(hour)}</div>
+                          <div className="dayCalendarTime" data-calendar-hour={hour}>{formatWeekHour(hour)}</div>
 
                           <div className="dayCalendarCell">
                             {dayEventsForHour(hour).map((event) => (
@@ -8020,6 +8489,39 @@ export default function CalendarManagementPage() {
             </section>
             )}
 
+                {/* Shared month/year filters for tenant actors and students. */}
+                {!showPublishAudienceFilters && contentView !== "Calendar" && (
+                  <section className="calendarListDateFilters" aria-label="Event month and year filters">
+                    <FilterDropdown
+                      className="monthFilterDropdown"
+                      label="Month"
+                      value={listMonthFilterTouched ? listMonthFilter : "Month"}
+                      options={calendarMonthFilterOptions}
+                      open={openFilter === "listMonth"}
+                      onToggle={() => setOpenFilter(openFilter === "listMonth" ? null : "listMonth")}
+                      onSelect={(value) => {
+                        setListMonthFilter(value);
+                        setListMonthFilterTouched(true);
+                        setOpenFilter(null);
+                      }}
+                    />
+                    <FilterDropdown
+                      className="yearFilterDropdown"
+                      label="Year"
+                      value={listYearFilterTouched ? listYearFilter : "Year"}
+                      options={listYearOptions}
+                      searchable
+                      open={openFilter === "listYear"}
+                      onToggle={() => setOpenFilter(openFilter === "listYear" ? null : "listYear")}
+                      onSelect={(value) => {
+                        setListYearFilter(value);
+                        setListYearFilterTouched(true);
+                        setOpenFilter(null);
+                      }}
+                    />
+                  </section>
+                )}
+
                 {showPublishAudienceFilters && (
                   <section className="calendarFilters listCalendarFilters allUsersCompactFilters">
                     <AllUsersFilterDropdown
@@ -8100,6 +8602,7 @@ export default function CalendarManagementPage() {
                       label="Year"
                       value={listYearFilterTouched ? listYearFilter : "Year"}
                       options={listYearOptions}
+                      searchable
                       open={openFilter === "listYear"}
                       onToggle={() =>
                         setOpenFilter(
@@ -8334,22 +8837,12 @@ export default function CalendarManagementPage() {
                                 <span className="scheduleTitleLine">
                                   <strong>{cardTitle}</strong>
 
-                                  {isStudentView && event.createdBy && (
-                                    <span className="studentEventCreator">
-                                      {" - "}{eventCreatorLabel(event.createdBy)}
-                                    </span>
-                                  )}
-
-                                  {!isStudentView &&
-                                    (contentView === "All" ||
-                                      contentView === "My Events") &&
-                                    isReceivedPublishedCard(event) &&
-                                    event.createdBy && (
-                                      <span className="studentEventCreator">
-                                        {" - Published by "}
-                                        {eventCreatorLabel(event.createdBy)}
-                                      </span>
-                                    )}
+                                  <span className="studentEventCreator calendarEventPublisher">
+                                    {event.status === "Published" || event.status === "Paused" || event.status === "Closed"
+                                      ? " - Published by "
+                                      : " - Created by "}
+                                    {getCalendarEventPublisherLabel(event)}
+                                  </span>
 
                                   {event.reminderSentAt && (
                                     <span
@@ -8694,14 +9187,21 @@ export default function CalendarManagementPage() {
                     <p><strong>Audience :</strong> {cancelEvent.audience || cancelEvent.role || cancelEvent.tenant || "Selected audience"}</p>
                   </div>
 
-                  <label className="cmCancelEventReasonLabel" htmlFor="cancel-event-reason">
-                    CANCELLATION MESSAGE
-                  </label>
+                  <div className="cmCancelEventReasonHeading">
+                    <label className="cmCancelEventReasonLabel" htmlFor="cancel-event-reason">
+                      CANCELLATION MESSAGE
+                    </label>
+                    <span id="cancel-event-reason-counter" className="cmCancelEventReasonCounter">
+                      {cancelReason.length} / 250
+                    </span>
+                  </div>
                   <textarea
                     id="cancel-event-reason"
                     className="cmCancelEventReason"
                     value={cancelReason}
-                    onChange={(e) => setCancelReason(e.target.value)}
+                    maxLength={250}
+                    onChange={(e) => setCancelReason(e.currentTarget.value.slice(0, 250))}
+                    aria-describedby="cancel-event-reason-counter"
                     placeholder="Enter the message users should receive about this cancellation"
                   />
 

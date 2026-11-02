@@ -20918,3 +20918,549 @@ body {
   }
 }
 
+
+/* Bulk upload file-validation feedback: small popup anchored to its button. */
+.calendarPage .bulkUploadWrap .bulkUploadFeedback {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 10001;
+  width: 300px;
+  max-width: calc(100vw - 20px);
+  max-height: 210px;
+  overflow-y: auto;
+  padding: 12px 30px 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #c4c4c4;
+  border-radius: 9px;
+  background: #DFE6E9;
+  color: #2F3547;
+  box-shadow: -3px -3px 7px #FFFFFF, 3px 3px 8px #C4C4C4;
+  font-family: "Segoe UI", Inter, sans-serif;
+  text-align: left;
+}
+.calendarPage .bulkUploadFeedback strong {
+  display: block;
+  font-size: 12px;
+  line-height: 18px;
+  color: #b42318;
+  font-weight: 700;
+}
+.calendarPage .bulkUploadFeedback--success strong { color: #207544; }
+.calendarPage .bulkUploadFeedback--info strong { color: #2D4CC8; }
+.calendarPage .bulkUploadFeedback p {
+  margin: 5px 0 0;
+  font-size: 11px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+.calendarPage .bulkUploadFeedback .bulkFeedbackClose {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  width: 22px;
+  height: 22px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #2F3547;
+  font-size: 19px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .bulkUploadWrap .bulkUploadFeedback {
+    left: 0;
+    right: auto;
+  }
+}
+
+/* Calendar month/year picker only: keep the dropdown above calendar days and event cards. */
+.calendarPage .calendarPanel:has(.calendarMonthYearPopover) {
+  position: relative !important;
+  z-index: 3500 !important;
+  overflow: visible !important;
+}
+
+.calendarPage .calendarPanel .calendarMonthYearPickerShell:has(.calendarMonthYearPopover) {
+  position: relative !important;
+  z-index: 3501 !important;
+  overflow: visible !important;
+}
+
+.calendarPage .calendarPanel .calendarMonthYearPickerShell .calendarMonthYearPopover {
+  z-index: 3502 !important;
+  pointer-events: auto !important;
+}
+
+.calendarPage .calendarPanel:has(.calendarMonthYearPopover) .monthGrid,
+.calendarPage .calendarPanel:has(.calendarMonthYearPopover) .calendarToolbar {
+  position: relative !important;
+  z-index: 0 !important;
+}
+
+/* Month picker has no previous/next arrows; leave year arrows unchanged. */
+.calendarPage .calendarMonthPopover .calendarMonthPickerHeader {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.calendarPage .calendarYearPopover .calendarPickerHeaderArrow {
+  position: relative !important;
+  z-index: 1 !important;
+  pointer-events: auto !important;
+}
+
+
+/* Week/Day event visibility only: keep date headings visible while scrolling to timed events. */
+.calendarPage .weekCalendarHeader,
+.calendarPage .dayCalendarHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Multiple events in one time slot must remain readable without changing cell dimensions. */
+.calendarPage .weekCalendarCell.hasCalendarEvents,
+.calendarPage .dayCalendarCell:has(.dayCalendarEvent) {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin;
+}
+
+.calendarPage .weekCalendarCell.hasCalendarEvents .weekCalendarEvent,
+.calendarPage .dayCalendarCell .dayCalendarEvent {
+  height: auto;
+  min-height: 14px;
+}
+
+
+/* ===== Requested All Events fixes only — shared roles/tenants ===== */
+/* Additional date filters live in their own row to preserve existing actor filter geometry. */
+.calendarPage .calendarContentModeList .calendarListDateFilters {
+  position: relative !important;
+  z-index: 350 !important;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(130px, 190px));
+  align-items: start;
+  gap: 14px;
+  width: 100%;
+  margin: 0 0 14px;
+  overflow: visible !important;
+}
+.calendarPage .calendarListDateFilters .filterDropdown {
+  position: relative;
+  min-width: 0;
+  z-index: 351;
+}
+.calendarPage .calendarListDateFilters .filterDropdown.open { z-index: 951; }
+.calendarPage .calendarListDateFilters .filterDropdownMenu { z-index: 952 !important; }
+
+/* Search input is sticky inside the year list. */
+.calendarPage .yearFilterDropdown .filterDropdownSearchWrap {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #dfe6e9;
+  padding: 7px 7px 10px;
+}
+.calendarPage .yearFilterDropdown .filterDropdownSearchInput {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 35px;
+  padding: 0 11px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  color: #2f3547;
+  font: inherit;
+  font-size: 12px;
+  background: #dfe6e9;
+  box-shadow: inset 3px 3px 5px #b5bdc1, inset -3px -3px 5px #ffffff;
+}
+.calendarPage .yearFilterDropdown .filterDropdownSearchInput:focus-visible {
+  outline: 1px solid #2d4cc8;
+}
+.calendarPage .yearFilterDropdown .filterDropdownSearchEmpty {
+  margin: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Visible, inset neumorphic scrollbar instead of same-on-same background. */
+.calendarPage .calendarContentModeList .eventScroll {
+  scrollbar-width: thin !important;
+  scrollbar-color: #95a4af #dfe6e9 !important;
+  scrollbar-gutter: stable;
+}
+.calendarPage .calendarContentModeList .eventScroll::-webkit-scrollbar {
+  width: 13px !important;
+  display: block !important;
+}
+.calendarPage .calendarContentModeList .eventScroll::-webkit-scrollbar-track {
+  background: #dfe6e9 !important;
+  border-radius: 99px !important;
+  box-shadow: inset 2px 2px 4px #c4c4c4, inset -2px -2px 4px #ffffff !important;
+}
+.calendarPage .calendarContentModeList .eventScroll::-webkit-scrollbar-thumb {
+  min-height: 42px !important;
+  border: 3px solid #dfe6e9 !important;
+  border-radius: 99px !important;
+  background: #95a4af !important;
+  background-clip: padding-box !important;
+  box-shadow: inset -1px -1px 2px #f8fbfd, inset 1px 1px 2px #73828a !important;
+}
+/* Main calendar workspace scrollbar, including on all roles. */
+.calendarPage .calendarManagementContent {
+  scrollbar-width: thin;
+  scrollbar-color: #95a4af #dfe6e9;
+}
+.calendarPage .calendarManagementContent::-webkit-scrollbar { width: 12px; }
+.calendarPage .calendarManagementContent::-webkit-scrollbar-track {
+  border-radius: 99px;
+  background: #dfe6e9;
+  box-shadow: inset 2px 2px 4px #c4c4c4, inset -2px -2px 4px #ffffff;
+}
+.calendarPage .calendarManagementContent::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  border: 3px solid #dfe6e9;
+  background: #95a4af;
+}
+/* Keep metadata legible without resizing any existing event cards. */
+.calendarPage .calendarContentModeList .calendarEventPublisher {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767px) {
+  .calendarPage .calendarContentModeList .calendarListDateFilters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  /* Mobile cards are swiped, so only the main page scroll is needed. */
+  .calendarPage .calendarContentModeList .eventScroll { scrollbar-gutter: auto; }
+}
+
+
+/* ===== Year filter: isolate the search field from the scrolling options =====
+   Fixes option circles appearing above/behind the search box and closes cleanly
+   on other-section scroll/interaction (handled by page.tsx). */
+.calendarPage .yearFilterDropdown .filterDropdownMenu {
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 9px 8px 8px !important;
+  overflow: hidden !important;
+  isolation: isolate;
+}
+
+.calendarPage .yearFilterDropdown .filterDropdownSearchWrap {
+  position: relative !important;
+  top: auto !important;
+  z-index: 2 !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 0 7px !important;
+  padding: 0 2px 3px !important;
+  background: #DFE6E9 !important;
+}
+
+.calendarPage .yearFilterDropdown .filterDropdownSearchInput {
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 36px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  background: #DFE6E9 !important;
+}
+
+.calendarPage .yearFilterDropdown .filterDropdownOptionsScroll {
+  position: relative;
+  z-index: 1;
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 180px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #9CA9B2 #DFE6E9;
+}
+
+.calendarPage .yearFilterDropdown .filterDropdownOptionsScroll .filterDropdownOption {
+  position: relative;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+}
+
+.calendarPage .yearFilterDropdown .filterDropdownOptionsScroll::-webkit-scrollbar {
+  width: 9px;
+}
+.calendarPage .yearFilterDropdown .filterDropdownOptionsScroll::-webkit-scrollbar-track {
+  border-radius: 99px;
+  background: #DFE6E9;
+  box-shadow: inset 2px 2px 4px #C4C4C4, inset -2px -2px 4px #FFFFFF;
+}
+.calendarPage .yearFilterDropdown .filterDropdownOptionsScroll::-webkit-scrollbar-thumb {
+  border: 2px solid #DFE6E9;
+  border-radius: 99px;
+  background: #9CA9B2;
+  background-clip: padding-box;
+}
+.calendarPage .yearFilterDropdown .filterDropdownOptionsScroll::-webkit-scrollbar-button {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .yearFilterDropdown .filterDropdownOptionsScroll {
+    max-height: 170px;
+  }
+}
+
+
+/* Cancellation message only: 250-character field counter and neumorphic scroll. */
+.cmCancelEventReasonCounter {
+  margin-top: 5px;
+  text-align: right;
+  font: 11px/16px "Segoe UI", Inter, sans-serif;
+  color: #596174;
+}
+
+.cmCancelEventReason {
+  max-height: 150px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+  scrollbar-width: thin;
+  scrollbar-color: #9ca9b2 #dfe6e9;
+}
+
+.cmCancelEventReason::-webkit-scrollbar {
+  width: 8px;
+}
+.cmCancelEventReason::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: #dfe6e9;
+  box-shadow: inset 2px 2px 4px #c4c4c4, inset -2px -2px 4px #fff;
+}
+.cmCancelEventReason::-webkit-scrollbar-thumb {
+  border: 2px solid #dfe6e9;
+  border-radius: 10px;
+  background: #9ca9b2;
+  background-clip: padding-box;
+}
+
+
+/* Cancellation message: counter above the field, aligned with its label. */
+.cmCancelEventReasonHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cmCancelEventReasonHeading .cmCancelEventReasonLabel,
+.cmCancelEventReasonHeading .cmCancelEventReasonCounter {
+  margin-top: 0;
+}
+
+.cmCancelEventReasonHeading .cmCancelEventReasonCounter {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* Division / Department: circular radio controls and correct dropdown layering only. */
+.calendarPage .checkboxFilterDropdown .departmentCheckRow input[type="radio"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  position: relative !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  flex: 0 0 24px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #DFE6E9 !important;
+  box-shadow: inset 2px 2px 4px rgba(174,181,184,.52),
+              inset -2px -2px 4px rgba(255,255,255,.88) !important;
+  cursor: pointer !important;
+}
+.calendarPage .checkboxFilterDropdown .departmentCheckRow input[type="radio"]::before {
+  content: "" !important;
+  position: absolute !important;
+  width: 14px !important;
+  height: 14px !important;
+  left: 5px !important;
+  top: 5px !important;
+  border: 1.5px solid #C6C6C9 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-sizing: border-box !important;
+}
+.calendarPage .checkboxFilterDropdown .departmentCheckRow input[type="radio"]:checked {
+  box-shadow: -3px -3px 5px rgba(255,255,255,.9),
+               3px 3px 5px rgba(174,181,184,.62) !important;
+}
+.calendarPage .checkboxFilterDropdown .departmentCheckRow input[type="radio"]:checked::before {
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #2D55D7 !important;
+}
+.calendarPage .checkboxFilterDropdown .departmentCheckRow input[type="radio"]::after {
+  content: none !important;
+  display: none !important;
+}
+/* The date-filter row must remain behind an open Division/Department menu. */
+.calendarPage .calendarContentModeList .listCalendarFilters:has(> .checkboxFilterDropdown.open) {
+  position: relative !important;
+  z-index: 1200 !important;
+  overflow: visible !important;
+}
+.calendarPage .calendarContentModeList .listCalendarFilters > .checkboxFilterDropdown.open {
+  z-index: 1201 !important;
+}
+.calendarPage .calendarContentModeList .listCalendarFilters > .checkboxFilterDropdown.open > .departmentCheckMenu {
+  z-index: 1202 !important;
+}
+
+
+/* TARGETED FIX: keep long event descriptions separate from action buttons. */
+.calendarPage .calendarContentModeList .eventCard .scheduleCardDescription {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+/* Let the buttons follow the actual content height rather than overlaying text. */
+.calendarPage .calendarContentModeList .eventCard:has(.eventCardActions) .eventCardActions,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard:has(.eventCardActions) .eventCardActions {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  margin: 22px 0 0 !important;
+  justify-content: flex-end !important;
+}
+
+/* Remove the extra space formerly reserved for absolutely-positioned buttons. */
+.calendarPage .calendarContentModeList .eventCard:has(.eventCardActions),
+.calendarPage .calendarContentModeList .eventScroll > .eventCard:has(.eventCardActions) {
+  padding-bottom: 18px !important;
+}
+
+@media (max-width: 900px) {
+  .calendarPage .calendarContentModeList .eventCard:has(.eventCardActions) .eventCardActions,
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard:has(.eventCardActions) .eventCardActions {
+    margin-top: 18px !important;
+  }
+}
+
+/* =========================================================
+   EVENT CARD — ACTION BUTTON BOTTOM CLEARANCE ONLY
+   Keep the existing description gap, button style and layout.
+   Reserve space after the button row so its raised shadow
+   does not touch the event card's lower border.
+   ========================================================= */
+.calendarPage .calendarContentModeList .eventCard:has(.eventCardActions) .eventCardActions,
+.calendarPage .calendarContentModeList .eventScroll > .eventCard:has(.eventCardActions) .eventCardActions {
+  box-sizing: border-box !important;
+  padding-bottom: 20px !important;
+  transform: none !important;
+}
+
+@media (max-width: 767px) {
+  .calendarPage .calendarContentModeList .eventScroll > .eventCard.mobileActiveEventCard:has(.eventCardActions) .eventCardActions,
+  .calendarPage .calendarContentModeList .eventCard:has(.eventCardActions) .eventCardActions {
+    padding-bottom: 14px !important;
+  }
+}
+
+
+/* Past dates: no event creation; preserve historical event indicators. */
+.calendarPage .monthGrid .dayCell.pastDate {
+  cursor: not-allowed !important;
+}
+.calendarPage .monthGrid .dayCell.pastDate .dayNumber {
+  color: #89939e !important;
+}
+.calendarPage .monthGrid .dayCell.pastDate .dayPlus,
+.calendarPage .monthGrid .dayCell.pastDate .dayPlusHover {
+  display: none !important;
+}
+
+/* =========================================================
+   CURRENT LOCAL DATE / PAST DATE — TARGETED CALENDAR FIX
+   No form borders, modal changes, or fixed day/month values.
+   ========================================================= */
+/* Selected dates show no permanent blue border; the outline is hover-only. */
+.calendarPage .monthGrid .dayCell.selected:not(.eventRangeHighlighted) {
+  border: 1.5px solid transparent !important;
+  outline: none !important;
+}
+/* Past dates remain visible for historical events, but are not selectable. */
+.calendarPage .monthGrid .dayCell.pastDate:not(.eventRangeHighlighted),
+.calendarPage .monthGrid .dayCell.pastDate:not(.eventRangeHighlighted):hover,
+.calendarPage .monthGrid .dayCell.pastDate:not(.eventRangeHighlighted):focus-within {
+  outline: none !important;
+  border-color: transparent !important;
+  cursor: not-allowed !important;
+}
+/* Never show an event-creation control on a past calendar day. */
+.calendarPage .monthGrid .dayCell.pastDate .dayPlus,
+.calendarPage .monthGrid .dayCell.pastDate .dayPlusHover {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* =========================================================
+   TODAY IDENTIFIER + HOVER-ONLY OUTLINE
+   Today's light-blue background and bold date stay visible.
+   The blue outline appears only while hovering (or keyboard focus).
+   ========================================================= */
+.calendarPage .monthGrid .dayCell.todayDate:not(.outside) {
+  outline: none !important;
+  border-color: transparent !important;
+  background: #D9E4F5 !important;
+}
+
+/* No permanent border after clicking any date. */
+.calendarPage .monthGrid .dayCell.selected:not(.eventRangeHighlighted) {
+  border-color: transparent !important;
+  outline: none !important;
+}
+
+/* The blue outline is visible only under the cursor or keyboard focus. */
+.calendarPage .monthGrid .dayCell:not(.outside):not(.pastDate):not(.eventRangeHighlighted):hover,
+.calendarPage .monthGrid .dayCell:not(.outside):not(.pastDate):not(.eventRangeHighlighted):focus-visible {
+  outline: 1.5px solid #3559df !important;
+  outline-offset: -2px !important;
+  border-color: transparent !important;
+}
+
+.calendarPage .monthGrid .dayCell.todayDate:not(.outside) .dayNumber {
+  color: #2D4CC8 !important;
+  font-weight: 700 !important;
+}
