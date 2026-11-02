@@ -40,6 +40,10 @@ const USE_LOCAL_DEMO_LOGIN =
   process.env.NODE_ENV === "development" &&
   process.env.NEXT_PUBLIC_CALENDAR_LOGIN_MODE !== "backend";
 
+/* Full URL of the real backend login endpoint (no Next.js API route needed). */
+const BACKEND_LOGIN_URL =
+  process.env.NEXT_PUBLIC_CALENDAR_LOGIN_URL?.trim() || "";
+
 type BackendLoginResponse = {
   accessToken?: string;
   message?: string | string[];
@@ -149,12 +153,19 @@ export default function LoginPage() {
       }
 
       /* ========================================
-         BACKEND LOGIN VIA SAME-ORIGIN PROXY
-         Avoid browser CORS failures. This proxy
-         forwards to the configured backend.
+         BACKEND LOGIN DIRECTLY FROM THIS TSX PAGE
+         The backend URL must be configured and its
+         server must allow requests from this site.
       ======================================== */
 
-      const response = await fetch("/api/calendar-login", {
+      if (!BACKEND_LOGIN_URL) {
+        setLoginError(
+          "Calendar login backend is not configured. Set NEXT_PUBLIC_CALENDAR_LOGIN_URL to your actual backend login endpoint."
+        );
+        return;
+      }
+
+      const response = await fetch(BACKEND_LOGIN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
@@ -209,7 +220,7 @@ export default function LoginPage() {
       setLoginError(
         USE_LOCAL_DEMO_LOGIN
           ? "Could not save the local demo session. Check browser storage permissions."
-          : "Unable to contact the login service. Check that the Next.js app and calendar backend are running."
+          : "Unable to contact the login service. Check the backend login URL, server availability, and CORS settings."
       );
     } finally {
       setIsLoggingIn(false);

@@ -2005,8 +2005,6 @@ function CustomDatePicker({
 
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
 
-  const previousMonthDays = new Date(year, monthIndex, 0).getDate();
-
   const monthNames = [
     "Jan",
     "Feb",
@@ -2022,25 +2020,14 @@ function CustomDatePicker({
     "Dec",
   ];
 
-  const cells = Array.from({ length: 42 }, (_, index) => {
-
-    const dayOffset = index - firstDay + 1;
-
-    if (dayOffset < 1) {
-
-      return { day: previousMonthDays + dayOffset, offset: -1, outside: true };
-
+  // Keep weekday alignment but show dates belonging to this month only.
+  const cells = Array.from(
+    { length: Math.ceil((firstDay + daysInMonth) / 7) * 7 },
+    (_, index) => {
+      const day = index - firstDay + 1;
+      return day >= 1 && day <= daysInMonth ? day : null;
     }
-
-    if (dayOffset > daysInMonth) {
-
-      return { day: dayOffset - daysInMonth, offset: 1, outside: true };
-
-    }
-
-    return { day: dayOffset, offset: 0, outside: false };
-
-  });
+  );
 
   const selectedDate = value ? new Date(`${value}T00:00:00`) : null;
 
@@ -2054,9 +2041,9 @@ function CustomDatePicker({
 
   };
 
-  const selectDay = (day: number, offset: number) => {
+  const selectDay = (day: number) => {
 
-    const date = new Date(year, monthIndex + offset, day);
+    const date = new Date(year, monthIndex, day);
 
     const formatted =
       `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -2328,13 +2315,13 @@ function CustomDatePicker({
 
           <div className="neoCalendarGrid">
 
-            {cells.map((cell, index) => {
+            {cells.map((day, index) => {
 
-              const cellDate = new Date(
-                year,
-                monthIndex + cell.offset,
-                cell.day
-              );
+              if (day === null) {
+                return <span key={`empty-${index}`} aria-hidden="true" />;
+              }
+
+              const cellDate = new Date(year, monthIndex, day);
 
               const selected =
                 selectedDate &&
@@ -2350,19 +2337,19 @@ function CustomDatePicker({
 
                 <button
                   type="button"
-                  key={`${cell.day}-${index}`}
+                  key={`${day}-${index}`}
                   className={`${disabled ? "outside" : ""} ${
                     selected ? "selected" : ""
                   }`}
                   disabled={disabled}
                   onClick={() => {
                     if (!disabled) {
-                      selectDay(cell.day, cell.offset);
+                      selectDay(day);
                     }
                   }}
                 >
 
-                  {cell.day}
+                  {day}
 
                 </button>
 
@@ -2631,17 +2618,94 @@ export default function AddEventPage({
 
   >(null);
 
-  const [calendarMonth, setCalendarMonth] = useState<Date>(
+  const [calendarMonth, setCalendarMonth] = useState<Date>(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
 
-    new Date(2026, 8, 1)
+  const openDatePicker = (
+    picker: "startDate" | "endDate" | "publishDate",
+    preferredDate?: string
+  ) => {
+    if (openPicker === picker) {
+      setOpenPicker(null);
+      return;
+    }
 
-  );
+    // Every fresh opening starts at today, or a future selected date.
+    const today = getLocalTodayValue();
+    const activeDate = preferredDate && preferredDate > today ? preferredDate : today;
+    const [year, monthNumber] = activeDate.split("-").map(Number);
+    setCalendarMonth(new Date(year, monthNumber - 1, 1));
+    setOpenPicker(picker);
+  };
 
 
 
   const router = useRouter();
 
   const [openDropdown, setOpenDropdown] = useState<"title" | "subtitle" | "priority" | "publishAudience" | "publishTenant" | "publishOrganization" | "publishActor" | null>(null);
+
+  useEffect(() => {
+    if (!openPicker && !openDropdown) return;
+
+    const closeOnPageScroll = (event: Event) => {
+      const target = event.target;
+      // Scrolling inside picker/dropdown options must not dismiss the menu.
+      if (
+        target instanceof Element &&
+        target.closest(".neoTimeScroll, .dropdownMenu, .dropdownOptions")
+      ) return;
+
+      // Opening Audience/Tenant/Actor expands the inline form. Browser scroll
+      // anchoring can then scroll the modal automatically. Keep those menus
+      // open while the form itself is scrolling so options can be selected.
+      if (openDropdown?.startsWith("publish")) {
+        if (
+          target instanceof Element &&
+          target.closest(".modalScroller")
+        ) return;
+        setOpenPicker(null);
+        setOpenDropdown(null);
+        return;
+      }
+
+      setOpenPicker(null);
+      setOpenDropdown(null);
+    };
+
+    document.addEventListener("scroll", closeOnPageScroll, true);
+    window.addEventListener("scroll", closeOnPageScroll, true);
+
+    return () => {
+      document.removeEventListener("scroll", closeOnPageScroll, true);
+      window.removeEventListener("scroll", closeOnPageScroll, true);
+    };
+  }, [openPicker, openDropdown]);
+
+  // Publish audience menus stay open until an option is chosen or the user
+  // interacts outside the open dropdown (or presses Escape).
+  useEffect(() => {
+    if (!openDropdown?.startsWith("publish")) return;
+
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      if (
+        event.target instanceof Element &&
+        event.target.closest(".formDropdown.open")
+      ) return;
+      setOpenDropdown(null);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenDropdown(null);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [openDropdown]);
 
   const [title, setTitle] = useState("");
 
@@ -2823,6 +2887,51 @@ export default function AddEventPage({
 
   const [startDate, setStartDate] = useState("");
 
+  // Use the date chosen with the calendar cell's Add Event (+) button.
+  useEffect(() => {
+    const stored = window.localStorage.getItem("calendar:add-event-date");
+    if (!stored) return;
+
+    // One-time handoff: future Add Event forms should not reuse this date.
+    window.localStorage.removeItem("calendar:add-event-date");
+
+    // Editing/reusing an existing event must preserve its original dates.
+    if (window.localStorage.getItem("calendar:event-action")) return;
+
+    try {
+      const date = JSON.parse(stored) as {
+        day?: number;
+        month?: number; // Calendar stores a zero-based month.
+        year?: number;
+      };
+      const { day, month, year } = date;
+
+      if (
+        !Number.isInteger(day) ||
+        !Number.isInteger(month) ||
+        !Number.isInteger(year) ||
+        day === undefined ||
+        month === undefined ||
+        year === undefined
+      ) return;
+
+      const selected = new Date(year, month, day);
+      if (
+        selected.getFullYear() !== year ||
+        selected.getMonth() !== month ||
+        selected.getDate() !== day
+      ) return;
+
+      const dateValue = [String(year), String(month + 1).padStart(2, "0"), String(day).padStart(2, "0")].join("-");
+      if (dateValue < getLocalTodayValue()) return;
+
+      setStartDate(dateValue);
+      setCalendarMonth(new Date(year, month, 1));
+    } catch {
+      // Ignore malformed or stale calendar selections.
+    }
+  }, []);
+
   const [endDate, setEndDate] = useState("");
 
   const [startTime, setStartTime] = useState("");
@@ -2838,6 +2947,8 @@ export default function AddEventPage({
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
 
   const [formError, setFormError] = useState("");
+  const [showMainFieldErrors, setShowMainFieldErrors] = useState(false);
+  const [showPublishFieldErrors, setShowPublishFieldErrors] = useState(false);
 
   const [formMode, setFormMode] = useState<"add" | "edit" | "reuse">("add");
 
@@ -3194,23 +3305,12 @@ export default function AddEventPage({
   ) => {
     if (!tenantValue || !organizationValue) return;
 
-    setPublishOrganizations((previous) => {
-      const exists = previous.some(
-        (item) =>
-          item.tenant === tenantValue &&
-          item.organization === organizationValue
-      );
-
-      return exists
-        ? previous
-        : [
-            ...previous,
-            {
-              tenant: tenantValue,
-              organization: organizationValue,
-            },
-          ];
-    });
+    // Specific Tenant allows one institute / organization at a time.
+    // Replace the earlier selection instead of merging selected chips.
+    setPublishOrganizations([{
+      tenant: tenantValue,
+      organization: organizationValue,
+    }]);
 
     setPublishOrganization("");
     setOpenDropdown(null);
@@ -3456,7 +3556,7 @@ export default function AddEventPage({
         setPublishTenant("");
         setPublishOrganization("");
         setPublishActor("");
-        setPublishOrganizer(source.organizer || "");
+        setPublishOrganizer((source.organizer || "").slice(0, 50));
 
         if (
           statusValue === "scheduled" &&
@@ -4116,6 +4216,86 @@ export default function AddEventPage({
 
   };
 
+  /* Required-field feedback is shown only after trying to save, publish or schedule. */
+  const mainFieldErrors = {
+    title: title.trim() ? "" : "Please select an Event Title.",
+    subtitle: subtitle.trim() ? "" : "Please select an Event Subtitle.",
+    startDate: !startDate ? "Please select a Start Date." : "",
+    endDate: !endDate
+      ? "Please select an End Date."
+      : startDate && endDate < startDate
+        ? "End Date cannot be before Start Date."
+        : "",
+    startTime: !startTime
+      ? "Please select a Start Time."
+      : startDate === getLocalTodayValue() &&
+        normalizeBackendTime(startTime) <= getCurrentLocalTimeValue()
+        ? "Start Time must be later than the current time."
+        : "",
+    endTime: !endTime
+      ? "Please select an End Time."
+      : startDate && endDate && startTime &&
+        new Date(`${endDate}T${normalizeBackendTime(endTime)}`).getTime() <=
+          new Date(`${startDate}T${normalizeBackendTime(startTime)}`).getTime()
+        ? "End Date and Time must be later than Start Date and Time."
+        : "",
+    priority: priority.trim() ? "" : "Please select a Priority.",
+    description: description.trim() ? "" : "Please enter a Description.",
+  };
+
+  // Required fields must be completed in the order they appear on the form.
+  // Only the first invalid field receives an inline red error at a time.
+  const mainFieldOrder = [
+    "title", "subtitle", "startDate", "endDate",
+    "startTime", "endTime", "priority", "description",
+  ] as const;
+  type MainFieldKey = (typeof mainFieldOrder)[number];
+
+  const firstInvalidMainField = mainFieldOrder.find(
+    (field) => Boolean(mainFieldErrors[field])
+  );
+
+  const showFirstMainFieldError = (field: MainFieldKey) => {
+    setShowMainFieldErrors(true);
+    setFormError(mainFieldErrors[field]);
+    setOpenPicker(null);
+    setOpenDropdown(null);
+    window.requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>(
+        `[data-event-required-field="${field}"]`
+      )?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  };
+
+  const canEnterMainField = (field: MainFieldKey) => {
+    const index = mainFieldOrder.indexOf(field);
+    return !mainFieldOrder.slice(0, index).some(
+      (previous) => Boolean(mainFieldErrors[previous])
+    );
+  };
+
+  const requirePreviousMainFields = (field: MainFieldKey) => {
+    const index = mainFieldOrder.indexOf(field);
+    const missingPrevious = mainFieldOrder.slice(0, index).find(
+      (previous) => Boolean(mainFieldErrors[previous])
+    );
+    if (missingPrevious) {
+      showFirstMainFieldError(missingPrevious);
+      return false;
+    }
+    return true;
+  };
+
+  const validateEventDetailsBeforeAdvance = () => {
+    if (firstInvalidMainField) {
+      showFirstMainFieldError(firstInvalidMainField);
+      return false;
+    }
+    setShowMainFieldErrors(false);
+    setFormError("");
+    return true;
+  };
+
   const toBackendDateTime = (dateValue: string, timeValue: string) => {
 
     const selectedDate = dateValue || new Date().toISOString().slice(0, 10);
@@ -4527,13 +4707,42 @@ export default function AddEventPage({
     return true;
   };
 
+  const requirePublishAudienceBeforeSchedule = () => {
+    let message = "";
+    if (!publishAudienceType) {
+      message = "Please select an Audience first.";
+    } else if (publishAudienceType === "Specific Tenant" &&
+      publishOrganizations.length === 0) {
+      message = "Please select at least one Institute / Organization first.";
+    } else if (publishAudienceType === "Tenant + Actor" &&
+      publishSelectedTenants.length === 0) {
+      message = "Please select at least one Tenant first.";
+    } else if ((publishAudienceType === "Specific Actor" ||
+      publishAudienceType === "Tenant + Actor") &&
+      publishSelectedActors.length === 0) {
+      message = "Please select at least one Actor first.";
+    } else if (publishAudienceType === "Specific Organization + Actor" &&
+      publishTargets.length === 0) {
+      message = "Please select an Institute / Organization and Actor first.";
+    }
+    if (message) {
+      setShowPublishFieldErrors(true);
+      setFormError(message);
+      setOpenPicker(null);
+      setOpenDropdown(null);
+      return false;
+    }
+    return true;
+  };
+
   const saveEvent = async (e: FormEvent<HTMLFormElement>) => {
 
     e.preventDefault();
 
     setFormError("");
 
-    if (!validateEventForm()) {
+    setShowPublishFieldErrors(true);
+    if (!validateEventDetailsBeforeAdvance() || !validateEventForm()) {
       return;
     }
 
@@ -5004,6 +5213,14 @@ export default function AddEventPage({
         className="modalScroller"
 
         onScroll={(event) => {
+          if (event.target === event.currentTarget) {
+            setOpenPicker(null);
+            // Publish menus expand the form and can trigger automatic scroll.
+            // Do not dismiss them until a choice/outside interaction occurs.
+            setOpenDropdown((current) =>
+              current?.startsWith("publish") ? current : null
+            );
+          }
 
           const scroller = event.currentTarget;
 
@@ -5079,7 +5296,7 @@ export default function AddEventPage({
 
           <form onSubmit={saveEvent}>
 
-            <div className="fieldGroup">
+            <div className="fieldGroup" data-event-required-field="title">
 
               <label>EVENT TITLE</label>
 
@@ -5102,18 +5319,22 @@ export default function AddEventPage({
                   setTitle(v);
 
                   setSubtitle("");
+                  setFormError("");
 
                   setOpenDropdown(null);
 
                 }}
 
               />
+              {showMainFieldErrors && firstInvalidMainField === "title" && mainFieldErrors.title && (
+                <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>{mainFieldErrors.title}</p>
+              )}
 
             </div>
 
 
 
-            <div className="fieldGroup">
+            <div className="fieldGroup" data-event-required-field="subtitle">
 
               <label>EVENT SUBTITLE</label>
 
@@ -5131,17 +5352,24 @@ export default function AddEventPage({
 
                 disabled={!title}
 
-                onToggle={() => setOpenDropdown(openDropdown === "subtitle" ? null : "subtitle")}
+                onToggle={() => {
+                  if (!requirePreviousMainFields("subtitle")) return;
+                  setOpenDropdown(openDropdown === "subtitle" ? null : "subtitle");
+                }}
 
                 onSelect={(v) => {
 
                   setSubtitle(v);
+                  setFormError("");
 
                   setOpenDropdown(null);
 
                 }}
 
               />
+              {showMainFieldErrors && firstInvalidMainField === "subtitle" && mainFieldErrors.subtitle && (
+                <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>{mainFieldErrors.subtitle}</p>
+              )}
 
             </div>
 
@@ -5149,7 +5377,7 @@ export default function AddEventPage({
 
             <div className="twoColumns">
 
-              <div className="fieldGroup">
+              <div className="fieldGroup" data-event-required-field="startDate">
 
                 <label>START DATE</label>
 
@@ -5161,7 +5389,10 @@ export default function AddEventPage({
 
                     className="neoPickerField"
 
-                    onClick={() => setOpenPicker(openPicker === "startDate" ? null : "startDate")}
+                    onClick={() => {
+                      if (!requirePreviousMainFields("startDate")) return;
+                      openDatePicker("startDate", startDate);
+                    }}
 
                   >
 
@@ -5187,7 +5418,7 @@ export default function AddEventPage({
 
                       onMonthChange={setCalendarMonth}
 
-                      minDate={new Date().toLocaleDateString("en-CA")}
+                      minDate={getLocalTodayValue()}
 
                       onSelect={(value) => {
 
@@ -5222,9 +5453,13 @@ export default function AddEventPage({
 
                 </div>
 
+                {showMainFieldErrors && firstInvalidMainField === "startDate" && mainFieldErrors.startDate && (
+                  <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>{mainFieldErrors.startDate}</p>
+                )}
+
               </div>
 
-              <div className="fieldGroup">
+              <div className="fieldGroup" data-event-required-field="endDate">
 
                 <label>END DATE</label>
 
@@ -5236,7 +5471,10 @@ export default function AddEventPage({
 
                     className="neoPickerField"
 
-                    onClick={() => setOpenPicker(openPicker === "endDate" ? null : "endDate")}
+                    onClick={() => {
+                      if (!requirePreviousMainFields("endDate")) return;
+                      openDatePicker("endDate", endDate || startDate);
+                    }}
 
                   >
 
@@ -5262,7 +5500,7 @@ export default function AddEventPage({
 
                       onMonthChange={setCalendarMonth}
 
-                      minDate={startDate || new Date().toLocaleDateString("en-CA")}
+                      minDate={startDate && startDate > getLocalTodayValue() ? startDate : getLocalTodayValue()}
 
                       onSelect={(value) => {
 
@@ -5295,6 +5533,10 @@ export default function AddEventPage({
 
                 </div>
 
+                {showMainFieldErrors && firstInvalidMainField === "endDate" && mainFieldErrors.endDate && (
+                  <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>{mainFieldErrors.endDate}</p>
+                )}
+
               </div>
 
             </div>
@@ -5303,7 +5545,7 @@ export default function AddEventPage({
 
             <div className="twoColumns">
 
-              <div className="fieldGroup">
+              <div className="fieldGroup" data-event-required-field="startTime">
 
                 <label>START TIME</label>
 
@@ -5317,6 +5559,7 @@ export default function AddEventPage({
 
                     onClick={() => {
 
+                      if (!requirePreviousMainFields("startTime")) return;
                       setOpenDropdown(null);
 
                       const willOpen = openPicker !== "startTime";
@@ -5400,9 +5643,13 @@ export default function AddEventPage({
 
                 </div>
 
+                {showMainFieldErrors && firstInvalidMainField === "startTime" && mainFieldErrors.startTime && (
+                  <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>{mainFieldErrors.startTime}</p>
+                )}
+
               </div>
 
-              <div className="fieldGroup">
+              <div className="fieldGroup" data-event-required-field="endTime">
 
                 <label>END TIME</label>
 
@@ -5416,6 +5663,7 @@ export default function AddEventPage({
 
                     onClick={() => {
 
+                      if (!requirePreviousMainFields("endTime")) return;
                       setOpenDropdown(null);
 
                       setFormError("");
@@ -5482,13 +5730,17 @@ export default function AddEventPage({
 
                 </div>
 
+                {showMainFieldErrors && firstInvalidMainField === "endTime" && mainFieldErrors.endTime && (
+                  <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>{mainFieldErrors.endTime}</p>
+                )}
+
               </div>
 
             </div>
 
 
 
-            <div className="fieldGroup">
+            <div className="fieldGroup" data-event-required-field="priority">
 
               <label>PRIORITY</label>
 
@@ -5502,23 +5754,30 @@ export default function AddEventPage({
 
                 open={openDropdown === "priority"}
 
-                onToggle={() => setOpenDropdown(openDropdown === "priority" ? null : "priority")}
+                onToggle={() => {
+                  if (!requirePreviousMainFields("priority")) return;
+                  setOpenDropdown(openDropdown === "priority" ? null : "priority");
+                }}
 
                 onSelect={(v) => {
 
                   setPriority(v);
+                  setFormError("");
 
                   setOpenDropdown(null);
 
                 }}
 
               />
+              {showMainFieldErrors && firstInvalidMainField === "priority" && mainFieldErrors.priority && (
+                <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>{mainFieldErrors.priority}</p>
+              )}
 
             </div>
 
 
 
-            <div className="fieldGroup descriptionFieldGroup">
+            <div className="fieldGroup descriptionFieldGroup" data-event-required-field="description">
 
               <div className="descriptionLabelRow">
 
@@ -5535,10 +5794,24 @@ export default function AddEventPage({
                 value={description}
 
                 maxLength={250}
+                readOnly={!canEnterMainField("description")}
+                onFocus={() => {
+                  if (!requirePreviousMainFields("description")) {
+                    document.activeElement instanceof HTMLElement && document.activeElement.blur();
+                  }
+                }}
 
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  if (canEnterMainField("description")) {
+                    setDescription(e.target.value);
+                    setFormError("");
+                  }
+                }}
 
               />
+              {showMainFieldErrors && firstInvalidMainField === "description" && mainFieldErrors.description && (
+                <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>{mainFieldErrors.description}</p>
+              )}
 
             </div>
 
@@ -5552,7 +5825,7 @@ export default function AddEventPage({
 
                 <span className="attachmentIcon"><Image src={icons.attachment} alt="" width={20} height={20} /></span>
 
-                <span className="attachmentText"><strong>{attachment || "Choose File Drag and Drop"}</strong><small>pdf, jpg, png, etc...</small></span>
+                <span className="attachmentText"><strong>{attachment || "Choose File "}</strong><small>pdf, jpg, png, etc...</small></span>
 
                 <input
                   type="file"
@@ -5581,13 +5854,18 @@ export default function AddEventPage({
                 <div className="publishInlineFields">
 
                   <div className="fieldGroup publishInlineField">
-                    <label>ORGANIZER</label>
+                    <div className="descriptionLabelRow" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "8px" }}>
+                      <label htmlFor="publish-organizer">ORGANIZER</label>
+                      <span className="descriptionCounter" style={{ marginLeft: "auto", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>{publishOrganizer.length}/50</span>
+                    </div>
                     <input
+                      id="publish-organizer"
                       className="publishOrganizerInput"
                       value={publishOrganizer}
+                      maxLength={50}
                       placeholder="Enter Organizer (Optional)"
                       onChange={(event) => {
-                        setPublishOrganizer(event.target.value);
+                        setPublishOrganizer(event.target.value.slice(0, 50));
                         setFormError("");
                       }}
                     />
@@ -5629,6 +5907,9 @@ export default function AddEventPage({
                         setFormError("");
                       }}
                     />
+                    {showPublishFieldErrors && !publishAudienceType && (
+                      <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>Please select an Audience.</p>
+                    )}
 
                   </div>
 
@@ -5650,6 +5931,11 @@ export default function AddEventPage({
                               )
                             }
                             onSelect={(value) => {
+                              // Reset dependent organization selections on tenant change.
+                              if (value !== publishTenant) {
+                                setPublishOrganizations([]);
+                                setPublishTargets([]);
+                              }
                               setPublishTenant(value);
                               setPublishOrganization("");
                               setOpenDropdown(null);
@@ -5813,13 +6099,17 @@ export default function AddEventPage({
                           value={publishActor}
                           options={publishTenantActors}
                           open={openDropdown === "publishActor"}
-                          onToggle={() =>
+                          onToggle={() => {
+                            if (publishSelectedTenants.length === 0) {
+                              setShowPublishFieldErrors(true);
+                              setFormError("Please select at least one Tenant before selecting an Actor.");
+                              setOpenDropdown(null);
+                              return;
+                            }
                             setOpenDropdown(
-                              openDropdown === "publishActor"
-                                ? null
-                                : "publishActor"
-                            )
-                          }
+                              openDropdown === "publishActor" ? null : "publishActor"
+                            );
+                          }}
                           onSelect={(value) => {
                             addSelectedActor(value);
                             setFormError("");
@@ -5892,6 +6182,11 @@ export default function AddEventPage({
                               )
                             }
                             onSelect={(value) => {
+                              // Never retain recipients belonging to the previous tenant.
+                              if (value !== publishTenant) {
+                                setPublishOrganizations([]);
+                                setPublishTargets([]);
+                              }
                               setPublishTenant(value);
                               setPublishOrganization("");
                               setPublishActor("");
@@ -6032,6 +6327,20 @@ export default function AddEventPage({
                     </>
                   )}
 
+                  {/* Audience-specific validation: no submission without a selected recipient. */}
+                  {showPublishFieldErrors && publishAudienceType === "Specific Tenant" && publishOrganizations.length === 0 && (
+                    <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>Please select at least one Institute / Organization.</p>
+                  )}
+                  {showPublishFieldErrors && (publishAudienceType === "Specific Actor" || publishAudienceType === "Tenant + Actor") && publishSelectedActors.length === 0 && (
+                    <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>Please select at least one Actor.</p>
+                  )}
+                  {showPublishFieldErrors && publishAudienceType === "Tenant + Actor" && publishSelectedTenants.length === 0 && (
+                    <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>Please select at least one Tenant.</p>
+                  )}
+                  {showPublishFieldErrors && publishAudienceType === "Specific Organization + Actor" && publishTargets.length === 0 && (
+                    <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>Please select an Institute / Organization and Actor.</p>
+                  )}
+
                   {publishMode === "schedule" && (
                     <div className="publishScheduleGrid">
 
@@ -6042,12 +6351,9 @@ export default function AddEventPage({
                             type="button"
                             className="neoPickerField"
                             onClick={() => {
+                              if (!requirePublishAudienceBeforeSchedule()) return;
                               setOpenDropdown(null);
-                              setOpenPicker(
-                                openPicker === "publishDate"
-                                  ? null
-                                  : "publishDate"
-                              );
+                              openDatePicker("publishDate", publishScheduleDate);
                             }}
                           >
                             <span>
@@ -6071,7 +6377,7 @@ export default function AddEventPage({
                               value={publishScheduleDate}
                               month={calendarMonth}
                               onMonthChange={setCalendarMonth}
-                              minDate={new Date().toLocaleDateString("en-CA")}
+                              minDate={getLocalTodayValue()}
                               onSelect={(value) => {
                                 setPublishScheduleDate(value);
                                 setOpenPicker(null);
@@ -6080,6 +6386,9 @@ export default function AddEventPage({
                             />
                           )}
                         </div>
+                        {showPublishFieldErrors && !publishScheduleDate && (
+                          <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>Please select a Publish Date.</p>
+                        )}
                       </div>
 
                       <div className="fieldGroup publishInlineField">
@@ -6089,6 +6398,12 @@ export default function AddEventPage({
                             type="button"
                             className="neoPickerField"
                             onClick={() => {
+                              if (!requirePublishAudienceBeforeSchedule()) return;
+                              if (!publishScheduleDate) {
+                                setShowPublishFieldErrors(true);
+                                setFormError("Please select a Publish Date first.");
+                                return;
+                              }
                               setOpenDropdown(null);
                               setOpenPicker(
                                 openPicker === "publishTime"
@@ -6121,6 +6436,9 @@ export default function AddEventPage({
                             />
                           )}
                         </div>
+                        {showPublishFieldErrors && !publishScheduleTime && (
+                          <p className="addEventRequiredError" role="alert" style={{ color: "#dc2626", fontSize: "12px", fontWeight: 600, lineHeight: 1.4, margin: "6px 1px 0", overflowWrap: "anywhere" }}>Please select a Publish Time.</p>
+                        )}
                       </div>
 
                     </div>
@@ -6191,6 +6509,8 @@ export default function AddEventPage({
                       !showPublishOptions ||
                       publishMode !== "publish"
                     ) {
+                      if (!validateEventDetailsBeforeAdvance()) return;
+                      setShowPublishFieldErrors(false);
                       setPublishMode("publish");
                       setShowPublishOptions(true);
                       setOpenDropdown(null);
@@ -6218,6 +6538,8 @@ export default function AddEventPage({
                       !showPublishOptions ||
                       publishMode !== "schedule"
                     ) {
+                      if (!validateEventDetailsBeforeAdvance()) return;
+                      setShowPublishFieldErrors(false);
                       setPublishMode("schedule");
                       setShowPublishOptions(true);
                       setOpenDropdown(null);
@@ -6267,6 +6589,8 @@ export default function AddEventPage({
                       !showPublishOptions ||
                       publishMode !== "publish"
                     ) {
+                      if (!validateEventDetailsBeforeAdvance()) return;
+                      setShowPublishFieldErrors(false);
                       setPublishMode("publish");
                       setShowPublishOptions(true);
                       setOpenDropdown(null);
@@ -6294,6 +6618,8 @@ export default function AddEventPage({
                       !showPublishOptions ||
                       publishMode !== "schedule"
                     ) {
+                      if (!validateEventDetailsBeforeAdvance()) return;
+                      setShowPublishFieldErrors(false);
                       setPublishMode("schedule");
                       setShowPublishOptions(true);
                       setOpenDropdown(null);

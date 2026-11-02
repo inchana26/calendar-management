@@ -5078,3 +5078,18 @@
     }
 }
 
+/* Add / Edit Event — clear neumorphic edges without visible border lines.
+   Only field shadows are refined; no field sizes or layout are changed. */
+.addEventPage .formDropdown:not(.open) .formControl,
+.addEventPage .neoPickerField,
+.addEventPage .inputWithIcon,
+.addEventPage .fieldGroup textarea,
+.addEventPage .attachmentControl,
+.addEventPage .dropdownSearch,
+.addEventPage .publishOrganizerInput,
+.addEventPage .publishReadOnlyField {
+  border: 0 !important;
+  box-shadow:
+    inset -2px -2px 2px #FFFFFF,
+    inset 2px 2px 2px #C4C4C4 !important;
+}
