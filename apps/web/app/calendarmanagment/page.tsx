@@ -229,9 +229,24 @@ function getSignedInCalendarPublisherName(): string {
 }
 
 function getCalendarEventPublisherLabel(event: CalendarEvent): string {
-  return actualCalendarPublisherName(event.publisherName) ||
-    actualCalendarPublisherName(event.createdBy) ||
-    "Name unavailable";
+  // Keep the real creator/publisher name when it is available.
+  const personName = actualCalendarPublisherName(event.publisherName) ||
+    actualCalendarPublisherName(event.createdBy);
+  if (personName) return personName;
+
+  // Older calendar events identify their creator by role instead of name.
+  // Restore the previous role label rather than displaying "Name unavailable".
+  const creator = (event.createdBy || "").trim();
+  const normalizedRole = creator
+    .replace(/^calendar[-_]/i, "")
+    .replace(/[-_]+/g, " ")
+    .toUpperCase();
+  if (/^(SUPER ADMIN|PLATFORM ADMIN|TENANT ADMIN|INSTITUTE ADMIN|COORDINATOR|FACULTY|LEARNER|STUDENT)(\s|$)/.test(normalizedRole)) {
+    return eventCreatorLabel(creator);
+  }
+
+  const localRole = (event.localOwner || "").split("::")[0]?.trim();
+  return localRole ? eventCreatorLabel(localRole) : "Not recorded";
 }
 
 function formatAudienceTenantLabel(value: string) {
@@ -3424,8 +3439,8 @@ export default function CalendarManagementPage() {
   const [dayDate, setDayDate] = useState(() => new Date());
   const weekScrollRef = useRef<HTMLDivElement>(null);
   const dayScrollRef = useRef<HTMLDivElement>(null);
-  const [dayPopup, setDayPopup] = useState<{ day: number; event: CalendarEvent } | null>(null);
-  const [dayEventList, setDayEventList] = useState<{ day: number; events: CalendarEvent[] } | null>(null);
+  const [dayPopup, setDayPopup] = useState<{ dateKey: string; event: CalendarEvent } | null>(null);
+  const [dayEventList, setDayEventList] = useState<{ dateKey: string; events: CalendarEvent[] } | null>(null);
   const [reminderEvent, setReminderEvent] = useState<CalendarEvent | null>(null);
   const [reminderDescription, setReminderDescription] = useState("");
   const [reminderSentEvent, setReminderSentEvent] = useState<CalendarEvent | null>(null);
@@ -7903,16 +7918,16 @@ export default function CalendarManagementPage() {
                               className="dayEvents"
                               onMouseEnter={() => {
                                 setDayPopup(null);
-                                setDayEventList({ day: cell.day, events: dayEvents });
+                                setDayEventList({ dateKey: cellKey, events: dayEvents });
                               }}
                               onFocus={() => {
                                 setDayPopup(null);
-                                setDayEventList({ day: cell.day, events: dayEvents });
+                                setDayEventList({ dateKey: cellKey, events: dayEvents });
                               }}
                               onClick={(ev) => {
                                 ev.stopPropagation();
                                 setDayPopup(null);
-                                setDayEventList({ day: cell.day, events: dayEvents });
+                                setDayEventList({ dateKey: cellKey, events: dayEvents });
                               }}
                             >
                               {dayEvents.slice(0, 3).map((event) => (
@@ -7959,7 +7974,7 @@ export default function CalendarManagementPage() {
                             </span>
                           )}
 
-                          {dayEventList?.day === cell.day && cell.current && !dayPopup && (
+                          {dayEventList?.dateKey === cellKey && !dayPopup && (
                             <span
                               className={`calendarDayEventList ${
                                 index % 7 <= 1
@@ -7983,14 +7998,14 @@ export default function CalendarManagementPage() {
                                     onClick={(ev) => {
                                       ev.stopPropagation();
                                       setDayEventList(null);
-                                      setDayPopup({ day: cell.day, event });
+                                      setDayPopup({ dateKey: cellKey, event });
                                     }}
                                     onKeyDown={(ev) => {
                                       if (ev.key === "Enter" || ev.key === " ") {
                                         ev.preventDefault();
                                         ev.stopPropagation();
                                         setDayEventList(null);
-                                        setDayPopup({ day: cell.day, event });
+                                        setDayPopup({ dateKey: cellKey, event });
                                       }
                                     }}
                                   >
@@ -8005,7 +8020,7 @@ export default function CalendarManagementPage() {
                             </span>
                           )}
 
-                          {dayPopup?.day === cell.day && cell.current && (
+                          {dayPopup?.dateKey === cellKey && (
                             <span
                               className={`calendarDayPopup ${
                                 index % 7 <= 1
